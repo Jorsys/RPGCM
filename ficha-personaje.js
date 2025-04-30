@@ -241,6 +241,78 @@ document.addEventListener("componentsLoaded", () => {
     })
   }
 
+  // Configurar el botón de crear hechizo
+  const createSpellBtn = document.getElementById("createSpellBtn")
+  if (createSpellBtn) {
+    createSpellBtn.addEventListener("click", () => {
+      const createSpellModal = document.getElementById("createSpellModal")
+      if (createSpellModal) {
+        // Limpiar formulario
+        document.getElementById("spellName").value = ""
+        document.getElementById("spellDifficultyValue").value = "6"
+        document.getElementById("spellDifficultyDice").value = "1d10"
+        document.getElementById("spellDistance").value = "0"
+        document.getElementById("spellUse").value = "Ofensivo"
+        document.getElementById("spellAction").value = ""
+        document.getElementById("spellDescription").value = ""
+
+        // Cambiar el texto del botón
+        const addSpellBtn = document.getElementById("addSpellBtn")
+        if (addSpellBtn) {
+          addSpellBtn.textContent = "Agregar Hechizo"
+
+          // Eliminar cualquier event listener anterior
+          const newAddSpellBtn = addSpellBtn.cloneNode(true)
+          addSpellBtn.parentNode.replaceChild(newAddSpellBtn, addSpellBtn)
+
+          // Añadir nuevo event listener
+          newAddSpellBtn.addEventListener("click", () => {
+            const spellName = document.getElementById("spellName").value.trim()
+            const difficultyValue = document.getElementById("spellDifficultyValue").value
+            const difficultyDice = document.getElementById("spellDifficultyDice").value
+            const distance = document.getElementById("spellDistance").value
+            const use = document.getElementById("spellUse").value
+            const action = document.getElementById("spellAction").value
+            const description = document.getElementById("spellDescription").value
+
+            if (spellName) {
+              const newSpell = {
+                nombre: spellName,
+                dificultad: {
+                  valor: difficultyValue,
+                  dados: difficultyDice,
+                },
+                distancia: distance,
+                uso: use,
+                accion: action,
+                descripcion: description,
+              }
+
+              addSpell(newSpell)
+              createSpellModal.classList.remove("show-modal")
+            } else {
+              alert("El nombre del hechizo es obligatorio")
+            }
+          })
+        }
+
+        // Mostrar modal
+        createSpellModal.classList.add("show-modal")
+      }
+    })
+  }
+
+  // Configurar cierre del modal de crear hechizo
+  const closeCreateSpellModal = document.getElementById("closeCreateSpellModal")
+  if (closeCreateSpellModal) {
+    closeCreateSpellModal.addEventListener("click", () => {
+      const createSpellModal = document.getElementById("createSpellModal")
+      if (createSpellModal) {
+        createSpellModal.classList.remove("show-modal")
+      }
+    })
+  }
+
   // Función para agregar un hechizo al grimorio
   function addSpell(hechizo) {
     personaje.grimorio.push(hechizo)
@@ -562,21 +634,28 @@ document.addEventListener("componentsLoaded", () => {
 
   // Función para cargar el inventario en el acordeón
   loadInventoryAccordion = (category) => {
-    const inventoryList = document.getElementById(`${category}List`)
-    if (!inventoryList) {
-      console.error(`No se encontró el elemento con ID '${category}List'`)
+    const accordionList = document.querySelector(`#${category}-content .accordion-list`)
+    if (!accordionList) {
+      console.error(`No se encontró el elemento con clase 'accordion-list' en #${category}-content`)
       return
     }
 
-    inventoryList.innerHTML = ""
+    accordionList.innerHTML = ""
 
     if (!personaje.inventario[category] || personaje.inventario[category].length === 0) {
-      inventoryList.innerHTML = "<tr><td colspan='4'>No hay objetos en esta categoría.</td></tr>"
+      accordionList.innerHTML = "<p>No hay objetos en esta categoría.</p>"
       return
     }
 
+    // Crear tabla para mostrar los items
+    let tableHTML = `<table class="inventory-table"><thead><tr>
+      <th>Nombre</th>
+      <th>Detalles</th>
+      <th>Coste</th>
+      <th>Acciones</th>
+    </tr></thead><tbody id="${category}List">`
+
     personaje.inventario[category].forEach((item, index) => {
-      const row = document.createElement("tr")
       let detalles = ""
 
       switch (category) {
@@ -600,22 +679,25 @@ document.addEventListener("componentsLoaded", () => {
           break
       }
 
-      row.innerHTML = `
-        <td>${item.nombre}</td>
-        <td>${detalles}</td>
-        <td>${item.coste}</td>
-        <td class="actions-cell">
-          <i class="fas fa-edit action-icon edit-inventory-icon" data-category="${category}" data-index="${index}" title="Editar"></i>
-          <i class="fas fa-trash action-icon delete-inventory-icon" data-category="${category}" data-index="${index}" title="Eliminar"></i>
-          <i class="fas fa-arrow-up action-icon equip-icon" data-category="${category}" data-index="${index}" title="Equipar"></i>
-        </td>
+      tableHTML += `
+        <tr>
+          <td>${item.nombre}</td>
+          <td>${detalles}</td>
+          <td>${item.coste}</td>
+          <td class="actions-cell">
+            <i class="fas fa-edit action-icon edit-inventory-icon" data-category="${category}" data-index="${index}" title="Editar"></i>
+            <i class="fas fa-trash action-icon delete-inventory-icon" data-category="${category}" data-index="${index}" title="Eliminar"></i>
+            <i class="fas fa-arrow-up action-icon equip-icon" data-category="${category}" data-index="${index}" title="Equipar"></i>
+          </td>
+        </tr>
       `
-
-      inventoryList.appendChild(row)
     })
 
+    tableHTML += `</tbody></table>`
+    accordionList.innerHTML = tableHTML
+
     // Agregar event listeners a los iconos
-    const editInventoryIcons = inventoryList.querySelectorAll(".edit-inventory-icon")
+    const editInventoryIcons = accordionList.querySelectorAll(".edit-inventory-icon")
     editInventoryIcons.forEach((icon) => {
       icon.addEventListener("click", function () {
         const category = this.dataset.category
@@ -624,7 +706,7 @@ document.addEventListener("componentsLoaded", () => {
       })
     })
 
-    const deleteInventoryIcons = inventoryList.querySelectorAll(".delete-inventory-icon")
+    const deleteInventoryIcons = accordionList.querySelectorAll(".delete-inventory-icon")
     deleteInventoryIcons.forEach((icon) => {
       icon.addEventListener("click", function () {
         const category = this.dataset.category
@@ -637,7 +719,7 @@ document.addEventListener("componentsLoaded", () => {
       })
     })
 
-    const equipIcons = inventoryList.querySelectorAll(".equip-icon")
+    const equipIcons = accordionList.querySelectorAll(".equip-icon")
     equipIcons.forEach((icon) => {
       icon.addEventListener("click", function () {
         const category = this.dataset.category
@@ -646,9 +728,6 @@ document.addEventListener("componentsLoaded", () => {
       })
     })
   }
-
-  // Buscar la sección donde se configuran los botones de añadir items
-  // Después de la función loadInventoryAccordion, añadir:
 
   // Configurar botones de añadir items
   function setupAddItemButtons() {
@@ -983,7 +1062,7 @@ document.addEventListener("componentsLoaded", () => {
     const createBagModal = document.getElementById("createBagModal")
     const closeCreateBagModal = document.getElementById("closeCreateBagModal")
     const bagNameInput = document.getElementById("bagName")
-    const createBagModalBtn = document.getElementById("createBagBtn")
+    const createBagModalBtn = document.querySelector("#createBagModal #createBagBtn")
 
     if (createBagBtn) {
       createBagBtn.addEventListener("click", () => {
@@ -1008,10 +1087,8 @@ document.addEventListener("componentsLoaded", () => {
     }
 
     // Corregir el selector para el botón dentro del modal
-    const createBagBtnInModal = document.querySelector("#createBagModal #createBagBtn")
-
-    if (createBagBtnInModal) {
-      createBagBtnInModal.addEventListener("click", () => {
+    if (createBagModalBtn) {
+      createBagModalBtn.addEventListener("click", () => {
         const bagName = bagNameInput.value.trim()
         if (bagName) {
           // Crear nueva bolsa
@@ -1125,6 +1202,14 @@ document.addEventListener("componentsLoaded", () => {
     })
   }
 
+  // Cambiar el icono de las cuerdas
+  function updateResourceIcons() {
+    const cuerdasIcon = document.querySelector("#cuerdas-resource i")
+    if (cuerdasIcon) {
+      cuerdasIcon.className = "fas fa-circle-notch" // Cambiamos de fa-scroll a fa-circle-notch
+    }
+  }
+
   // Añadir al final del documento, justo antes del cierre de la función principal
   // Inicializar la aplicación
   loadGrimorio()
@@ -1136,6 +1221,7 @@ document.addEventListener("componentsLoaded", () => {
   setupMoveToBagModal()
   setupCreateBagButton()
   loadSpecialBags()
+  updateResourceIcons() // Actualizar el icono de las cuerdas
 
   // Manejar cambios en los atributos y estado
   attributeListeners()
@@ -1341,5 +1427,11 @@ document.addEventListener("componentsLoaded", () => {
   // Función para mostrar el modal de recursos
   showResourceModal = (resource) => {
     console.log(`Mostrar modal para el recurso ${resource}`)
+  }
+
+  // Configurar modales de recursos
+  setupResourceModals = () => {
+    // Implementar la configuración de modales para recursos
+    console.log("Configurando modales de recursos")
   }
 })
