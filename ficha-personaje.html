@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Character Manager - Ficha de Personaje</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3498db">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RPG Manager">
+    <link rel="apple-touch-icon" href="icons/icon-152x152.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-72x72.png">
+    <style>
+        .app-logo {
+            width: 32px;
+            height: 32px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cabecera -->
+        <div id="header-container"></div>
+        
+        <div class="character-sheet">
+            <!-- Información básica -->
+            <div id="basic-info-container"></div>
+            
+            <!-- Atributos -->
+            <div id="attributes-container"></div>
+            
+            <!-- Estado -->
+            <div id="status-container"></div>
+            
+            <!-- Grimorio -->
+            <div id="grimorio-container"></div>
+            
+            <!-- Equipamiento -->
+            <div id="equipment-container"></div>
+            
+            <!-- Inventario -->
+            <div id="inventory-container"></div>
+        </div>
+    </div>
+    
+    <!-- Contenedor para modales -->
+    <div id="modals-container"></div>
+    
+    <!-- Script para cargar componentes -->
+    <script src="component-loader.js"></script>
+    <script src="ficha-personaje.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

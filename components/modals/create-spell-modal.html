@@ -1,0 +1,40 @@
+<div id="createSpellModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeCreateSpellModal">&times;</span>
+        <h2>Añadir Hechizo</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="spellName">Nombre:</label>
+                <input type="text" id="spellName" required>
+            </div>
+            <div class="form-group">
+                <label for="spellDifficultyValue">Dificultad (valor):</label>
+                <input type="number" id="spellDifficultyValue" min="1" value="6">
+            </div>
+            <div class="form-group">
+                <label for="spellDifficultyDice">Dados:</label>
+                <input type="text" id="spellDifficultyDice" placeholder="1d10" value="1d10">
+            </div>
+            <div class="form-group">
+                <label for="spellDistance">Distancia (m):</label>
+                <input type="number" id="spellDistance" min="0" value="0">
+            </div>
+            <div class="form-group">
+                <label for="spellUse">Uso:</label>
+                <select id="spellUse">
+                    <option value="Ofensivo">Ofensivo</option>
+                    <option value="Ayuda">Ayuda</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="spellAction">Acción:</label>
+                <input type="text" id="spellAction" placeholder="2d6 daño, +3 escudo, etc.">
+            </div>
+            <div class="form-group full-width">
+                <label for="spellDescription">Descripción:</label>
+                <textarea id="spellDescription" rows="2"></textarea>
+            </div>
+        </div>
+        <button id="addSpellBtn" class="btn">Agregar Hechizo</button>
+    </div>
+</div>

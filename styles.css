@@ -1,0 +1,881 @@
+/* Estilos generales */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #2c3e50;
+}
+
+h2 {
+  color: #3498db;
+  margin-bottom: 20px;
+}
+
+h3 {
+  color: #2c3e50;
+  margin: 15px 0;
+}
+
+/* Tarjetas */
+.card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* Formularios */
+.form-group {
+  margin-bottom: 15px;
+}
+
+/* Nuevo: Grupos de formulario compactos */
+.compact-form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.compact-form-group label {
+  min-width: 80px;
+  font-weight: 600;
+}
+
+.compact-input {
+  width: 200px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.compact-input-small {
+  width: 60px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.centered-label {
+  display: block;
+  text-align: center;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input[type="number"] {
+  width: 100px;
+}
+
+/* Botones */
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #e0e0e0;
+  color: #333;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #d0d0d0;
+}
+
+.btn-primary {
+  background-color: #4caf50;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #45a049;
+}
+
+.btn-small {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* Lista de personajes */
+.personajes-list {
+  margin-bottom: 20px;
+}
+
+.personaje-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.personaje-item:last-child {
+  border-bottom: none;
+}
+
+.personaje-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.show-modal {
+  display: block !important;
+  opacity: 1 !important;
+}
+
+.modal.show-modal {
+  display: block;
+}
+
+.modal-content {
+  background-color: white;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+}
+
+.show-modal .modal-content {
+  transform: translateY(0);
+}
+
+.close {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+}
+
+/* Ficha de personaje */
+.character-sheet {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .character-sheet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+.attributes-grid,
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+@media (min-width: 768px) {
+  .attributes-grid,
+  .status-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.status-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-control input {
+  margin: 0 10px;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  background-color: transparent;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.tab-btn.active {
+  color: #3498db;
+  border-bottom: 2px solid #3498db;
+}
+
+/* Listas */
+.list-container {
+  margin-bottom: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item-actions {
+  display: flex;
+  gap: 5px;
+}
+
+/* Tablas */
+.table-container {
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Formulario en grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Utilidades */
+.hidden {
+  display: none;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header-actions h1 {
+  margin: 0 0 0 20px;
+  flex-grow: 1;
+}
+
+.equipment-section {
+  margin-top: 10px;
+}
+
+/* Estilos para los formularios dinámicos */
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.simple-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.simple-item-value {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.simple-item-controls {
+  display: flex;
+  gap: 5px;
+}
+
+/* Estilos para las tablas de inventario */
+.inventory-table {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.inventory-table th {
+  background-color: #e9f2fa;
+}
+
+.inventory-table td {
+  vertical-align: middle;
+}
+
+.inventory-table .actions-cell {
+  width: 120px;
+  text-align: center;
+}
+
+.inventory-table .quantity-cell {
+  width: 80px;
+  text-align: center;
+}
+
+/* Nuevos estilos para recursos simples */
+.simple-resources {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f0f8ff;
+  border-radius: 8px;
+}
+
+.resource-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.resource-item:hover {
+  background-color: #e0f0ff;
+}
+
+.resource-item i {
+  font-size: 18px;
+  color: #3498db;
+}
+
+.resource-item span {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Estilos para el acordeón */
+.accordion-container {
+  width: 100%;
+}
+
+.accordion-item {
+  margin-bottom: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: #f5f5f5;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.accordion-header:hover {
+  background-color: #e9f2fa;
+}
+
+.accordion-header.active {
+  background-color: #e0f0ff;
+}
+
+.accordion-content {
+  display: none;
+  padding: 15px;
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+}
+
+.accordion-content.active {
+  display: block;
+}
+
+.accordion-list {
+  margin-bottom: 15px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.add-item-btn {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Estilos para los iconos */
+.action-icon {
+  cursor: pointer;
+  font-size: 18px;
+  color: #666;
+  transition: color 0.3s;
+  margin: 0 3px;
+}
+
+.action-icon:hover {
+  color: #333;
+}
+
+.edit-icon {
+  color: #3498db;
+}
+
+.edit-icon:hover {
+  color: #2980b9;
+}
+
+.delete-icon {
+  color: #e74c3c;
+}
+
+.delete-icon:hover {
+  color: #c0392b;
+}
+
+.equip-icon {
+  color: #2ecc71;
+}
+
+.equip-icon:hover {
+  color: #27ae60;
+}
+
+.unequip-icon {
+  color: #f39c12;
+}
+
+.unequip-icon:hover {
+  color: #d35400;
+}
+
+.sell-icon {
+  color: #9b59b6;
+}
+
+.sell-icon:hover {
+  color: #8e44ad;
+}
+
+.move-icon {
+  color: #1abc9c;
+}
+
+.move-icon:hover {
+  color: #16a085;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Estilos para bolsas especiales */
+.special-bags-section {
+  margin-top: 30px;
+}
+
+.special-bags-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.special-bag {
+  margin-top: 20px;
+  border: 1px solid #3498db;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.special-bag-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: #e0f0ff;
+  cursor: pointer;
+}
+
+.special-bag-header h3 {
+  margin: 0;
+  color: #3498db;
+}
+
+.special-bag-content {
+  display: none;
+  padding: 15px;
+  background-color: #f9f9f9;
+}
+
+.special-bag-content.active {
+  display: block;
+}
+
+.inventory-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+/* Estilos para el coste total */
+.cost-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.total-cost {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-top: 3px;
+}
+
+/* Estilos para el formulario de recursos */
+.resource-form {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.resource-form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.resource-form-row label {
+  min-width: 80px;
+}
+
+.resource-form-row input {
+  width: 80px;
+}
+
+.resource-form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Estilos para opciones de movimiento */
+.move-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.move-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.move-option input[type="radio"] {
+  width: auto;
+}
+
+.empty-bag-message {
+  font-style: italic;
+  color: #7f8c8d;
+  text-align: center;
+  padding: 10px;
+}
+
+/* Estilos para tablas de equipamiento */
+.equipment-table {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.equipment-table th {
+  background-color: #e9f2fa;
+}
+
+.equipment-table td {
+  vertical-align: middle;
+}
+
+/* Estilos para tablas de grimorio */
+.grimorio-table {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.grimorio-table th {
+  background-color: #e9f2fa;
+}
+
+.grimorio-table td {
+  vertical-align: middle;
+}
+
+/* Estilos para el botón de volver */
+#backBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Mejoras visuales para las bolsas especiales */
+.bag-items-list {
+  margin-bottom: 15px;
+}
+
+.bag-items-list table {
+  margin-bottom: 0;
+}
+
+/* Estilos para el modal de mover objetos */
+#newBagNameGroup {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+/* Estilos para PWA */
+#toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 4px;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 767px) {
+  .container {
+    padding: 10px;
+  }
+
+  .modal-content {
+    margin: 5% auto;
+    width: 90%;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions h1 {
+    margin: 10px 0;
+    font-size: 24px;
+  }
+
+  .simple-resources {
+    flex-wrap: wrap;
+  }
+
+  .resource-item {
+    margin-bottom: 5px;
+  }
+
+  .table-container {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  /* Mejoras para la experiencia táctil */
+  .btn,
+  .action-icon {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px; /* Evita el zoom en iOS */
+  }
+}
+
+/* Estilos para modo standalone */
+body.standalone-mode {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Animaciones para la PWA */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Estilos para la pantalla de splash */
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #2c0b3f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.splash-logo {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 20px;
+}
+
+.splash-title {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.splash-spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 4px solid white;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
