@@ -180,6 +180,10 @@ document.addEventListener("componentsLoaded", () => {
   let editInventoryItem
   let removeInventoryItem
   let equipItem
+  let loadBagContent
+  let editBagName
+  let deleteBag
+  let showResourceModal
 
   // Función para cargar el grimorio
   loadGrimorio = () => {
@@ -643,6 +647,664 @@ document.addEventListener("componentsLoaded", () => {
     })
   }
 
+  // Buscar la sección donde se configuran los botones de añadir items
+  // Después de la función loadInventoryAccordion, añadir:
+
+  // Configurar botones de añadir items
+  function setupAddItemButtons() {
+    const addItemBtns = document.querySelectorAll(".add-item-btn")
+    addItemBtns.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const category = this.dataset.category
+        showAddItemModal(category)
+      })
+    })
+  }
+
+  // Función para mostrar el modal de añadir item
+  function showAddItemModal(category) {
+    const itemModal = document.getElementById("itemModal")
+    const itemModalContent = document.getElementById("itemModalContent")
+
+    let formHTML = ""
+    let title = ""
+
+    switch (category) {
+      case "armaduras":
+        title = "Añadir Armadura"
+        formHTML = `
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nombre:</label>
+              <input type="text" id="itemName" required>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Cantidad:</label>
+              <input type="number" id="itemQuantity" min="1" value="1">
+            </div>
+            <div class="form-group">
+              <label for="itemCoste">Coste por unidad:</label>
+              <input type="number" id="itemCoste" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label for="itemResistenciaMax">Resistencia Máxima:</label>
+              <input type="number" id="itemResistenciaMax" min="0" value="10">
+            </div>
+            <div class="form-group">
+              <label for="itemBloqueoFisico">Bloqueo Físico:</label>
+              <input type="number" id="itemBloqueoFisico" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label for="itemBloqueoMagico">Bloqueo Mágico:</label>
+              <input type="number" id="itemBloqueoMagico" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label for="itemResistenciaActual">Resistencia Actual:</label>
+              <input type="number" id="itemResistenciaActual" min="0" value="10">
+            </div>
+          </div>
+        `
+        break
+      case "armas":
+        title = "Añadir Arma"
+        formHTML = `
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nombre:</label>
+              <input type="text" id="itemName" required>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Cantidad:</label>
+              <input type="number" id="itemQuantity" min="1" value="1">
+            </div>
+            <div class="form-group">
+              <label for="itemCoste">Coste por unidad:</label>
+              <input type="number" id="itemCoste" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label for="itemManos">Manos necesarias:</label>
+              <select id="itemManos">
+                <option value="0">No requiere manos</option>
+                <option value="1" selected>1 mano</option>
+                <option value="2">2 manos</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="itemTipo">Tipo de arma:</label>
+              <select id="itemTipo">
+                <option value="Cuerpo a cuerpo" selected>Cuerpo a cuerpo</option>
+                <option value="A distancia">A distancia</option>
+                <option value="Mágica">Mágica</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="itemDanio">Daño (ej: 2d4+1):</label>
+              <input type="text" id="itemDanio" placeholder="1d6" value="1d6">
+            </div>
+            <div class="form-group">
+              <label for="itemResistenciaMax">Resistencia Máxima:</label>
+              <input type="number" id="itemResistenciaMax" min="0" value="10">
+            </div>
+            <div class="form-group">
+              <label for="itemResistenciaActual">Resistencia Actual:</label>
+              <input type="number" id="itemResistenciaActual" min="0" value="10">
+            </div>
+            <div class="form-group">
+              <label for="itemEstadisticas">Estadísticas modificadas:</label>
+              <input type="text" id="itemEstadisticas" placeholder="+1 daño, -1 defensa">
+            </div>
+          </div>
+        `
+        break
+      case "municion":
+        title = "Añadir Munición"
+        formHTML = `
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nombre:</label>
+              <input type="text" id="itemName" required>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Cantidad:</label>
+              <input type="number" id="itemQuantity" min="1" value="10">
+            </div>
+            <div class="form-group">
+              <label for="itemCoste">Coste por unidad:</label>
+              <input type="number" id="itemCoste" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label for="itemMejora">Mejora:</label>
+              <input type="text" id="itemMejora" placeholder="daño +1">
+            </div>
+          </div>
+        `
+        break
+      case "pociones":
+        title = "Añadir Poción"
+        formHTML = `
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nombre:</label>
+              <input type="text" id="itemName" required>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Cantidad:</label>
+              <input type="number" id="itemQuantity" min="1" value="1">
+            </div>
+            <div class="form-group">
+              <label for="itemCoste">Coste por unidad:</label>
+              <input type="number" id="itemCoste" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label for="itemModificador">Modificador:</label>
+              <input type="text" id="itemModificador" placeholder="salud">
+            </div>
+            <div class="form-group">
+              <label for="itemEfecto">Efecto:</label>
+              <input type="text" id="itemEfecto" placeholder="+1">
+            </div>
+          </div>
+        `
+        break
+      case "pergaminos":
+        title = "Añadir Pergamino"
+        formHTML = `
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nombre:</label>
+              <input type="text" id="itemName" required>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Cantidad:</label>
+              <input type="number" id="itemQuantity" min="1" value="1">
+            </div>
+            <div class="form-group">
+              <label for="itemCoste">Coste por unidad:</label>
+              <input type="number" id="itemCoste" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label for="itemTipo">Tipo:</label>
+              <select id="itemTipo">
+                <option value="Ofensivo" selected>Ofensivo</option>
+                <option value="Efecto de estado">Efecto de estado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="itemModificador">Modificador:</label>
+              <input type="text" id="itemModificador" placeholder="daño">
+            </div>
+            <div class="form-group">
+              <label for="itemEfecto">Efecto:</label>
+              <input type="text" id="itemEfecto" placeholder="+2">
+            </div>
+            <div class="form-group full-width">
+              <label for="itemDescripcion">Descripción:</label>
+              <textarea id="itemDescripcion" rows="2"></textarea>
+            </div>
+          </div>
+        `
+        break
+      case "otros":
+        title = "Añadir Otro Objeto"
+        formHTML = `
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nombre:</label>
+              <input type="text" id="itemName" required>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Cantidad:</label>
+              <input type="number" id="itemQuantity" min="1" value="1">
+            </div>
+            <div class="form-group">
+              <label for="itemCoste">Coste por unidad:</label>
+              <input type="number" id="itemCoste" min="0" value="0">
+            </div>
+            <div class="form-group full-width">
+              <label for="itemDescripcion">Descripción:</label>
+              <textarea id="itemDescripcion" rows="2"></textarea>
+            </div>
+          </div>
+        `
+        break
+    }
+
+    // Preparar contenido del modal
+    itemModalContent.innerHTML = `
+      <h3>${title}</h3>
+      ${formHTML}
+      <div class="form-actions">
+        <button id="addItemModalBtn" class="btn" data-category="${category}">Agregar</button>
+      </div>
+    `
+
+    // Mostrar modal
+    itemModal.classList.add("show-modal")
+
+    // Configurar botón de agregar
+    const addItemModalBtn = document.getElementById("addItemModalBtn")
+    if (addItemModalBtn) {
+      addItemModalBtn.addEventListener("click", function () {
+        const category = this.dataset.category
+        addInventoryItem(category)
+        itemModal.classList.remove("show-modal")
+      })
+    }
+  }
+
+  // Función para añadir item al inventario
+  function addInventoryItem(category) {
+    const itemName = document.getElementById("itemName").value.trim()
+    const itemQuantity = Number.parseInt(document.getElementById("itemQuantity").value) || 1
+    const itemCoste = Number.parseInt(document.getElementById("itemCoste").value) || 0
+
+    if (!itemName) {
+      alert("El nombre del objeto es obligatorio")
+      return
+    }
+
+    const newItem = {
+      nombre: itemName,
+      cantidad: itemQuantity,
+      coste: itemCoste,
+      categoria: category,
+    }
+
+    switch (category) {
+      case "armaduras":
+        newItem.resistenciaMax = Number.parseInt(document.getElementById("itemResistenciaMax").value) || 10
+        newItem.bloqueoFisico = Number.parseInt(document.getElementById("itemBloqueoFisico").value) || 0
+        newItem.bloqueoMagico = Number.parseInt(document.getElementById("itemBloqueoMagico").value) || 0
+        newItem.resistenciaActual =
+          Number.parseInt(document.getElementById("itemResistenciaActual").value) || newItem.resistenciaMax
+        break
+      case "armas":
+        newItem.manos = Number.parseInt(document.getElementById("itemManos").value) || 1
+        newItem.tipo = document.getElementById("itemTipo").value
+        newItem.danio = document.getElementById("itemDanio").value || "1d6"
+        newItem.resistenciaMax = Number.parseInt(document.getElementById("itemResistenciaMax").value) || 10
+        newItem.resistenciaActual =
+          Number.parseInt(document.getElementById("itemResistenciaActual").value) || newItem.resistenciaMax
+        newItem.estadisticas = document.getElementById("itemEstadisticas").value || ""
+        break
+      case "municion":
+        newItem.mejora = document.getElementById("itemMejora").value || ""
+        break
+      case "pociones":
+        newItem.modificador = document.getElementById("itemModificador").value || ""
+        newItem.efecto = document.getElementById("itemEfecto").value || ""
+        break
+      case "pergaminos":
+        newItem.tipo = document.getElementById("itemTipo").value
+        newItem.modificador = document.getElementById("itemModificador").value || ""
+        newItem.efecto = document.getElementById("itemEfecto").value || ""
+        newItem.descripcion = document.getElementById("itemDescripcion").value || ""
+        break
+      case "otros":
+        newItem.descripcion = document.getElementById("itemDescripcion").value || ""
+        break
+    }
+
+    personaje.inventario[category].push(newItem)
+    saveCharacter()
+    loadInventoryAccordion(category)
+  }
+
+  // Arreglar la función setupInventoryAccordion para que cargue correctamente el contenido
+  setupInventoryAccordion = () => {
+    const accordionHeaders = document.querySelectorAll(".accordion-header")
+
+    accordionHeaders.forEach((header) => {
+      header.addEventListener("click", function () {
+        const category = this.dataset.category
+        const content = document.getElementById(`${category}-content`)
+        const isActive = this.classList.contains("active")
+
+        // Cerrar todos los acordeones
+        document.querySelectorAll(".accordion-header").forEach((h) => h.classList.remove("active"))
+        document.querySelectorAll(".accordion-content").forEach((c) => c.classList.remove("active"))
+
+        // Si no estaba activo, abrirlo y cargar su contenido
+        if (!isActive) {
+          this.classList.add("active")
+          content.classList.add("active")
+          loadInventoryAccordion(category)
+        }
+      })
+    })
+
+    // Configurar botones de añadir items
+    setupAddItemButtons()
+  }
+
+  // Arreglar la función para configurar el botón de crear bolsas especiales
+  function setupCreateBagButton() {
+    const createBagBtn = document.getElementById("createBagBtn")
+    const createBagModal = document.getElementById("createBagModal")
+    const closeCreateBagModal = document.getElementById("closeCreateBagModal")
+    const bagNameInput = document.getElementById("bagName")
+    const createBagModalBtn = document.getElementById("createBagBtn")
+
+    if (createBagBtn) {
+      createBagBtn.addEventListener("click", () => {
+        // Limpiar campo
+        if (bagNameInput) bagNameInput.value = ""
+        // Mostrar modal
+        createBagModal.classList.add("show-modal")
+      })
+    }
+
+    if (closeCreateBagModal) {
+      closeCreateBagModal.addEventListener("click", () => {
+        createBagModal.classList.remove("show-modal")
+      })
+
+      // Cerrar modal al hacer clic fuera
+      window.addEventListener("click", (event) => {
+        if (event.target === createBagModal) {
+          createBagModal.classList.remove("show-modal")
+        }
+      })
+    }
+
+    // Corregir el selector para el botón dentro del modal
+    const createBagBtnInModal = document.querySelector("#createBagModal #createBagBtn")
+
+    if (createBagBtnInModal) {
+      createBagBtnInModal.addEventListener("click", () => {
+        const bagName = bagNameInput.value.trim()
+        if (bagName) {
+          // Crear nueva bolsa
+          const newBag = {
+            id: Date.now().toString(),
+            nombre: bagName,
+            contenido: [],
+          }
+
+          personaje.bolsasEspeciales.push(newBag)
+          saveCharacter()
+          loadSpecialBags()
+
+          // Cerrar modal
+          createBagModal.classList.remove("show-modal")
+        } else {
+          alert("El nombre de la bolsa es obligatorio")
+        }
+      })
+    }
+  }
+
+  // Añadir al final de la función loadSpecialBags
+  loadSpecialBags = () => {
+    const specialBagsContainer = document.getElementById("special-bags-container")
+
+    if (!specialBagsContainer) {
+      console.error("No se encontró el contenedor de bolsas especiales")
+      return
+    }
+
+    specialBagsContainer.innerHTML = ""
+
+    if (!personaje.bolsasEspeciales || personaje.bolsasEspeciales.length === 0) {
+      return
+    }
+
+    personaje.bolsasEspeciales.forEach((bolsa, index) => {
+      const bagElement = document.createElement("div")
+      bagElement.className = "special-bag"
+      bagElement.innerHTML = `
+        <div class="special-bag-header" data-bag-index="${index}">
+          <h3>${bolsa.nombre}</h3>
+          <div>
+            <i class="fas fa-edit action-icon edit-bag-icon" data-bag-index="${index}" title="Editar nombre"></i>
+            <i class="fas fa-trash action-icon delete-bag-icon" data-bag-index="${index}" title="Eliminar bolsa"></i>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+        </div>
+        <div class="special-bag-content" id="bag-content-${index}">
+          <div class="bag-items-list"></div>
+          <p class="empty-bag-message ${bolsa.contenido.length > 0 ? "hidden" : ""}">Esta bolsa está vacía.</p>
+        </div>
+      `
+
+      specialBagsContainer.appendChild(bagElement)
+
+      // Cargar contenido de la bolsa
+      if (bolsa.contenido.length > 0) {
+        loadBagContent(index)
+      }
+    })
+
+    // Agregar event listeners a los headers de las bolsas
+    const bagHeaders = document.querySelectorAll(".special-bag-header")
+    bagHeaders.forEach((header) => {
+      header.addEventListener("click", function (e) {
+        // Ignorar si se hizo clic en un icono
+        if (e.target.classList.contains("action-icon")) {
+          return
+        }
+
+        const bagIndex = this.dataset.bagIndex
+        const content = document.getElementById(`bag-content-${bagIndex}`)
+
+        // Cerrar todas las bolsas
+        document.querySelectorAll(".special-bag-content").forEach((c) => {
+          if (c !== content) {
+            c.classList.remove("active")
+          }
+        })
+
+        // Alternar la bolsa actual
+        content.classList.toggle("active")
+      })
+    })
+
+    // Agregar event listeners a los iconos de editar bolsa
+    const editBagIcons = document.querySelectorAll(".edit-bag-icon")
+    editBagIcons.forEach((icon) => {
+      icon.addEventListener("click", function () {
+        const bagIndex = this.dataset.bagIndex
+        editBagName(bagIndex)
+      })
+    })
+
+    // Agregar event listeners a los iconos de eliminar bolsa
+    const deleteBagIcons = document.querySelectorAll(".delete-bag-icon")
+    deleteBagIcons.forEach((icon) => {
+      icon.addEventListener("click", function () {
+        const bagIndex = this.dataset.bagIndex
+        const bagName = personaje.bolsasEspeciales[bagIndex].nombre
+
+        showConfirmation(
+          `¿Estás seguro de que deseas eliminar la bolsa "${bagName}"? Todos los objetos en ella volverán al inventario.`,
+          () => {
+            deleteBag(bagIndex)
+          },
+        )
+      })
+    })
+  }
+
+  // Añadir al final del documento, justo antes del cierre de la función principal
+  // Inicializar la aplicación
+  loadGrimorio()
+  loadEquipment()
+  loadSimpleResources()
+  setupInventoryAccordion()
+  setupItemModal()
+  setupSellItemModal()
+  setupMoveToBagModal()
+  setupCreateBagButton()
+  loadSpecialBags()
+
+  // Manejar cambios en los atributos y estado
+  attributeListeners()
+  statusControls()
+  setupResourceModals()
+
+  // Función para cargar los recursos simples
+  function loadSimpleResources() {
+    // Actualizar los valores de los recursos
+    document.getElementById("monedas-value").textContent = personaje.inventario.monedas
+    document.getElementById("ganzuas-value").textContent = personaje.inventario.ganzuas
+    document.getElementById("antorchas-value").textContent = personaje.inventario.antorchas
+    document.getElementById("cuerdas-value").textContent = personaje.inventario.cuerdas
+
+    // Agregar event listeners a los recursos
+    const resources = ["monedas", "ganzuas", "antorchas", "cuerdas"]
+    resources.forEach((resource) => {
+      const resourceElement = document.getElementById(`${resource}-resource`)
+      if (resourceElement) {
+        resourceElement.addEventListener("click", () => {
+          showResourceModal(resource)
+        })
+      }
+    })
+  }
+
+  // Configurar modal para items
+  function setupItemModal() {
+    const itemModal = document.getElementById("itemModal")
+    const closeItemModal = document.getElementById("closeItemModal")
+
+    // Cerrar modal al hacer clic en X
+    if (closeItemModal) {
+      closeItemModal.addEventListener("click", () => {
+        itemModal.classList.remove("show-modal")
+      })
+    }
+
+    // Cerrar modal al hacer clic fuera
+    window.addEventListener("click", (event) => {
+      if (event.target === itemModal) {
+        itemModal.classList.remove("show-modal")
+      }
+    })
+  }
+
+  // Configurar modal para vender items
+  function setupSellItemModal() {
+    const sellItemModal = document.getElementById("sellItemModal")
+    const closeSellItemModal = document.getElementById("closeSellItemModal")
+
+    // Cerrar modal al hacer clic en X
+    if (closeSellItemModal) {
+      closeSellItemModal.addEventListener("click", () => {
+        sellItemModal.classList.remove("show-modal")
+      })
+    }
+
+    // Cerrar modal al hacer clic fuera
+    window.addEventListener("click", (event) => {
+      if (event.target === sellItemModal) {
+        sellItemModal.classList.remove("show-modal")
+      }
+    })
+  }
+
+  // Configurar modal para mover items a bolsas
+  function setupMoveToBagModal() {
+    const moveToBagModal = document.getElementById("moveToBagModal")
+    const closeMoveToBagModal = document.getElementById("closeMoveToBagModal")
+
+    // Cerrar modal al hacer clic en X
+    if (closeMoveToBagModal) {
+      closeMoveToBagModal.addEventListener("click", () => {
+        moveToBagModal.classList.remove("show-modal")
+      })
+    }
+
+    // Cerrar modal al hacer clic fuera
+    window.addEventListener("click", (event) => {
+      if (event.target === moveToBagModal) {
+        moveToBagModal.classList.remove("show-modal")
+      }
+    })
+  }
+
+  // Manejar cambios en los atributos y estado
+  function attributeListeners() {
+    // Manejar cambio en el nivel
+    const nivelInput = document.getElementById("nivel")
+    if (nivelInput) {
+      nivelInput.addEventListener("change", () => {
+        personaje.nivel = Number.parseInt(nivelInput.value) || 1
+        saveCharacter()
+        updateCharacterInList()
+      })
+    }
+
+    // Manejar cambios en otros atributos
+    const atributos = ["clase", "combateCuerpo", "combateDistancia", "lanzamientoHechizos"]
+    atributos.forEach((atributo) => {
+      const input = document.getElementById(atributo)
+      if (input) {
+        input.addEventListener("change", () => {
+          personaje[atributo] = input.type === "number" ? Number.parseInt(input.value) || 0 : input.value
+          saveCharacter()
+        })
+      }
+    })
+  }
+
+  // Configurar botones de incremento/decremento para vida, aguante y maná
+  function statusControls() {
+    const statusControls = ["vida", "aguante", "mana"]
+    statusControls.forEach((status) => {
+      const input = document.getElementById(status)
+      const decreaseBtn = input?.parentElement?.querySelector(".decrease")
+      const increaseBtn = input?.parentElement?.querySelector(".increase")
+
+      if (input) {
+        input.addEventListener("change", () => {
+          personaje[status] = Number.parseInt(input.value) || 0
+          saveCharacter()
+        })
+      }
+
+      if (decreaseBtn) {
+        decreaseBtn.addEventListener("click", () => {
+          const currentValue = Number.parseInt(input.value) || 0
+          if (currentValue > 0) {
+            input.value = currentValue - 1
+            personaje[status] = currentValue - 1
+            saveCharacter()
+          }
+        })
+      }
+
+      if (increaseBtn) {
+        increaseBtn.addEventListener("click", () => {
+          const currentValue = Number.parseInt(input.value) || 0
+          input.value = currentValue + 1
+          personaje[status] = currentValue + 1
+          saveCharacter()
+        })
+      }
+    })
+  }
+
+  // Función para actualizar el personaje en la lista de personajes
+  function updateCharacterInList() {
+    // Obtener la lista de personajes
+    const personajesData = JSON.parse(localStorage.getItem("personajes")) || { personajes: [] }
+
+    // Buscar el personaje en la lista
+    const index = personajesData.personajes.findIndex((p) => p.nombre === personaje.nombre)
+
+    if (index !== -1) {
+      // Actualizar los datos del personaje en la lista
+      personajesData.personajes[index] = {
+        nombre: personaje.nombre,
+        raza: personaje.raza,
+        nivel: personaje.nivel,
+      }
+
+      // Guardar la lista actualizada
+      localStorage.setItem("personajes", JSON.stringify(personajesData))
+    }
+  }
+
   // Función para editar un item del inventario
   editInventoryItem = (category, index) => {
     // Implementar la lógica para editar un item del inventario
@@ -659,5 +1321,25 @@ document.addEventListener("componentsLoaded", () => {
   equipItem = (category, index) => {
     // Implementar la lógica para equipar un item del inventario
     console.log(`Equipar item en la categoría ${category} con índice ${index}`)
+  }
+
+  // Función para cargar el contenido de una bolsa especial
+  loadBagContent = (bagIndex) => {
+    console.log(`Cargar contenido de la bolsa con índice ${bagIndex}`)
+  }
+
+  // Función para editar el nombre de una bolsa especial
+  editBagName = (bagIndex) => {
+    console.log(`Editar nombre de la bolsa con índice ${bagIndex}`)
+  }
+
+  // Función para eliminar una bolsa especial
+  deleteBag = (bagIndex) => {
+    console.log(`Eliminar bolsa con índice ${bagIndex}`)
+  }
+
+  // Función para mostrar el modal de recursos
+  showResourceModal = (resource) => {
+    console.log(`Mostrar modal para el recurso ${resource}`)
   }
 })
