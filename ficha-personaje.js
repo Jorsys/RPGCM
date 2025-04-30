@@ -2,6 +2,14 @@
 document.addEventListener("componentsLoaded", () => {
   console.log("ficha-personaje.js: Componentes cargados, inicializando aplicación")
 
+  // Configurar el botón de volver
+  const backBtn = document.getElementById("backBtn")
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      window.location.href = "personaje.html"
+    })
+  }
+
   // Aquí va el código original de ficha-personaje.js
   // Obtener el nombre del personaje de la URL
   const urlParams = new URLSearchParams(window.location.search)
@@ -1175,7 +1183,7 @@ document.addEventListener("componentsLoaded", () => {
         <div class="special-bag-header" data-bag-index="${index}">
           <h3>${bolsa.nombre}</h3>
           <div>
-            <i class="fas fa-edit action-icon edit-bag-icon" data-bag-index="${index}" title="Editar nombre"></i>
+            <i class="fas fa-edit action-icon edit-bag-name-icon" data-bag-index="${index}" title="Editar nombre"></i>
             <i class="fas fa-trash action-icon delete-bag-icon" data-bag-index="${index}" title="Eliminar bolsa"></i>
             <i class="fas fa-chevron-down"></i>
           </div>
@@ -1218,9 +1226,9 @@ document.addEventListener("componentsLoaded", () => {
       })
     })
 
-    // Agregar event listeners a los iconos de editar bolsa
-    const editBagIcons = document.querySelectorAll(".edit-bag-icon")
-    editBagIcons.forEach((icon) => {
+    // Agregar event listeners a los iconos de editar nombre de bolsa
+    const editBagNameIcons = document.querySelectorAll(".edit-bag-name-icon")
+    editBagNameIcons.forEach((icon) => {
       icon.addEventListener("click", function () {
         const bagIndex = this.dataset.bagIndex
         editBagName(bagIndex)
@@ -1568,20 +1576,26 @@ document.addEventListener("componentsLoaded", () => {
   // Función para cargar el contenido de una bolsa especial
   // Reemplazar la función loadBagContent para mostrar el contenido completo de la bolsa
   loadBagContent = (bagIndex) => {
+    console.log(`Cargando contenido de la bolsa ${bagIndex}`)
     const bagContent = document.getElementById(`bag-content-${bagIndex}`)
     const bagItemsList = bagContent.querySelector(".bag-items-list")
     const emptyBagMessage = bagContent.querySelector(".empty-bag-message")
     const bolsa = personaje.bolsasEspeciales[bagIndex]
 
-    if (!bagItemsList) return
+    if (!bagItemsList) {
+      console.error(`No se encontró la lista de items para la bolsa ${bagIndex}`)
+      return
+    }
 
     bagItemsList.innerHTML = ""
 
     if (!bolsa.contenido || bolsa.contenido.length === 0) {
+      console.log(`La bolsa ${bagIndex} está vacía`)
       emptyBagMessage.classList.remove("hidden")
       return
     }
 
+    console.log(`La bolsa ${bagIndex} tiene ${bolsa.contenido.length} objetos:`, bolsa.contenido)
     emptyBagMessage.classList.add("hidden")
 
     // Crear tabla para mostrar los items
@@ -2007,11 +2021,14 @@ document.addEventListener("componentsLoaded", () => {
       bolsa.contenido[existingItemIndex].cantidad += quantity
     } else {
       // Si no existe, agregar como nuevo item
+      // Asegurarse de que el objeto tenga la propiedad categoria
+      itemToMove.categoria = category
       bolsa.contenido.push(itemToMove)
     }
 
     saveCharacter()
     loadInventoryAccordion(category)
+    loadSpecialBags() // Recargar todas las bolsas especiales
 
     // Si la bolsa está abierta, recargar su contenido
     const bagContent = document.getElementById(`bag-content-${bagIndex}`)
