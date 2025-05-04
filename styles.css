@@ -142,34 +142,6 @@ textarea {
   display: block;
 }
 
-/* Estilos para la sección de habilidades */
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-}
-
-.skill-group {
-  background-color: #f9f9f9;
-  border-radius: 6px;
-  padding: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.skill-group h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  font-size: 16px;
-  color: #2c0b3f;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 5px;
-}
-
-.skill-attributes {
-  margin-top: 10px;
-  padding-left: 10px;
-}
-
 /* Estilos para tablas */
 .table-container {
   overflow-x: auto;
@@ -429,34 +401,6 @@ th {
 
 .delete-icon:hover {
   color: #c0392b;
-}
-
-/* Estilos para la lista de personajes a exportar */
-.export-characters-list {
-  margin-bottom: 20px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.export-character-item {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-}
-
-.export-character-item:last-child {
-  border-bottom: none;
-}
-
-.export-character-item label {
-  margin-left: 10px;
-  cursor: pointer;
-  flex: 1;
-}
-
-.export-character-item input[type="checkbox"] {
-  width: auto;
 }
 
 /* Estilos para la pantalla de splash */

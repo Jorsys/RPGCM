@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadComponent("basic-info-container", "components/basic-info.html")
   await loadComponent("attributes-container", "components/attributes.html")
   await loadComponent("status-container", "components/status.html")
-  await loadComponent("skills-container", "components/skills.html")
   await loadComponent("grimorio-container", "components/grimorio.html")
   await loadComponent("equipment-container", "components/equipment.html")
 
