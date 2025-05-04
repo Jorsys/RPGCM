@@ -953,31 +953,31 @@ document.addEventListener("componentsLoaded", () => {
           <div class="form-grid">
             <div class="form-group">
               <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" required />
+              <input type="text" id="itemName" required/>
             </div>
             <div class="form-group">
               <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="1" />
+              <input type="number" id="itemQuantity" min="1" value="1"/>
             </div>
             <div class="form-group">
               <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="0" />
+              <input type="number" id="itemCoste" min="0" value="0"/>
             </div>
             <div class="form-group">
               <label for="itemResistenciaMax">Resistencia Máxima:</label>
-              <input type="number" id="itemResistenciaMax" min="0" value="10" />
+              <input type="number" id="itemResistenciaMax" min="0" value="10"/>
             </div>
             <div class="form-group">
               <label for="itemBloqueoFisico">Bloqueo Físico:</label>
-              <input type="number" id="itemBloqueoFisico" min="0" value="0" />
+              <input type="number" id="itemBloqueoFisico" min="0" value="0"/>
             </div>
             <div class="form-group">
               <label for="itemBloqueoMagico">Bloqueo Mágico:</label>
-              <input type="number" id="itemBloqueoMagico" min="0" value="0" />
+              <input type="number" id="itemBloqueoMagico" min="0" value="0"/>
             </div>
             <div class="form-group">
               <label for="itemResistenciaActual">Resistencia Actual:</label>
-              <input type="number" id="itemResistenciaActual" min="0" value="10" />
+              <input type="number" id="itemResistenciaActual" min="0" value="10"/>
             </div>
           </div>
         `
@@ -988,15 +988,15 @@ document.addEventListener("componentsLoaded", () => {
           <div class="form-grid">
             <div class="form-group">
               <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" required />
+              <input type="text" id="itemName" required/>
             </div>
             <div class="form-group">
               <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="1" />
+              <input type="number" id="itemQuantity" min="1" value="1"/>
             </div>
             <div class="form-group">
               <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="0" />
+              <input type="number" id="itemCoste" min="0" value="0"/>
             </div>
             <div class="form-group">
               <label for="itemManos">Manos necesarias:</label>
@@ -1016,19 +1016,19 @@ document.addEventListener("componentsLoaded", () => {
             </div>
             <div class="form-group">
               <label for="itemDanio">Daño (ej: 2d4+1):</label>
-              <input type="text" id="itemDanio" placeholder="1d6" value="1d6" />
+              <input type="text" id="itemDanio" placeholder="1d6" value="1d6"/>
             </div>
             <div class="form-group">
               <label for="itemResistenciaMax">Resistencia Máxima:</label>
-              <input type="number" id="itemResistenciaMax" min="0" value="10" />
+              <input type="number" id="itemResistenciaMax" min="0" value="10"/>
             </div>
             <div class="form-group">
               <label for="itemResistenciaActual">Resistencia Actual:</label>
-              <input type="number" id="itemResistenciaActual" min="0" value="10" />
+              <input type="number" id="itemResistenciaActual" min="0" value="10"/>
             </div>
             <div class="form-group">
               <label for="itemEstadisticas">Estadísticas modificadas:</label>
-              <input type="text" id="itemEstadisticas" placeholder="+1 daño, -1 defensa" />
+              <input type="text" id="itemEstadisticas" placeholder="+1 daño, -1 defensa"/>
             </div>
           </div>
         `
@@ -1039,19 +1039,19 @@ document.addEventListener("componentsLoaded", () => {
           <div class="form-grid">
             <div class="form-group">
               <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" required />
+              <input type="text" id="itemName" required/>
             </div>
             <div class="form-group">
               <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="10" />
+              <input type="number" id="itemQuantity" min="1" value="10"/>
             </div>
             <div class="form-group">
               <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="0" />
+              <input type="number" id="itemCoste" min="0" value="0"/>
             </div>
             <div class="form-group">
               <label for="itemMejora">Mejora:</label>
-              <input type="text" id="itemMejora" placeholder="daño +1" />
+              <input type="text" id="itemMejora" placeholder="daño +1"/>
             </div>
           </div>
         `
@@ -1062,23 +1062,23 @@ document.addEventListener("componentsLoaded", () => {
           <div class="form-grid">
             <div class="form-group">
               <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" required />
+              <input type="text" id="itemName" required/>
             </div>
             <div class="form-group">
               <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="1" />
+              <input type="number" id="itemQuantity" min="1" value="1"/>
             </div>
             <div class="form-group">
               <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="0" />
+              <input type="number" id="itemCoste" min="0" value="0"/>
             </div>
             <div class="form-group">
               <label for="itemModificador">Modificador:</label>
-              <input type="text" id="itemModificador" placeholder="salud" />
+              <input type="text" id="itemModificador" placeholder="salud"/>
             </div>
             <div class="form-group">
               <label for="itemEfecto">Efecto:</label>
-              <input type="text" id="itemEfecto" placeholder="+1" />
+              <input type="text" id="itemEfecto" placeholder="+1"/>
             </div>
           </div>
         `
@@ -1089,15 +1089,15 @@ document.addEventListener("componentsLoaded", () => {
           <div class="form-grid">
             <div class="form-group">
               <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" required />
+              <input type="text" id="itemName" required/>
             </div>
             <div class="form-group">
               <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="1" />
+              <input type="number" id="itemQuantity" min="1" value="1"/>
             </div>
             <div class="form-group">
               <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="0" />
+              <input type="number" id="itemCoste" min="0" value="0"/>
             </div>
             <div class="form-group">
               <label for="itemTipo">Tipo:</label>
@@ -1108,11 +1108,11 @@ document.addEventListener("componentsLoaded", () => {
             </div>
             <div class="form-group">
               <label for="itemModificador">Modificador:</label>
-              <input type="text" id="itemModificador" placeholder="daño" />
+              <input type="text" id="itemModificador" placeholder="daño"/>
             </div>
             <div class="form-group">
               <label for="itemEfecto">Efecto:</label>
-              <input type="text" id="itemEfecto" placeholder="+2" />
+              <input type="text" id="itemEfecto" placeholder="+2"/>
             </div>
             <div class="form-group full-width">
               <label for="itemDescripcion">Descripción:</label>
@@ -1127,15 +1127,15 @@ document.addEventListener("componentsLoaded", () => {
           <div class="form-grid">
             <div class="form-group">
               <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" required />
+              <input type="text" id="itemName" required/>
             </div>
             <div class="form-group">
               <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="1" />
+              <input type="number" id="itemQuantity" min="1" value="1"/>
             </div>
             <div class="form-group">
               <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="0" />
+              <input type="number" id="itemCoste" min="0" value="0"/>
             </div>
             <div class="form-group full-width">
               <label for="itemDescripcion">Descripción:</label>
@@ -1430,31 +1430,31 @@ document.addEventListener("componentsLoaded", () => {
           <div class="form-grid">
             <div class="form-group">
               <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" value="${item.nombre}" required />
+              <input type="text" id="itemName" value="${item.nombre}" required/>
             </div>
             <div class="form-group">
               <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}" />
+              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}"/>
             </div>
             <div class="form-group">
               <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}" />
+              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}"/>
             </div>
             <div class="form-group">
               <label for="itemResistenciaMax">Resistencia Máxima:</label>
-              <input type="number" id="itemResistenciaMax" min="0" value="${item.resistenciaMax || 10}" />
+              <input type="number" id="itemResistenciaMax" min="0" value="${item.resistenciaMax || 10}"/>
             </div>
             <div class="form-group">
               <label for="itemBloqueoFisico">Bloqueo Físico:</label>
-              <input type="number" id="itemBloqueoFisico" min="0" value="${item.bloqueoFisico || 0}" />
+              <input type="number" id="itemBloqueoFisico" min="0" value="${item.bloqueoFisico || 0}"/>
             </div>
             <div class="form-group">
               <label for="itemBloqueoMagico">Bloqueo Mágico:</label>
-              <input type="number" id="itemBloqueoMagico" min="0" value="${item.bloqueoMagico || 0}" />
+              <input type="number" id="itemBloqueoMagico" min="0" value="${item.bloqueoMagico || 0}"/>
             </div>
             <div class="form-group">
               <label for="itemResistenciaActual">Resistencia Actual:</label>
-              <input type="number" id="itemResistenciaActual" min="0" value="${item.resistenciaActual || item.resistenciaMax || 10}" />
+              <input type="number" id="itemResistenciaActual" min="0" value="${item.resistenciaActual || item.resistenciaMax || 10}"/>
             </div>
           </div>
         `
@@ -1464,15 +1464,15 @@ document.addEventListener("componentsLoaded", () => {
           <div class="form-grid">
             <div class="form-group">
               <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" value="${item.nombre}" required />
+              <input type="text" id="itemName" value="${item.nombre}" required/>
             </div>
             <div class="form-group">
               <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}" />
+              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}"/>
             </div>
             <div class="form-group">
               <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}" />
+              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}"/>
             </div>
             <div class="form-group">
               <label for="itemManos">Manos necesarias:</label>
@@ -1492,11 +1492,11 @@ document.addEventListener("componentsLoaded", () => {
             </div>
             <div class="form-group">
               <label for="itemDanio">Daño (ej: 2d4+1):</label>
-              <input type="text" id="itemDanio" value="${item.danio || "1d6"}" />
+              <input type="text" id="itemDanio" value="${item.danio || "1d6"}"/>
             </div>
             <div class="form-group">
               <label for="itemEstadisticas">Estadísticas modificadas:</label>
-              <input type="text" id="itemEstadisticas" value="${item.estadisticas || ""}" />
+              <input type="text" id="itemEstadisticas" value="${item.estadisticas || ""}"/>
             </div>
           </div>
         `
@@ -1506,19 +1506,19 @@ document.addEventListener("componentsLoaded", () => {
           <div class="form-grid">
             <div class="form-group">
               <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" value="${item.nombre}" required />
+              <input type="text" id="itemName" value="${item.nombre}" required/>
             </div>
             <div class="form-group">
               <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}" />
+              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}"/>
             </div>
             <div class="form-group">
               <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}" />
+              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}"/>
             </div>
             <div class="form-group">
               <label for="itemMejora">Mejora:</label>
-              <input type="text" id="itemMejora" value="${item.mejora || ""}" />
+              <input type="text" id="itemMejora" value="${item.mejora || ""}"/>
             </div>
           </div>
         `
@@ -1528,23 +1528,23 @@ document.addEventListener("componentsLoaded", () => {
           <div class="form-grid">
             <div class="form-group">
               <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" value="${item.nombre}" required />
+              <input type="text" id="itemName" value="${item.nombre}" required/>
             </div>
             <div class="form-group">
               <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}" />
+              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}"/>
             </div>
             <div class="form-group">
               <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}" />
+              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}"/>
             </div>
             <div class="form-group">
               <label for="itemModificador">Modificador:</label>
-              <input type="text" id="itemModificador" value="${item.modificador || ""}" />
+              <input type="text" id="itemModificador" value="${item.modificador || ""}"/>
             </div>
             <div class="form-group">
               <label for="itemEfecto">Efecto:</label>
-              <input type="text" id="itemEfecto" value="${item.efecto || ""}" />
+              <input type="text" id="itemEfecto" value="${item.efecto || ""}"/>
             </div>
           </div>
         `
@@ -1554,15 +1554,15 @@ document.addEventListener("componentsLoaded", () => {
           <div class="form-grid">
             <div class="form-group">
               <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" value="${item.nombre}" required />
+              <input type="text" id="itemName" value="${item.nombre}" required/>
             </div>
             <div class="form-group">
               <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}" />
+              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}"/>
             </div>
             <div class="form-group">
               <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}" />
+              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}"/>
             </div>
             <div class="form-group">
               <label for="itemTipo">Tipo:</label>
@@ -1573,11 +1573,11 @@ document.addEventListener("componentsLoaded", () => {
             </div>
             <div class="form-group">
               <label for="itemModificador">Modificador:</label>
-              <input type="text" id="itemModificador" value="${item.modificador || ""}" />
+              <input type="text" id="itemModificador" value="${item.modificador || ""}"/>
             </div>
             <div class="form-group">
               <label for="itemEfecto">Efecto:</label>
-              <input type="text" id="itemEfecto" value="${item.efecto || ""}" />
+              <input type="text" id="itemEfecto" value="${item.efecto || ""}"/>
             </div>
             <div class="form-group full-width">
               <label for="itemDescripcion">Descripción:</label>
@@ -1591,15 +1591,15 @@ document.addEventListener("componentsLoaded", () => {
           <div class="form-grid">
             <div class="form-group">
               <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" value="${item.nombre}" required />
+              <input type="text" id="itemName" value="${item.nombre}" required/>
             </div>
             <div class="form-group">
               <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}" />
+              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}"/>
             </div>
             <div class="form-group">
               <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}" />
+              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}"/>
             </div>
             <div class="form-group full-width">
               <label for="itemDescripcion">Descripción:</label>
@@ -1853,7 +1853,14 @@ document.addEventListener("componentsLoaded", () => {
     addItemButton.dataset.bagIndex = bagIndex
     addItemButton.addEventListener("click", function () {
       const bagIndex = this.dataset.bagIndex
-      showAddItemToBagModal(bagIndex)
+      showAddItemToBagModalFunc(bagIndex)
+    })
+
+    bagItemsList.appendChild(document.createElement("br"))
+    bagItemsList.appendChild(document.createElement("br"))
+    addItemButton.addEventListener("click", function () {
+      const bagIndex = this.dataset.bagIndex
+      showAddItemToBagModalFunc(bagIndex)
     })
 
     bagItemsList.appendChild(document.createElement("br"))
@@ -2046,7 +2053,7 @@ document.addEventListener("componentsLoaded", () => {
       <div class="form-grid">
         <div class="form-group">
           <label for="resourceValue">Cantidad:</label>
-          <input type="number" id="resourceValue" min="0" value="${currentValue}" />
+          <input type="number" id="resourceValue" min="0" value="${currentValue}"/>
         </div>
       </div>
       <div class="form-actions">
@@ -2124,7 +2131,7 @@ document.addEventListener("componentsLoaded", () => {
           controlsDiv.className = "resource-controls"
           controlsDiv.innerHTML = `
           <button class="btn-small decrease-resource" data-resource="${resource}"><i class="fas fa-minus"></i></button>
-          <input type="number" class="resource-quantity" data-resource="${resource}" min="1" value="1" />
+          <input type="number" class="resource-quantity" data-resource="${resource}" min="1" value="1"/>
           <button class="btn-small increase-resource" data-resource="${resource}"><i class="fas fa-plus"></i></button>
         `
           container.appendChild(controlsDiv)
@@ -2184,7 +2191,7 @@ document.addEventListener("componentsLoaded", () => {
     </div>
     <div class="form-group">
       <label for="moveQuantity">Cantidad a mover:</label>
-      <input type="number" id="moveQuantity" min="1" max="${personaje.inventario[resource]}" value="1" />
+      <input type="number" id="moveQuantity" min="1" max="${personaje.inventario[resource]}" value="1"/>
     </div>
     <div class="form-actions">
       <button id="confirmMoveResourceBtn" class="btn" data-resource="${resource}">Mover</button>
@@ -2263,7 +2270,7 @@ document.addEventListener("componentsLoaded", () => {
     </div>
     <div class="form-group">
       <label for="moveQuantity">Cantidad a mover:</label>
-      <input type="number" id="moveQuantity" min="1" max="${item.cantidad}" value="1" />
+      <input type="number" id="moveQuantity" min="1" max="${item.cantidad}" value="1"/>
     </div>
     <div class="form-actions">
       <button id="confirmMoveToBagBtn" class="btn" data-category="${category}" data-index="${index}">Mover</button>
@@ -2331,7 +2338,7 @@ showMoveFromBagModalFunc = (bagIndex, itemIndex) => {
     <p>¿Cuántos ${item.nombre} deseas mover al inventario?</p>
     <div class="form-group">
       <label for="moveQuantity">Cantidad:</label>
-      <input type="number" id="moveQuantity" min="1" max="${item.cantidad}" value="${item.cantidad}" />
+      <input type="number" id="moveQuantity" min="1" max="${item.cantidad}" value="${item.cantidad}"/>
     </div>
     <div class="form-actions">
       <button id="confirmMoveFromBagBtn" class="btn" data-bag-index="${bagIndex}" data-item-index="${itemIndex}">Mover</button>
@@ -2436,7 +2443,7 @@ showMoveToOtherBagModalFunc = (bagIndex, itemIndex) => {
     </div>
     <div class="form-group">
       <label for="moveQuantity">Cantidad:</label>
-      <input type="number" id="moveQuantity" min="1" max="${item.cantidad}" value="${item.cantidad}" />
+      <input type="number" id="moveQuantity" min="1" max="${item.cantidad}" value="${item.cantidad}"/>
     </div>
     <div class="form-actions">
       <button id="confirmMoveToOtherBagBtn" class="btn" data-bag-index="${bagIndex}" data-item-index="${itemIndex}">Mover</button>
@@ -2504,11 +2511,11 @@ editBagItemFunc = (bagIndex, itemIndex) => {
     <div class="form-grid">
       <div class="form-group">
         <label for="bagItemName">Nombre:</label>
-        <input type="text" id="bagItemName" value="${item.nombre}" required />
+        <input type="text" id="bagItemName" value="${item.nombre}" required/>
       </div>
       <div class="form-group">
         <label for="bagItemQuantity">Cantidad:</label>
-        <input type="number" id="bagItemQuantity" min="1" value="${item.cantidad || 1}" />
+        <input type="number" id="bagItemQuantity" min="1" value="${item.cantidad || 1}"/>
       </div>
       <div class="form-group full-width">
         <label for="bagItemDescription">Descripción:</label>
@@ -2547,7 +2554,7 @@ editBagItemFunc = (bagIndex, itemIndex) => {
 }
 
 // Función para mostrar el modal de añadir item a una bolsa
-function showAddItemToBagModal(bagIndex) {
+function showAddItemToBagModalFunc(bagIndex) {
   const itemModal = document.getElementById("itemModal")
   const itemModalContent = document.getElementById("itemModalContent")
 
@@ -2574,11 +2581,11 @@ function showAddItemToBagModal(bagIndex) {
       </div>
       <div class="form-group">
         <label for="bagItemName">Nombre:</label>
-        <input type="text" id="bagItemName" required />
+        <input type="text" id="bagItemName" required/>
       </div>
       <div class="form-group">
         <label for="bagItemQuantity">Cantidad:</label>
-        <input type="number" id="bagItemQuantity" min="1" value="1" />
+        <input type="number" id="bagItemQuantity" min="1" value="1"/>
       </div>
       <div class="form-group">
         <label for="bagItemDescription">Descripción:</label>
