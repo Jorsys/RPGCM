@@ -488,7 +488,7 @@ document.addEventListener("componentsLoaded", () => {
         (item.categoria !== "armaduras" ||
           (i.resistenciaMax === item.resistenciaMax &&
             i.bloqueoFisico === item.bloqueoFisico &&
-            i.bloqueoMagico === i.bloqueoMagico)),
+            i.bloqueoMagico === item.bloqueoMagico)),
     )
 
     if (existingItemIndex !== -1) {
@@ -1293,9 +1293,7 @@ document.addEventListener("componentsLoaded", () => {
             </div>
             <div class="form-group">
               <label for="itemBloqueoFisico">Bloqueo Físico:</label>
-              <input type="number" id="itemBloqueoFisico" min="0" value="${item.bloqueoFisico || 0}">
-            </div>
-            <div class="form-group">
+              <div class="form-group">
               <label for="itemBloqueoMagico">Bloqueo Mágico:</label>
               <input type="number" id="itemBloqueoMagico" min="0" value="${item.bloqueoMagico || 0}">
             </div>
@@ -1592,65 +1590,391 @@ document.addEventListener("componentsLoaded", () => {
     if (!bolsa.contenido || bolsa.contenido.length === 0) {
       console.log(`La bolsa ${bagIndex} está vacía`)
       emptyBagMessage.classList.remove("hidden")
+    } else {
+      console.log(`La bolsa ${bagIndex} tiene ${bolsa.contenido.length} objetos:`, bolsa.contenido)
+      emptyBagMessage.classList.add("hidden")
+
+      // Crear tabla para mostrar los items
+      let tableHTML = `<table class="bag-items-table"><thead><tr>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Cantidad</th>
+        <th>Acciones</th>
+      </tr></thead><tbody>`
+
+      bolsa.contenido.forEach((item, index) => {
+        tableHTML += `
+        <tr>
+          <td>${item.nombre}</td>
+          <td>${getCategoryName(item.categoria)}</td>
+          <td>${item.cantidad || 1}</td>
+          <td class="actions-cell">
+            <i class="fas fa-edit action-icon edit-bag-item-icon" data-bag-index="${bagIndex}" data-item-index="${index}" title="Editar"></i>
+            <i class="fas fa-arrow-up action-icon move-from-bag-icon" data-bag-index="${bagIndex}" data-item-index="${index}" title="Mover al inventario"></i>
+            <i class="fas fa-exchange-alt action-icon move-to-other-bag-icon" data-bag-index="${bagIndex}" data-item-index="${index}" title="Mover a otra bolsa"></i>
+          </td>
+        </tr>
+      `
+      })
+
+      tableHTML += `</tbody></table>`
+      bagItemsList.innerHTML = tableHTML
+
+      // Agregar event listeners a los iconos
+      const editBagItemIcons = bagItemsList.querySelectorAll(".edit-bag-item-icon")
+      editBagItemIcons.forEach((icon) => {
+        icon.addEventListener("click", function () {
+          const bagIndex = this.dataset.bagIndex
+          const itemIndex = this.dataset.itemIndex
+          editBagItem(bagIndex, itemIndex)
+        })
+      })
+
+      const moveFromBagIcons = bagItemsList.querySelectorAll(".move-from-bag-icon")
+      moveFromBagIcons.forEach((icon) => {
+        icon.addEventListener("click", function () {
+          const bagIndex = this.dataset.bagIndex
+          const itemIndex = this.dataset.itemIndex
+          showMoveFromBagModal(bagIndex, itemIndex)
+        })
+      })
+
+      const moveToOtherBagIcons = bagItemsList.querySelectorAll(".move-to-other-bag-icon")
+      moveToOtherBagIcons.forEach((icon) => {
+        icon.addEventListener("click", function () {
+          const bagIndex = this.dataset.bagIndex
+          const itemIndex = this.dataset.itemIndex
+          showMoveToOtherBagModal(bagIndex, itemIndex)
+        })
+      })
+    }
+
+    // Añadir botón para crear nuevo objeto en la bolsa
+    const addItemButton = document.createElement("button")
+    addItemButton.className = "btn-small"
+    addItemButton.innerHTML = '<i class="fas fa-plus"></i> Añadir Objeto'
+    addItemButton.dataset.bagIndex = bagIndex
+    addItemButton.addEventListener("click", function () {
+      const bagIndex = this.dataset.bagIndex
+      showAddItemToBagModal(bagIndex)
+    })
+
+    bagItemsList.appendChild(document.createElement("br"))
+    bagItemsList.appendChild(document.createElement("br"))
+    bagItemsList.appendChild(addItemButton)
+  }
+
+  // Nueva función para mostrar el modal de selección de tipo de objeto
+  function showAddItemToBagModal(bagIndex) {
+    const itemModal = document.getElementById("itemModal")
+    const itemModalContent = document.getElementById("itemModalContent")
+
+    // Preparar contenido del modal
+    itemModalContent.innerHTML = `
+    <h3>Añadir Objeto a la Bolsa</h3>
+    <div class="form-group">
+      <label for="itemTypeSelect">Selecciona el tipo de objeto:</label>
+      <select id="itemTypeSelect">
+        <option value="armaduras">Armadura</option>
+        <option value="armas">Arma</option>
+        <option value="municion">Munición</option>
+        <option value="pociones">Poción</option>
+        <option value="pergaminos">Pergamino</option>
+        <option value="otros">Otro</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button id="continueAddItemBtn" class="btn" data-bag-index="${bagIndex}">Continuar</button>
+    </div>
+  `
+
+    // Mostrar modal
+    itemModal.classList.add("show-modal")
+
+    // Configurar botón de continuar
+    const continueAddItemBtn = document.getElementById("continueAddItemBtn")
+    if (continueAddItemBtn) {
+      continueAddItemBtn.addEventListener("click", function () {
+        const bagIndex = this.dataset.bagIndex
+        const itemType = document.getElementById("itemTypeSelect").value
+        showAddItemToBagFormModal(bagIndex, itemType)
+        itemModal.classList.remove("show-modal")
+      })
+    }
+  }
+
+  // Nueva función para mostrar el formulario de creación de objeto según el tipo
+  function showAddItemToBagFormModal(bagIndex, category) {
+    const itemModal = document.getElementById("itemModal")
+    const itemModalContent = document.getElementById("itemModalContent")
+
+    let formHTML = ""
+    let title = ""
+
+    switch (category) {
+      case "armaduras":
+        title = "Añadir Armadura"
+        formHTML = `
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="itemName">Nombre:</label>
+            <input type="text" id="itemName" required>
+          </div>
+          <div class="form-group">
+            <label for="itemQuantity">Cantidad:</label>
+            <input type="number" id="itemQuantity" min="1" value="1">
+          </div>
+          <div class="form-group">
+            <label for="itemCoste">Coste por unidad:</label>
+            <input type="number" id="itemCoste" min="0" value="0">
+          </div>
+          <div class="form-group">
+            <label for="itemResistenciaMax">Resistencia Máxima:</label>
+            <input type="number" id="itemResistenciaMax" min="0" value="10">
+          </div>
+          <div class="form-group">
+            <label for="itemBloqueoFisico">Bloqueo Físico:</label>
+            <input type="number" id="itemBloqueoFisico" min="0" value="0">
+          </div>
+          <div class="form-group">
+            <label for="itemBloqueoMagico">Bloqueo Mágico:</label>
+            <input type="number" id="itemBloqueoMagico" min="0" value="0">
+          </div>
+        </div>
+      `
+        break
+      case "armas":
+        title = "Añadir Arma"
+        formHTML = `
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="itemName">Nombre:</label>
+            <input type="text" id="itemName" required>
+          </div>
+          <div class="form-group">
+            <label for="itemQuantity">Cantidad:</label>
+            <input type="number" id="itemQuantity" min="1" value="1">
+          </div>
+          <div class="form-group">
+            <label for="itemCoste">Coste por unidad:</label>
+            <input type="number" id="itemCoste" min="0" value="0">
+          </div>
+          <div class="form-group">
+            <label for="itemManos">Manos necesarias:</label>
+            <select id="itemManos">
+              <option value="0">No requiere manos</option>
+              <option value="1" selected>1 mano</option>
+              <option value="2">2 manos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="itemTipo">Tipo de arma:</label>
+            <select id="itemTipo">
+              <option value="Cuerpo a cuerpo" selected>Cuerpo a cuerpo</option>
+              <option value="A distancia">A distancia</option>
+              <option value="Mágica">Mágica</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="itemDanio">Daño (ej: 2d4+1):</label>
+            <input type="text" id="itemDanio" placeholder="1d6" value="1d6">
+          </div>
+          <div class="form-group">
+            <label for="itemEstadisticas">Estadísticas modificadas:</label>
+            <input type="text" id="itemEstadisticas" placeholder="+1 daño, -1 defensa">
+          </div>
+        </div>
+      `
+        break
+      case "municion":
+        title = "Añadir Munición"
+        formHTML = `
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="itemName">Nombre:</label>
+            <input type="text" id="itemName" required>
+          </div>
+          <div class="form-group">
+            <label for="itemQuantity">Cantidad:</label>
+            <input type="number" id="itemQuantity" min="1" value="10">
+          </div>
+          <div class="form-group">
+            <label for="itemCoste">Coste por unidad:</label>
+            <input type="number" id="itemCoste" min="0" value="0">
+          </div>
+          <div class="form-group">
+            <label for="itemMejora">Mejora:</label>
+            <input type="text" id="itemMejora" placeholder="daño +1">
+          </div>
+        </div>
+      `
+        break
+      case "pociones":
+        title = "Añadir Poción"
+        formHTML = `
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="itemName">Nombre:</label>
+            <input type="text" id="itemName" required>
+          </div>
+          <div class="form-group">
+            <label for="itemQuantity">Cantidad:</label>
+            <input type="number" id="itemQuantity" min="1" value="1">
+          </div>
+          <div class="form-group">
+            <label for="itemCoste">Coste por unidad:</label>
+            <input type="number" id="itemCoste" min="0" value="0">
+          </div>
+          <div class="form-group">
+            <label for="itemModificador">Modificador:</label>
+            <input type="text" id="itemModificador" placeholder="salud">
+          </div>
+          <div class="form-group">
+            <label for="itemEfecto">Efecto:</label>
+            <input type="text" id="itemEfecto" placeholder="+1">
+          </div>
+        </div>
+      `
+        break
+      case "pergaminos":
+        title = "Añadir Pergamino"
+        formHTML = `
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="itemName">Nombre:</label>
+            <input type="text" id="itemName" required>
+          </div>
+          <div class="form-group">
+            <label for="itemQuantity">Cantidad:</label>
+            <input type="number" id="itemQuantity" min="1" value="1">
+          </div>
+          <div class="form-group">
+            <label for="itemCoste">Coste por unidad:</label>
+            <input type="number" id="itemCoste" min="0" value="0">
+          </div>
+          <div class="form-group">
+            <label for="itemTipo">Tipo:</label>
+            <select id="itemTipo">
+              <option value="Ofensivo" selected>Ofensivo</option>
+              <option value="Efecto de estado">Efecto de estado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="itemModificador">Modificador:</label>
+            <input type="text" id="itemModificador" placeholder="daño">
+          </div>
+          <div class="form-group">
+            <label for="itemEfecto">Efecto:</label>
+            <input type="text" id="itemEfecto" placeholder="+2">
+          </div>
+          <div class="form-group full-width">
+            <label for="itemDescripcion">Descripción:</label>
+            <textarea id="itemDescripcion" rows="2"></textarea>
+          </div>
+        </div>
+      `
+        break
+      case "otros":
+        title = "Añadir Otro Objeto"
+        formHTML = `
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="itemName">Nombre:</label>
+            <input type="text" id="itemName" required>
+          </div>
+          <div class="form-group">
+            <label for="itemQuantity">Cantidad:</label>
+            <input type="number" id="itemQuantity" min="1" value="1">
+          </div>
+          <div class="form-group">
+            <label for="itemCoste">Coste por unidad:</label>
+            <input type="number" id="itemCoste" min="0" value="0">
+          </div>
+          <div class="form-group full-width">
+            <label for="itemDescripcion">Descripción:</label>
+            <textarea id="itemDescripcion" rows="2"></textarea>
+          </div>
+        </div>
+      `
+        break
+    }
+
+    // Preparar contenido del modal
+    itemModalContent.innerHTML = `
+    <h3>${title}</h3>
+    ${formHTML}
+    <div class="form-actions">
+      <button id="addItemToBagBtn" class="btn" data-bag-index="${bagIndex}" data-category="${category}">Agregar</button>
+    </div>
+  `
+
+    // Mostrar modal
+    itemModal.classList.add("show-modal")
+
+    // Configurar botón de agregar
+    const addItemToBagBtn = document.getElementById("addItemToBagBtn")
+    if (addItemToBagBtn) {
+      addItemToBagBtn.addEventListener("click", function () {
+        const bagIndex = this.dataset.bagIndex
+        const category = this.dataset.category
+        addItemToBag(bagIndex, category)
+        itemModal.classList.remove("show-modal")
+      })
+    }
+  }
+
+  // Nueva función para añadir un objeto a una bolsa
+  function addItemToBag(bagIndex, category) {
+    const itemName = document.getElementById("itemName").value.trim()
+    const itemQuantity = Number.parseInt(document.getElementById("itemQuantity").value) || 1
+    const itemCoste = Number.parseInt(document.getElementById("itemCoste").value) || 0
+
+    if (!itemName) {
+      alert("El nombre del objeto es obligatorio")
       return
     }
 
-    console.log(`La bolsa ${bagIndex} tiene ${bolsa.contenido.length} objetos:`, bolsa.contenido)
-    emptyBagMessage.classList.add("hidden")
+    const newItem = {
+      nombre: itemName,
+      cantidad: itemQuantity,
+      coste: itemCoste,
+      categoria: category,
+    }
 
-    // Crear tabla para mostrar los items
-    let tableHTML = `<table class="bag-items-table"><thead><tr>
-      <th>Nombre</th>
-      <th>Tipo</th>
-      <th>Cantidad</th>
-      <th>Acciones</th>
-    </tr></thead><tbody>`
+    switch (category) {
+      case "armaduras":
+        newItem.resistenciaMax = Number.parseInt(document.getElementById("itemResistenciaMax").value) || 10
+        newItem.bloqueoFisico = Number.parseInt(document.getElementById("itemBloqueoFisico").value) || 0
+        newItem.bloqueoMagico = Number.parseInt(document.getElementById("itemBloqueoMagico").value) || 0
+        break
+      case "armas":
+        newItem.manos = Number.parseInt(document.getElementById("itemManos").value) || 1
+        newItem.tipo = document.getElementById("itemTipo").value
+        newItem.danio = document.getElementById("itemDanio").value || "1d6"
+        newItem.estadisticas = document.getElementById("itemEstadisticas").value || ""
+        break
+      case "municion":
+        newItem.mejora = document.getElementById("itemMejora").value || ""
+        break
+      case "pociones":
+        newItem.modificador = document.getElementById("itemModificador").value || ""
+        newItem.efecto = document.getElementById("itemEfecto").value || ""
+        break
+      case "pergaminos":
+        newItem.tipo = document.getElementById("itemTipo").value
+        newItem.modificador = document.getElementById("itemModificador").value || ""
+        newItem.efecto = document.getElementById("itemEfecto").value || ""
+        newItem.descripcion = document.getElementById("itemDescripcion").value || ""
+        break
+      case "otros":
+        newItem.descripcion = document.getElementById("itemDescripcion").value || ""
+        break
+    }
 
-    bolsa.contenido.forEach((item, index) => {
-      tableHTML += `
-      <tr>
-        <td>${item.nombre}</td>
-        <td>${getCategoryName(item.categoria)}</td>
-        <td>${item.cantidad || 1}</td>
-        <td class="actions-cell">
-          <i class="fas fa-edit action-icon edit-bag-item-icon" data-bag-index="${bagIndex}" data-item-index="${index}" title="Editar"></i>
-          <i class="fas fa-arrow-up action-icon move-from-bag-icon" data-bag-index="${bagIndex}" data-item-index="${index}" title="Mover al inventario"></i>
-          <i class="fas fa-exchange-alt action-icon move-to-other-bag-icon" data-bag-index="${bagIndex}" data-item-index="${index}" title="Mover a otra bolsa"></i>
-        </td>
-      </tr>
-    `
-    })
-
-    tableHTML += `</tbody></table>`
-    bagItemsList.innerHTML = tableHTML
-
-    // Agregar event listeners a los iconos
-    const editBagItemIcons = bagItemsList.querySelectorAll(".edit-bag-item-icon")
-    editBagItemIcons.forEach((icon) => {
-      icon.addEventListener("click", function () {
-        const bagIndex = this.dataset.bagIndex
-        const itemIndex = this.dataset.itemIndex
-        editBagItem(bagIndex, itemIndex)
-      })
-    })
-
-    const moveFromBagIcons = bagItemsList.querySelectorAll(".move-from-bag-icon")
-    moveFromBagIcons.forEach((icon) => {
-      icon.addEventListener("click", function () {
-        const bagIndex = this.dataset.bagIndex
-        const itemIndex = this.dataset.itemIndex
-        showMoveFromBagModal(bagIndex, itemIndex)
-      })
-    })
-
-    const moveToOtherBagIcons = bagItemsList.querySelectorAll(".move-to-other-bag-icon")
-    moveToOtherBagIcons.forEach((icon) => {
-      icon.addEventListener("click", function () {
-        const bagIndex = this.dataset.bagIndex
-        const itemIndex = this.dataset.itemIndex
-        showMoveToOtherBagModal(bagIndex, itemIndex)
-      })
-    })
+    // Añadir el objeto a la bolsa
+    personaje.bolsasEspeciales[bagIndex].contenido.push(newItem)
+    saveCharacter()
+    loadBagContent(bagIndex)
   }
 
   // Función para mover un item de una bolsa al inventario
@@ -1846,6 +2170,10 @@ document.addEventListener("componentsLoaded", () => {
   updateResourceIcons() // Actualizar el icono de las cuerdas
 
   // Manejar cambios en los atributos y estado
+  // Declare attributeListeners and statusControls before using them
+  const attributeListeners = () => {} // Default empty function
+  const statusControls = () => {} // Default empty function
+
   attributeListeners()
   statusControls()
   setupResourceModals()
@@ -1988,277 +2316,381 @@ document.addEventListener("componentsLoaded", () => {
     const bolsa = personaje.bolsasEspeciales[bagIndex]
 
     // Verificar que la cantidad a mover es válida
-    if (quantity <= 0 || quantity > item.cantidad) {
-      alert("Cantidad inválida.")
-      return
-    }
+    if (quantity <= item.cantidad) {
+      // Si la cantidad a mover es igual a la cantidad total, mover todo el objeto
+      if (quantity === item.cantidad) {
+        // Eliminar el objeto del inventario
+        personaje.inventario[category].splice(index, 1)
 
-    // Crear una copia del item para mover a la bolsa
-    const itemToMove = { ...item }
-    itemToMove.cantidad = quantity
+        // Añadir el objeto a la bolsa
+        bolsa.contenido.push(item)
+      } else {
+        // Si la cantidad a mover es menor, crear un nuevo objeto con la cantidad a mover
+        const newItem = { ...item, cantidad: quantity }
 
-    // Reducir la cantidad en el inventario o eliminar si se mueven todos
-    if (quantity < item.cantidad) {
-      item.cantidad -= quantity
-    } else {
-      personaje.inventario[category].splice(index, 1)
-    }
+        // Reducir la cantidad del objeto original
+        item.cantidad -= quantity
 
-    // Verificar si ya existe un item similar en la bolsa
-    const existingItemIndex = bolsa.contenido.findIndex(
-      (i) =>
-        i.nombre === item.nombre &&
-        i.categoria === category &&
-        (category !== "armas" || i.manos === item.manos) &&
-        (category !== "armaduras" ||
-          (i.resistenciaMax === item.resistenciaMax &&
-            i.bloqueoFisico === item.bloqueoFisico &&
-            i.bloqueoMagico === item.bloqueoMagico)),
-    )
+        // Añadir el nuevo objeto a la bolsa
+        bolsa.contenido.push(newItem)
+      }
 
-    if (existingItemIndex !== -1) {
-      // Si existe, incrementar la cantidad
-      bolsa.contenido[existingItemIndex].cantidad += quantity
-    } else {
-      // Si no existe, agregar como nuevo item
-      // Asegurarse de que el objeto tenga la propiedad categoria
-      itemToMove.categoria = category
-      bolsa.contenido.push(itemToMove)
-    }
+      // Guardar los cambios
+      saveCharacter()
 
-    saveCharacter()
-    loadInventoryAccordion(category)
-    loadSpecialBags() // Recargar todas las bolsas especiales
-
-    // Si la bolsa está abierta, recargar su contenido
-    const bagContent = document.getElementById(`bag-content-${bagIndex}`)
-    if (bagContent && bagContent.classList.contains("active")) {
+      // Recargar el inventario y la bolsa
+      loadInventoryAccordion(category)
       loadBagContent(bagIndex)
+    } else {
+      alert("Cantidad inválida")
     }
   }
 
-  // Añadir función para editar un item en una bolsa
-  function editBagItem(bagIndex, itemIndex) {
+  // Función para mostrar el modal de mover un item de una bolsa al inventario
+  function showMoveFromBagModal(bagIndex, itemIndex) {
     const bolsa = personaje.bolsasEspeciales[bagIndex]
     const item = bolsa.contenido[itemIndex]
+    const moveToBagModal = document.getElementById("moveToBagModal")
+    const moveToBagModalContent = document.getElementById("moveToBagModalContent")
+
+    moveToBagModalContent.innerHTML = `
+      <p>¿Mover "${item.nombre}" al inventario?</p>
+      <div class="form-actions">
+        <button id="confirmMoveFromBagBtn" class="btn" data-bag-index="${bagIndex}" data-item-index="${itemIndex}">Mover</button>
+      </div>
+    `
+
+    moveToBagModal.classList.add("show-modal")
+
+    const confirmMoveFromBagBtn = document.getElementById("confirmMoveFromBagBtn")
+    if (confirmMoveFromBagBtn) {
+      confirmMoveFromBagBtn.addEventListener("click", function () {
+        const bagIndex = this.dataset.bagIndex
+        const itemIndex = this.dataset.itemIndex
+
+        moveItemFromBag(bagIndex, itemIndex)
+        moveToBagModal.classList.remove("show-modal")
+      })
+    }
+  }
+
+  // Función para mostrar el modal de mover un item a otra bolsa
+  function showMoveToOtherBagModal(bagIndex, itemIndex) {
+    const item = personaje.bolsasEspeciales[bagIndex].contenido[itemIndex]
+    const moveToBagModal = document.getElementById("moveToBagModal")
+    const moveToBagModalContent = document.getElementById("moveToBagModalContent")
+
+    // Verificar si hay otras bolsas especiales
+    if (personaje.bolsasEspeciales.length <= 1) {
+      alert("No tienes otras bolsas especiales.")
+      return
+    }
+
+    // Preparar contenido del modal
+    let bagsHTML = ""
+    personaje.bolsasEspeciales.forEach((bolsa, otherBagIndex) => {
+      if (otherBagIndex != bagIndex) {
+        bagsHTML += `<option value="${otherBagIndex}">${bolsa.nombre}</option>`
+      }
+    })
+
+    moveToBagModalContent.innerHTML = `
+      <div class="form-group">
+        <label for="moveToBagSelect">Selecciona una bolsa:</label>
+        <select id="moveToBagSelect">
+          ${bagsHTML}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="moveQuantity">Cantidad a mover:</label>
+        <input type="number" id="moveQuantity" min="1" max="${item.cantidad || 1}" value="1">
+      </div>
+      <div class="form-actions">
+        <button id="confirmMoveToOtherBagBtn" class="btn" data-bag-index="${bagIndex}" data-item-index="${itemIndex}">Mover</button>
+      </div>
+    `
+
+    // Mostrar modal
+    moveToBagModal.classList.add("show-modal")
+
+    // Configurar botón de confirmar
+    const confirmMoveToOtherBagBtn = document.getElementById("confirmMoveToOtherBagBtn")
+    if (confirmMoveToOtherBagBtn) {
+      confirmMoveToOtherBagBtn.addEventListener("click", function () {
+        const bagIndex = this.dataset.bagIndex
+        const itemIndex = this.dataset.itemIndex
+        const otherBagIndex = document.getElementById("moveToBagSelect").value
+        const quantity = Number.parseInt(document.getElementById("moveQuantity").value) || 1
+
+        moveItemToOtherBag(bagIndex, itemIndex, otherBagIndex, quantity)
+        moveToBagModal.classList.remove("show-modal")
+      })
+    }
+  }
+
+  // Función para mover un item a otra bolsa
+  function moveItemToOtherBag(bagIndex, itemIndex, otherBagIndex, quantity) {
+    const bolsaOrigen = personaje.bolsasEspeciales[bagIndex]
+    const bolsaDestino = personaje.bolsasEspeciales[otherBagIndex]
+    const item = bolsaOrigen.contenido[itemIndex]
+
+    // Verificar que la cantidad a mover es válida
+    if (quantity <= item.cantidad) {
+      // Si la cantidad a mover es igual a la cantidad total, mover todo el objeto
+      if (quantity === item.cantidad) {
+        // Eliminar el objeto de la bolsa de origen
+        bolsaOrigen.contenido.splice(itemIndex, 1)
+
+        // Añadir el objeto a la bolsa de destino
+        bolsaDestino.contenido.push(item)
+      } else {
+        // Si la cantidad a mover es menor, crear un nuevo objeto con la cantidad a mover
+        const newItem = { ...item, cantidad: quantity }
+
+        // Reducir la cantidad del objeto original
+        item.cantidad -= quantity
+
+        // Añadir el nuevo objeto a la bolsa de destino
+        bolsaDestino.contenido.push(newItem)
+      }
+
+      // Guardar los cambios
+      saveCharacter()
+
+      // Recargar las bolsas
+      loadBagContent(bagIndex)
+      loadBagContent(otherBagIndex)
+    } else {
+      alert("Cantidad inválida")
+    }
+  }
+
+  // Función para editar un item de una bolsa
+  function editBagItem(bagIndex, itemIndex) {
+    const item = personaje.bolsasEspeciales[bagIndex].contenido[itemIndex]
     const itemModal = document.getElementById("itemModal")
     const itemModalContent = document.getElementById("itemModalContent")
 
     let formHTML = ""
     const title = `Editar ${getCategoryName(item.categoria)}`
 
-    // Crear formulario según la categoría del item (similar a editInventoryItem)
     switch (item.categoria) {
       case "armaduras":
         formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="itemName">Nombre:</label>
-            <input type="text" id="itemName" value="${item.nombre}" required>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nombre:</label>
+              <input type="text" id="itemName" value="${item.nombre}" required>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Cantidad:</label>
+              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}">
+            </div>
+            <div class="form-group">
+              <label for="itemCoste">Coste por unidad:</label>
+              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}">
+            </div>
+            <div class="form-group">
+              <label for="itemResistenciaMax">Resistencia Máxima:</label>
+              <input type="number" id="itemResistenciaMax" min="0" value="${item.resistenciaMax || 10}">
+            </div>
+            <div class="form-group">
+              <label for="itemBloqueoFisico">Bloqueo Físico:</label>
+              <input type="number" id="itemBloqueoFisico" min="0" value="${item.bloqueoFisico || 0}">
+            </div>
+<div class="form-group">
+              <label for="itemBloqueoMagico">Bloqueo Mágico:</label>
+              <input type="number" id="itemBloqueoMagico" min="0" value="${item.bloqueoMagico || 0}">
+            </div>
+            <div class="form-group">
+              <label for="itemResistenciaMax">Resistencia Máxima:</label>
+              <input type="number" id="itemResistenciaMax" min="0" value="${item.resistenciaMax || 10}">
+            </div>
           </div>
-          <div class="form-group">
-            <label for="itemQuantity">Cantidad:</label>
-            <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}">
-          </div>
-          <div class="form-group">
-            <label for="itemCoste">Coste por unidad:</label>
-            <input type="number" id="itemCoste" min="0" value="${item.coste || 0}">
-          </div>
-          <div class="form-group">
-            <label for="itemResistenciaMax">Resistencia Máxima:</label>
-            <input type="number" id="itemResistenciaMax" min="0" value="${item.resistenciaMax || 10}">
-          </div>
-          <div class="form-group">
-            <label for="itemBloqueoFisico">Bloqueo Físico:</label>
-            <input type="number" id="itemBloqueoFisico" min="0" value="${item.bloqueoFisico || 0}">
-          </div>
-          <div class="form-group">
-            <label for="itemBloqueoMagico">Bloqueo Mágico:</label>
-            <input type="number" id="itemBloqueoMagico" min="0" value="${item.bloqueoMagico || 0}">
-          </div>
-        </div>
-      `
+        `
         break
-      // Añadir casos para otras categorías (similar a editInventoryItem)
       case "armas":
         formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="itemName">Nombre:</label>
-            <input type="text" id="itemName" value="${item.nombre}" required>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nombre:</label>
+              <input type="text" id="itemName" value="${item.nombre}" required>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Cantidad:</label>
+              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}">
+            </div>
+            <div class="form-group">
+              <label for="itemCoste">Coste por unidad:</label>
+              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}">
+            </div>
+            <div class="form-group">
+              <label for="itemManos">Manos necesarias:</label>
+              <select id="itemManos">
+                <option value="0" ${item.manos === 0 ? "selected" : ""}>No requiere manos</option>
+                <option value="1" ${item.manos === 1 ? "selected" : ""}>1 mano</option>
+                <option value="2" ${item.manos === 2 ? "selected" : ""}>2 manos</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="itemTipo">Tipo de arma:</label>
+              <select id="itemTipo">
+                <option value="Cuerpo a cuerpo" ${item.tipo === "Cuerpo a cuerpo" ? "selected" : ""}>Cuerpo a cuerpo</option>
+                <option value="A distancia" ${item.tipo === "A distancia" ? "selected" : ""}>A distancia</option>
+                <option value="Mágica" ${item.tipo === "Mágica" ? "selected" : ""}>Mágica</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="itemDanio">Daño (ej: 2d4+1):</label>
+              <input type="text" id="itemDanio" value="${item.danio || "1d6"}">
+            </div>
+            <div class="form-group">
+              <label for="itemEstadisticas">Estadísticas modificadas:</label>
+              <input type="text" id="itemEstadisticas" value="${item.estadisticas || ""}">
+            </div>
+            <div class="form-group">
+              <label for="itemResistenciaMax">Resistencia Máxima:</label>
+              <input type="number" id="itemResistenciaMax" min="0" value="${item.resistenciaMax || 10}">
+            </div>
           </div>
-          <div class="form-group">
-            <label for="itemQuantity">Cantidad:</label>
-            <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}">
-          </div>
-          <div class="form-group">
-            <label for="itemCoste">Coste por unidad:</label>
-            <input type="number" id="itemCoste" min="0" value="${item.coste || 0}">
-          </div>
-          <div class="form-group">
-            <label for="itemManos">Manos necesarias:</label>
-            <select id="itemManos">
-              <option value="0" ${item.manos === 0 ? "selected" : ""}>No requiere manos</option>
-              <option value="1" ${item.manos === 1 ? "selected" : ""}>1 mano</option>
-              <option value="2" ${item.manos === 2 ? "selected" : ""}>2 manos</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="itemTipo">Tipo de arma:</label>
-            <select id="itemTipo">
-              <option value="Cuerpo a cuerpo" ${item.tipo === "Cuerpo a cuerpo" ? "selected" : ""}>Cuerpo a cuerpo</option>
-              <option value="A distancia" ${item.tipo === "A distancia" ? "selected" : ""}>A distancia</option>
-              <option value="Mágica" ${item.tipo === "Mágica" ? "selected" : ""}>Mágica</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="itemDanio">Daño (ej: 2d4+1):</label>
-            <input type="text" id="itemDanio" value="${item.danio || "1d6"}">
-          </div>
-          <div class="form-group">
-            <label for="itemEstadisticas">Estadísticas modificadas:</label>
-            <input type="text" id="itemEstadisticas" value="${item.estadisticas || ""}">
-          </div>
-        </div>
-      `
+        `
         break
       case "municion":
         formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="itemName">Nombre:</label>
-            <input type="text" id="itemName" value="${item.nombre}" required>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nombre:</label>
+              <input type="text" id="itemName" value="${item.nombre}" required>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Cantidad:</label>
+              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}">
+            </div>
+            <div class="form-group">
+              <label for="itemCoste">Coste por unidad:</label>
+              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}">
+            </div>
+            <div class="form-group">
+              <label for="itemMejora">Mejora:</label>
+              <input type="text" id="itemMejora" value="${item.mejora || ""}">
+            </div>
           </div>
-          <div class="form-group">
-            <label for="itemQuantity">Cantidad:</label>
-            <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}">
-          </div>
-          <div class="form-group">
-            <label for="itemCoste">Coste por unidad:</label>
-            <input type="number" id="itemCoste" min="0" value="${item.coste || 0}">
-          </div>
-          <div class="form-group">
-            <label for="itemMejora">Mejora:</label>
-            <input type="text" id="itemMejora" value="${item.mejora || ""}">
-          </div>
-        </div>
-      `
+        `
         break
       case "pociones":
         formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="itemName">Nombre:</label>
-            <input type="text" id="itemName" value="${item.nombre}" required>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nombre:</label>
+              <input type="text" id="itemName" value="${item.nombre}" required>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Cantidad:</label>
+              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}">
+            </div>
+            <div class="form-group">
+              <label for="itemCoste">Coste por unidad:</label>
+              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}">
+            </div>
+            <div class="form-group">
+              <label for="itemModificador">Modificador:</label>
+              <input type="text" id="itemModificador" value="${item.modificador || ""}">
+            </div>
+            <div class="form-group">
+              <label for="itemEfecto">Efecto:</label>
+              <input type="text" id="itemEfecto" value="${item.efecto || ""}">
+            </div>
           </div>
-          <div class="form-group">
-            <label for="itemQuantity">Cantidad:</label>
-            <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}">
-          </div>
-          <div class="form-group">
-            <label for="itemCoste">Coste por unidad:</label>
-            <input type="number" id="itemCoste" min="0" value="${item.coste || 0}">
-          </div>
-          <div class="form-group">
-            <label for="itemModificador">Modificador:</label>
-            <input type="text" id="itemModificador" value="${item.modificador || ""}">
-          </div>
-          <div class="form-group">
-            <label for="itemEfecto">Efecto:</label>
-            <input type="text" id="itemEfecto" value="${item.efecto || ""}">
-          </div>
-        </div>
-      `
+        `
         break
       case "pergaminos":
         formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="itemName">Nombre:</label>
-            <input type="text" id="itemName" value="${item.nombre}" required>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nombre:</label>
+              <input type="text" id="itemName" value="${item.nombre}" required>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Cantidad:</label>
+              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}">
+            </div>
+            <div class="form-group">
+              <label for="itemCoste">Coste por unidad:</label>
+              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}">
+            </div>
+            <div class="form-group">
+              <label for="itemTipo">Tipo:</label>
+              <select id="itemTipo">
+                <option value="Ofensivo" ${item.tipo === "Ofensivo" ? "selected" : ""}>Ofensivo</option>
+                <option value="Efecto de estado" ${item.tipo === "Efecto de estado" ? "selected" : ""}>Efecto de estado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="itemModificador">Modificador:</label>
+              <input type="text" id="itemModificador" value="${item.modificador || ""}">
+            </div>
+            <div class="form-group">
+              <label for="itemEfecto">Efecto:</label>
+              <input type="text" id="itemEfecto" value="${item.efecto || ""}">
+            </div>
+            <div class="form-group full-width">
+              <label for="itemDescripcion">Descripción:</label>
+              <textarea id="itemDescripcion" rows="2">${item.descripcion || ""}</textarea>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="itemQuantity">Cantidad:</label>
-            <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}">
-          </div>
-          <div class="form-group">
-            <label for="itemCoste">Coste por unidad:</label>
-            <input type="number" id="itemCoste" min="0" value="${item.coste || 0}">
-          </div>
-          <div class="form-group">
-            <label for="itemTipo">Tipo:</label>
-            <select id="itemTipo">
-              <option value="Ofensivo" ${item.tipo === "Ofensivo" ? "selected" : ""}>Ofensivo</option>
-              <option value="Efecto de estado" ${item.tipo === "Efecto de estado" ? "selected" : ""}>Efecto de estado</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="itemModificador">Modificador:</label>
-            <input type="text" id="itemModificador" value="${item.modificador || ""}">
-          </div>
-          <div class="form-group">
-            <label for="itemEfecto">Efecto:</label>
-            <input type="text" id="itemEfecto" value="${item.efecto || ""}">
-          </div>
-          <div class="form-group full-width">
-            <label for="itemDescripcion">Descripción:</label>
-            <textarea id="itemDescripcion" rows="2">${item.descripcion || ""}</textarea>
-          </div>
-        </div>
-      `
+        `
         break
       case "otros":
         formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="itemName">Nombre:</label>
-            <input type="text" id="itemName" value="${item.nombre}" required>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nombre:</label>
+              <input type="text" id="itemName" value="${item.nombre}" required>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Cantidad:</label>
+              <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}">
+            </div>
+            <div class="form-group">
+              <label for="itemCoste">Coste por unidad:</label>
+              <input type="number" id="itemCoste" min="0" value="${item.coste || 0}">
+            </div>
+            <div class="form-group full-width">
+              <label for="itemDescripcion">Descripción:</label>
+              <textarea id="itemDescripcion" rows="2">${item.descripcion || ""}</textarea>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="itemQuantity">Cantidad:</label>
-            <input type="number" id="itemQuantity" min="1" value="${item.cantidad || 1}">
-          </div>
-          <div class="form-group">
-            <label for="itemCoste">Coste por unidad:</label>
-            <input type="number" id="itemCoste" min="0" value="${item.coste || 0}">
-          </div>
-          <div class="form-group full-width">
-            <label for="itemDescripcion">Descripción:</label>
-            <textarea id="itemDescripcion" rows="2">${item.descripcion || ""}</textarea>
-          </div>
-        </div>
-      `
+        `
         break
     }
 
     // Preparar contenido del modal
     itemModalContent.innerHTML = `
-    <h3>${title}</h3>
-    ${formHTML}
-    <div class="form-actions">
-      <button id="saveBagItemBtn" class="btn" data-bag-index="${bagIndex}" data-item-index="${itemIndex}">Guardar Cambios</button>
-    </div>
-  `
+      <h3>${title}</h3>
+      ${formHTML}
+      <div class="form-actions">
+        <button id="saveItemBtn" class="btn" data-category="${category}" data-index="${index}">Guardar Cambios</button>
+      </div>
+    `
 
     // Mostrar modal
     itemModal.classList.add("show-modal")
 
     // Configurar botón de guardar
-    const saveBagItemBtn = document.getElementById("saveBagItemBtn")
-    if (saveBagItemBtn) {
-      saveBagItemBtn.addEventListener("click", function () {
-        const bagIndex = this.dataset.bagIndex
-        const itemIndex = this.dataset.itemIndex
-        saveBagItemChanges(bagIndex, itemIndex)
+    const saveItemBtn = document.getElementById("saveItemBtn")
+    if (saveItemBtn) {
+      saveItemBtn.addEventListener("click", function () {
+        const category = this.dataset.category
+        const index = this.dataset.index
+        saveInventoryItemChangesFunc(category, index)
         itemModal.classList.remove("show-modal")
       })
     }
   }
 
-  // Añadir función para guardar cambios en un item de una bolsa
-  function saveBagItemChanges(bagIndex, itemIndex) {
-    const bolsa = personaje.bolsasEspeciales[bagIndex]
-    const item = bolsa.contenido[itemIndex]
+  // Función para guardar los cambios de un item del inventario
+  function saveInventoryItemChangesFunc(category, index) {
+    const item = personaje.bolsasEspeciales[bagIndex].contenido[index]
 
     // Actualizar propiedades comunes
     item.nombre = document.getElementById("itemName").value.trim()
@@ -2266,7 +2698,7 @@ document.addEventListener("componentsLoaded", () => {
     item.coste = Number.parseInt(document.getElementById("itemCoste").value) || 0
 
     // Actualizar propiedades específicas según la categoría
-    switch (item.categoria) {
+    switch (category) {
       case "armaduras":
         item.resistenciaMax = Number.parseInt(document.getElementById("itemResistenciaMax").value) || 10
         item.bloqueoFisico = Number.parseInt(document.getElementById("itemBloqueoFisico").value) || 0
@@ -2300,280 +2732,48 @@ document.addEventListener("componentsLoaded", () => {
     loadBagContent(bagIndex)
   }
 
-  // Añadir función para mostrar el modal de mover de bolsa a inventario
-  function showMoveFromBagModal(bagIndex, itemIndex) {
+  // Función para mostrar el modal de confirmación para mover un item de una bolsa al inventario
+  function showMoveFromBagConfirmationModal(bagIndex, itemIndex) {
     const bolsa = personaje.bolsasEspeciales[bagIndex]
     const item = bolsa.contenido[itemIndex]
-    const moveToBagModal = document.getElementById("moveToBagModal")
-    const moveToBagModalContent = document.getElementById("moveToBagModalContent")
+    const confirmModal = document.getElementById("confirmModal")
+    const confirmMessage = document.getElementById("confirmMessage")
+    const confirmYesBtn = document.getElementById("confirmYesBtn")
+    const confirmNoBtn = document.getElementById("confirmNoBtn")
 
-    // Preparar contenido del modal
-    moveToBagModalContent.innerHTML = `
-    <h3>Mover al Inventario</h3>
-    <div class="form-group">
-      <label for="moveQuantity">Cantidad a mover:</label>
-      <input type="number" id="moveQuantity" min="1" max="${item.cantidad || 1}" value="1">
-    </div>
-    <div class="form-actions">
-      <button id="confirmMoveToInventoryBtn" class="btn" data-bag-index="${bagIndex}" data-item-index="${itemIndex}">Mover</button>
-    </div>
-  `
+    confirmMessage.textContent = `¿Mover "${item.nombre}" al inventario?`
+    confirmModal.classList.add("show-modal")
 
-    // Mostrar modal
-    moveToBagModal.classList.add("show-modal")
+    confirmYesBtn.onclick = () => {
+      moveItemFromBag(bagIndex, itemIndex)
+      confirmModal.classList.remove("show-modal")
+    }
 
-    // Configurar botón de confirmar
-    const confirmMoveToInventoryBtn = document.getElementById("confirmMoveToInventoryBtn")
-    if (confirmMoveToInventoryBtn) {
-      confirmMoveToInventoryBtn.addEventListener("click", function () {
-        const bagIndex = this.dataset.bagIndex
-        const itemIndex = this.dataset.itemIndex
-        const quantity = Number.parseInt(document.getElementById("moveQuantity").value) || 1
-
-        moveItemFromBagToInventory(bagIndex, itemIndex, quantity)
-        moveToBagModal.classList.remove("show-modal")
-      })
+    confirmNoBtn.onclick = () => {
+      confirmModal.classList.remove("show-modal")
     }
   }
 
-  // Añadir función para mover un item de una bolsa al inventario
-  function moveItemFromBagToInventory(bagIndex, itemIndex, quantity) {
+  // Función para mostrar el modal de confirmación para mover un item a otra bolsa
+  function showMoveToOtherBagConfirmationModal(bagIndex, itemIndex, otherBagIndex) {
     const bolsa = personaje.bolsasEspeciales[bagIndex]
     const item = bolsa.contenido[itemIndex]
+    const otherBolsa = personaje.bolsasEspeciales[otherBagIndex]
+    const confirmModal = document.getElementById("confirmModal")
+    const confirmMessage = document.getElementById("confirmMessage")
+    const confirmYesBtn = document.getElementById("confirmYesBtn")
+    const confirmNoBtn = document.getElementById("confirmNoBtn")
 
-    // Verificar que la cantidad a mover es válida
-    if (quantity <= 0 || quantity > item.cantidad) {
-      alert("Cantidad inválida.")
-      return
+    confirmMessage.textContent = `¿Mover "${item.nombre}" a la bolsa "${otherBolsa.nombre}"?`
+    confirmModal.classList.add("show-modal")
+
+    confirmYesBtn.onclick = () => {
+      moveItemToOtherBag(bagIndex, itemIndex, otherBagIndex)
+      confirmModal.classList.remove("show-modal")
     }
 
-    // Crear una copia del item para mover al inventario
-    const itemToMove = { ...item }
-    itemToMove.cantidad = quantity
-
-    // Reducir la cantidad en la bolsa o eliminar si se mueven todos
-    if (quantity < item.cantidad) {
-      item.cantidad -= quantity
-    } else {
-      bolsa.contenido.splice(itemIndex, 1)
-    }
-
-    // Verificar si ya existe un item similar en el inventario
-    const existingItemIndex = personaje.inventario[item.categoria].findIndex(
-      (i) =>
-        i.nombre === item.nombre &&
-        (item.categoria !== "armas" || i.manos === item.manos) &&
-        (item.categoria !== "armaduras" ||
-          (i.resistenciaMax === item.resistenciaMax &&
-            i.bloqueoFisico === item.bloqueoFisico &&
-            i.bloqueoMagico === item.bloqueoMagico)),
-    )
-
-    if (existingItemIndex !== -1) {
-      // Si existe, incrementar la cantidad
-      personaje.inventario[item.categoria][existingItemIndex].cantidad += quantity
-    } else {
-      // Si no existe, agregar como nuevo item
-      personaje.inventario[item.categoria].push(itemToMove)
-    }
-
-    saveCharacter()
-    loadBagContent(bagIndex)
-
-    // Recargar la categoría actual del inventario si está abierta
-    const activeHeader = document.querySelector(".accordion-header.active")
-    if (activeHeader) {
-      const category = activeHeader.dataset.category
-      loadInventoryAccordion(category)
-    }
-  }
-
-  // Añadir función para mostrar el modal de mover de una bolsa a otra
-  function showMoveToOtherBagModal(bagIndex, itemIndex) {
-    const bolsa = personaje.bolsasEspeciales[bagIndex]
-    const item = bolsa.contenido[itemIndex]
-    const moveToBagModal = document.getElementById("moveToBagModal")
-    const moveToBagModalContent = document.getElementById("moveToBagModalContent")
-
-    // Verificar si hay otras bolsas especiales
-    if (personaje.bolsasEspeciales.length <= 1) {
-      alert("No hay otras bolsas especiales para mover el objeto.")
-      return
-    }
-
-    // Preparar contenido del modal
-    let bagsHTML = ""
-    personaje.bolsasEspeciales.forEach((otraBolsa, otroBagIndex) => {
-      if (otroBagIndex !== Number(bagIndex)) {
-        bagsHTML += `<option value="${otroBagIndex}">${otraBolsa.nombre}</option>`
-      }
-    })
-
-    moveToBagModalContent.innerHTML = `
-    <h3>Mover a Otra Bolsa</h3>
-    <div class="form-group">
-      <label for="moveToOtherBagSelect">Selecciona una bolsa:</label>
-      <select id="moveToOtherBagSelect">
-        ${bagsHTML}
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="moveQuantity">Cantidad a mover:</label>
-      <input type="number" id="moveQuantity" min="1" max="${item.cantidad || 1}" value="1">
-    </div>
-    <div class="form-actions">
-      <button id="confirmMoveToOtherBagBtn" class="btn" data-bag-index="${bagIndex}" data-item-index="${itemIndex}">Mover</button>
-    </div>
-  `
-
-    // Mostrar modal
-    moveToBagModal.classList.add("show-modal")
-
-    // Configurar botón de confirmar
-    const confirmMoveToOtherBagBtn = document.getElementById("confirmMoveToOtherBagBtn")
-    if (confirmMoveToOtherBagBtn) {
-      confirmMoveToOtherBagBtn.addEventListener("click", function () {
-        const sourceBagIndex = this.dataset.bagIndex
-        const itemIndex = this.dataset.itemIndex
-        const targetBagIndex = document.getElementById("moveToOtherBagSelect").value
-        const quantity = Number.parseInt(document.getElementById("moveQuantity").value) || 1
-
-        moveItemBetweenBags(sourceBagIndex, itemIndex, targetBagIndex, quantity)
-        moveToBagModal.classList.remove("show-modal")
-      })
-    }
-  }
-
-  // Añadir función para mover un item entre bolsas
-  function moveItemBetweenBags(sourceBagIndex, itemIndex, targetBagIndex, quantity) {
-    const sourceBolsa = personaje.bolsasEspeciales[sourceBagIndex]
-    const targetBolsa = personaje.bolsasEspeciales[targetBagIndex]
-    const item = sourceBolsa.contenido[itemIndex]
-
-    // Verificar que la cantidad a mover es válida
-    if (quantity <= 0 || quantity > item.cantidad) {
-      alert("Cantidad inválida.")
-      return
-    }
-
-    // Crear una copia del item para mover a la otra bolsa
-    const itemToMove = { ...item }
-    itemToMove.cantidad = quantity
-
-    // Reducir la cantidad en la bolsa origen o eliminar si se mueven todos
-    if (quantity < item.cantidad) {
-      item.cantidad -= quantity
-    } else {
-      sourceBolsa.contenido.splice(itemIndex, 1)
-    }
-
-    // Verificar si ya existe un item similar en la bolsa destino
-    const existingItemIndex = targetBolsa.contenido.findIndex(
-      (i) =>
-        i.nombre === item.nombre &&
-        i.categoria === item.categoria &&
-        (item.categoria !== "armas" || i.manos === item.manos) &&
-        (item.categoria !== "armaduras" ||
-          (i.resistenciaMax === item.resistenciaMax &&
-            i.bloqueoFisico === item.bloqueoFisico &&
-            i.bloqueoMagico === item.bloqueoMagico)),
-    )
-
-    if (existingItemIndex !== -1) {
-      // Si existe, incrementar la cantidad
-      targetBolsa.contenido[existingItemIndex].cantidad += quantity
-    } else {
-      // Si no existe, agregar como nuevo item
-      targetBolsa.contenido.push(itemToMove)
-    }
-
-    saveCharacter()
-
-    // Recargar el contenido de ambas bolsas si están abiertas
-    loadBagContent(sourceBagIndex)
-    loadBagContent(targetBagIndex)
-  }
-
-  // Manejar cambios en los atributos y estado
-  function attributeListeners() {
-    // Manejar cambio en el nivel
-    const nivelInput = document.getElementById("nivel")
-    if (nivelInput) {
-      nivelInput.addEventListener("change", () => {
-        personaje.nivel = Number.parseInt(nivelInput.value) || 1
-        saveCharacter()
-        updateCharacterInList()
-      })
-    }
-
-    // Manejar cambios en otros atributos
-    const atributos = ["clase", "combateCuerpo", "combateDistancia", "lanzamientoHechizos"]
-    atributos.forEach((atributo) => {
-      const input = document.getElementById(atributo)
-      if (input) {
-        input.addEventListener("change", () => {
-          personaje[atributo] = input.type === "number" ? Number.parseInt(input.value) || 0 : input.value
-          saveCharacter()
-        })
-      }
-    })
-  }
-
-  // Configurar botones de incremento/decremento para vida, aguante y maná
-  function statusControls() {
-    const statusControls = ["vida", "aguante", "mana"]
-    statusControls.forEach((status) => {
-      const input = document.getElementById(status)
-      const decreaseBtn = input?.parentElement?.querySelector(".decrease")
-      const increaseBtn = input?.parentElement?.querySelector(".increase")
-
-      if (input) {
-        input.addEventListener("change", () => {
-          personaje[status] = Number.parseInt(input.value) || 0
-          saveCharacter()
-        })
-      }
-
-      if (decreaseBtn) {
-        decreaseBtn.addEventListener("click", () => {
-          const currentValue = Number.parseInt(input.value) || 0
-          if (currentValue > 0) {
-            input.value = currentValue - 1
-            personaje[status] = currentValue - 1
-            saveCharacter()
-          }
-        })
-      }
-
-      if (increaseBtn) {
-        increaseBtn.addEventListener("click", () => {
-          const currentValue = Number.parseInt(input.value) || 0
-          input.value = currentValue + 1
-          personaje[status] = currentValue + 1
-          saveCharacter()
-        })
-      }
-    })
-  }
-
-  // Función para actualizar el personaje en la lista de personajes
-  function updateCharacterInList() {
-    // Obtener la lista de personajes
-    const personajesData = JSON.parse(localStorage.getItem("personajes")) || { personajes: [] }
-
-    // Buscar el personaje en la lista
-    const index = personajesData.personajes.findIndex((p) => p.nombre === personaje.nombre)
-
-    if (index !== -1) {
-      // Actualizar los datos del personaje en la lista
-      personajesData.personajes[index] = {
-        nombre: personaje.nombre,
-        raza: personaje.raza,
-        nivel: personaje.nivel,
-      }
-
-      // Guardar la lista actualizada
-      localStorage.setItem("personajes", JSON.stringify(personajesData))
+    confirmNoBtn.onclick = () => {
+      confirmModal.classList.remove("show-modal")
     }
   }
 })
