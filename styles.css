@@ -508,3 +508,32 @@ form .btn-primary {
   margin-top: 15px;
   margin-bottom: 10px;
 }
+
+/* Estilos para las etiquetas de recursos */
+.resource-label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+/* Mejoras de accesibilidad para botones e iconos */
+button[title],
+i[title] {
+  cursor: help;
+}
+
+/* Mejorar contraste y visibilidad */
+.resource-item {
+  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.resource-controls {
+  margin-top: 5px;
+}
+
+.btn-small {
+  padding: 2px 6px;
+  margin: 0 2px;
+}

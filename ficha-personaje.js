@@ -903,37 +903,29 @@ document.addEventListener("componentsLoaded", () => {
       case "pociones":
         title = "Añadir Poción"
         formHTML = `
-              <input type="text" id="itemMejora" placeholder="daño +1">
-            </div>
-          </div>
-        `
-        break
-      case "pociones":
-        title = "Añadir Poción"
-        formHTML = `
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="itemName">Nombre:</label>
-              <input type="text" id="itemName" required>
-            </div>
-            <div class="form-group">
-              <label for="itemQuantity">Cantidad:</label>
-              <input type="number" id="itemQuantity" min="1" value="1">
-            </div>
-            <div class="form-group">
-              <label for="itemCoste">Coste por unidad:</label>
-              <input type="number" id="itemCoste" min="0" value="0">
-            </div>
-            <div class="form-group">
-              <label for="itemModificador">Modificador:</label>
-              <input type="text" id="itemModificador" placeholder="salud">
-            </div>
-            <div class="form-group">
-              <label for="itemEfecto">Efecto:</label>
-              <input type="text" id="itemEfecto" placeholder="+1">
-            </div>
-          </div>
-        `
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="itemName">Nombre:</label>
+        <input type="text" id="itemName" required>
+      </div>
+      <div class="form-group">
+        <label for="itemQuantity">Cantidad:</label>
+        <input type="number" id="itemQuantity" min="1" value="1">
+      </div>
+      <div class="form-group">
+        <label for="itemCoste">Coste por unidad:</label>
+        <input type="number" id="itemCoste" min="0" value="0">
+      </div>
+      <div class="form-group">
+        <label for="itemModificador">Modificador:</label>
+        <input type="text" id="itemModificador" placeholder="salud">
+      </div>
+      <div class="form-group">
+        <label for="itemEfecto">Efecto:</label>
+        <input type="text" id="itemEfecto" placeholder="+1">
+      </div>
+    </div>
+  `
         break
       case "pergaminos":
         title = "Añadir Pergamino"
