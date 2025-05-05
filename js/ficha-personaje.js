@@ -7,6 +7,7 @@ import { cargarEquipamiento, configurarCierreModalEquipamiento } from "./modules
 import { configurarAcordeonInventario } from "./modules/inventario.js"
 import { cargarBolsasEspeciales, configurarBotonCrearBolsa } from "./modules/bolsas.js"
 import { inicializarRecursos, configurarCierreModalRecursos } from "./modules/recursos.js"
+import { configurarBotonEditarPersonaje } from "./modules/editar-personaje.js"
 
 // Esperar a que los componentes se carguen antes de inicializar la aplicación
 document.addEventListener("componentsLoaded", () => {
@@ -65,6 +66,14 @@ document.addEventListener("componentsLoaded", () => {
 
   // Calcular atributos derivados
   calcularAtributosDerivados(personaje)
+
+  // Configurar botón de editar personaje
+  configurarBotonEditarPersonaje(personaje)
+
+  // Escuchar evento para recalcular atributos
+  document.addEventListener("recalcularAtributos", () => {
+    calcularAtributosDerivados(personaje)
+  })
 
   // Cargar grimorio
   cargarGrimorio(personaje, confirmModal, confirmMessage)

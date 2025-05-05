@@ -18,6 +18,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadComponent("basic-info-container", "components/basic-info.html")
   await loadComponent("attributes-container", "components/attributes.html")
   await loadComponent("status-container", "components/status.html")
+
+  // Cargar atributos derivados
+  const derivedAttributesContainer = document.createElement("div")
+  derivedAttributesContainer.id = "derived-attributes-container"
+
+  // Insertar después del contenedor de estado y antes del grimorio
+  const statusContainer = document.getElementById("status-container")
+  const grimorioContainer = document.getElementById("grimorio-container")
+
+  if (statusContainer && grimorioContainer) {
+    statusContainer.parentNode.insertBefore(derivedAttributesContainer, grimorioContainer)
+    await loadComponent("derived-attributes-container", "components/attributes-derived.html")
+  }
+
   await loadComponent("grimorio-container", "components/grimorio.html")
   await loadComponent("equipment-container", "components/equipment.html")
 

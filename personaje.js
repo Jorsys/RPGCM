@@ -1,4 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Importar módulo para configurar atributos derivados en creación
+  import("./js/modules/editar-personaje.js")
+    .then((module) => {
+      // Configurar atributos derivados en el modal de creación
+      module.configurarAtributosDerivedosEnCreacion()
+    })
+    .catch((error) => {
+      console.error("Error al cargar el módulo de editar-personaje:", error)
+    })
+
   // Elementos del DOM
   const personajesList = document.getElementById("personajesList")
   const newCharacterBtn = document.getElementById("newCharacterBtn")
@@ -136,6 +146,12 @@ document.addEventListener("DOMContentLoaded", () => {
         brazos = Number.parseInt(selectedOption.dataset.brazos)
       }
 
+      // Obtener valores de atributos derivados
+      const percepcion = Number.parseInt(document.getElementById("percepcion").value) || 0
+      const destreza = Number.parseInt(document.getElementById("destreza").value) || 0
+      const agilidad = Number.parseInt(document.getElementById("agilidad").value) || 0
+      const inteligencia = Number.parseInt(document.getElementById("inteligencia").value) || 0
+
       // Crear objeto de personaje con la nueva estructura
       const personaje = {
         nombre: nombre,
@@ -164,6 +180,12 @@ document.addEventListener("DOMContentLoaded", () => {
         grimorio: [],
         equipados: [],
         bolsasEspeciales: [],
+        atributosDerivedos: {
+          percepcion: percepcion,
+          destreza: destreza,
+          agilidad: agilidad,
+          inteligencia: inteligencia,
+        },
       }
 
       // Verificar si ya existe un personaje con ese nombre
