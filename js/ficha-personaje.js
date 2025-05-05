@@ -6,6 +6,7 @@ import { cargarGrimorio, configurarBotonCrearHechizo } from "./modules/grimorio.
 import { cargarEquipamiento, configurarCierreModalEquipamiento } from "./modules/equipamiento.js"
 import { configurarAcordeonInventario } from "./modules/inventario.js"
 import { cargarBolsasEspeciales, configurarBotonCrearBolsa } from "./modules/bolsas.js"
+import { inicializarRecursos, configurarCierreModalRecursos } from "./modules/recursos.js"
 
 // Esperar a que los componentes se carguen antes de inicializar la aplicación
 document.addEventListener("componentsLoaded", () => {
@@ -80,11 +81,9 @@ document.addEventListener("componentsLoaded", () => {
   cargarBolsasEspeciales(personaje, confirmModal, confirmMessage)
   configurarBotonCrearBolsa(personaje, confirmModal, confirmMessage)
 
-  // Actualizar los iconos de recursos
-  const cuerdasIcon = document.querySelector("#cuerdas-resource i")
-  if (cuerdasIcon) {
-    cuerdasIcon.className = "fas fa-circle-notch" // Cambiamos de fa-scroll a fa-circle-notch
-  }
+  // Inicializar recursos
+  inicializarRecursos(personaje)
+  configurarCierreModalRecursos()
 
   console.log("ficha-personaje.js: Inicialización completada")
 })

@@ -133,8 +133,12 @@ textarea {
 
 .status-control {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+}
+
+.status-control input {
+  text-align: center;
 }
 
 .centered-label {
@@ -186,11 +190,22 @@ th {
   flex-wrap: wrap;
 }
 
+/* Estilos para valores clicables */
+.clickable-value {
+  cursor: pointer;
+  transition: background-color 0.2s;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.clickable-value:hover {
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+/* Estilos para los recursos */
 .resource-item {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  background-color: #f9f9f9;
   padding: 8px 15px;
   border-radius: 20px;
   margin: 5px;
@@ -201,6 +216,10 @@ th {
 .resource-item i {
   margin-right: 8px;
   color: #3498db;
+}
+
+.resource-item:hover {
+  background-color: rgba(52, 152, 219, 0.1);
 }
 
 .resource-controls {
