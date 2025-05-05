@@ -59,16 +59,16 @@ export function mostrarModalEditarPersonaje(personaje) {
           <input type="number" id="editLanzamientoHechizos" min="0" value="${personaje.lanzamientoHechizos}">
         </div>
         <div class="form-group">
-          <label for="editVida">Vida:</label>
-          <input type="number" id="editVida" min="1" value="${personaje.vida}">
+          <label for="editVidaMax">Vida máxima:</label>
+          <input type="number" id="editVidaMax" min="1" value="${personaje.vidaMax || personaje.vida}">
         </div>
         <div class="form-group">
-          <label for="editAguante">Aguante:</label>
-          <input type="number" id="editAguante" min="0" value="${personaje.aguante}">
+          <label for="editAguanteMax">Aguante máximo:</label>
+          <input type="number" id="editAguanteMax" min="0" value="${personaje.aguanteMax || personaje.aguante}">
         </div>
         <div class="form-group">
-          <label for="editMana">Maná:</label>
-          <input type="number" id="editMana" min="0" value="${personaje.mana}">
+          <label for="editManaMax">Maná máximo:</label>
+          <input type="number" id="editManaMax" min="0" value="${personaje.manaMax || personaje.mana}">
         </div>
         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
       </form>
@@ -105,9 +105,43 @@ export function mostrarModalEditarPersonaje(personaje) {
         personaje.combateCuerpo = Number.parseInt(document.getElementById("editCombateCuerpo").value) || 0
         personaje.combateDistancia = Number.parseInt(document.getElementById("editCombateDistancia").value) || 0
         personaje.lanzamientoHechizos = Number.parseInt(document.getElementById("editLanzamientoHechizos").value) || 0
-        personaje.vida = Number.parseInt(document.getElementById("editVida").value) || 1
-        personaje.aguante = Number.parseInt(document.getElementById("editAguante").value) || 0
-        personaje.mana = Number.parseInt(document.getElementById("editMana").value) || 0
+
+        // Actualizar valores máximos
+        const vidaMaxAnterior = personaje.vidaMax || personaje.vida
+        const aguanteMaxAnterior = personaje.aguanteMax || personaje.aguante
+        const manaMaxAnterior = personaje.manaMax || personaje.mana
+
+        personaje.vidaMax = Number.parseInt(document.getElementById("editVidaMax").value) || 1
+        personaje.aguanteMax = Number.parseInt(document.getElementById("editAguanteMax").value) || 0
+        personaje.manaMax = Number.parseInt(document.getElementById("editManaMax").value) || 0
+
+        // Ajustar valores actuales si los máximos cambiaron
+        if (personaje.vidaMax !== vidaMaxAnterior) {
+          // Si el máximo aumentó, aumentar el actual proporcionalmente
+          if (personaje.vidaMax > vidaMaxAnterior) {
+            personaje.vida = Math.round((personaje.vida / vidaMaxAnterior) * personaje.vidaMax)
+          }
+          // Si el máximo disminuyó, asegurar que el actual no lo supere
+          else if (personaje.vida > personaje.vidaMax) {
+            personaje.vida = personaje.vidaMax
+          }
+        }
+
+        if (personaje.aguanteMax !== aguanteMaxAnterior) {
+          if (personaje.aguanteMax > aguanteMaxAnterior) {
+            personaje.aguante = Math.round((personaje.aguante / aguanteMaxAnterior) * personaje.aguanteMax)
+          } else if (personaje.aguante > personaje.aguanteMax) {
+            personaje.aguante = personaje.aguanteMax
+          }
+        }
+
+        if (personaje.manaMax !== manaMaxAnterior) {
+          if (personaje.manaMax > manaMaxAnterior) {
+            personaje.mana = Math.round((personaje.mana / manaMaxAnterior) * personaje.manaMax)
+          } else if (personaje.mana > personaje.manaMax) {
+            personaje.mana = personaje.manaMax
+          }
+        }
 
         // Guardar cambios
         guardarPersonaje(personaje)
@@ -120,8 +154,11 @@ export function mostrarModalEditarPersonaje(personaje) {
         document.getElementById("combateDistancia").value = personaje.combateDistancia
         document.getElementById("lanzamientoHechizos").value = personaje.lanzamientoHechizos
         document.getElementById("vida").value = personaje.vida
+        document.getElementById("vidaMax").value = personaje.vidaMax
         document.getElementById("aguante").value = personaje.aguante
+        document.getElementById("aguanteMax").value = personaje.aguanteMax
         document.getElementById("mana").value = personaje.mana
+        document.getElementById("manaMax").value = personaje.manaMax
 
         // Recalcular atributos derivados
         const event = new CustomEvent("recalcularAtributos")

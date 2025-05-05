@@ -89,6 +89,28 @@ export function cargarPersonaje() {
     })
   })
 
+  // Asegurar que existen los valores máximos de vida, aguante y maná
+  if (!personaje.vidaMax) {
+    personaje.vidaMax = personaje.vida || 10
+  }
+  if (!personaje.aguanteMax) {
+    personaje.aguanteMax = personaje.aguante || 10
+  }
+  if (!personaje.manaMax) {
+    personaje.manaMax = personaje.mana || 10
+  }
+
+  // Asegurar que los valores actuales no superan los máximos
+  if (personaje.vida > personaje.vidaMax) {
+    personaje.vida = personaje.vidaMax
+  }
+  if (personaje.aguante > personaje.aguanteMax) {
+    personaje.aguante = personaje.aguanteMax
+  }
+  if (personaje.mana > personaje.manaMax) {
+    personaje.mana = personaje.manaMax
+  }
+
   return personaje
 }
 
@@ -118,9 +140,22 @@ export function actualizarInterfazPersonaje(personaje) {
   fillField("combateCuerpo", personaje.combateCuerpo)
   fillField("combateDistancia", personaje.combateDistancia)
   fillField("lanzamientoHechizos", personaje.lanzamientoHechizos)
+
+  // Actualizar valores de vida, aguante y maná
+  actualizarValoresRecursos(personaje)
+}
+
+// Función para actualizar los valores de vida, aguante y maná en la interfaz
+export function actualizarValoresRecursos(personaje) {
+  // Actualizar valores actuales
   fillField("vida", personaje.vida)
   fillField("aguante", personaje.aguante)
   fillField("mana", personaje.mana)
+
+  // Actualizar valores máximos
+  fillField("vidaMax", personaje.vidaMax)
+  fillField("aguanteMax", personaje.aguanteMax)
+  fillField("manaMax", personaje.manaMax)
 }
 
 // Función para calcular los atributos derivados

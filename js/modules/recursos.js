@@ -12,7 +12,7 @@ export function inicializarRecursos(personaje) {
       // Hacer que el valor sea clicable
       valorElement.classList.add("clickable-value")
       valorElement.addEventListener("click", () => {
-        mostrarModalRecurso(personaje, recurso, personaje[recurso])
+        mostrarModalRecurso(personaje, recurso, personaje[recurso], personaje[`${recurso}Max`])
       })
     }
   })
@@ -40,8 +40,14 @@ export function actualizarValoresRecursos(personaje) {
   const estadoRecursos = ["vida", "aguante", "mana"]
   estadoRecursos.forEach((recurso) => {
     const valorElement = document.getElementById(recurso)
+    const valorMaxElement = document.getElementById(`${recurso}Max`)
+
     if (valorElement) {
       valorElement.value = personaje[recurso]
+    }
+
+    if (valorMaxElement) {
+      valorMaxElement.value = personaje[`${recurso}Max`]
     }
   })
 
@@ -56,7 +62,7 @@ export function actualizarValoresRecursos(personaje) {
 }
 
 // Función para mostrar el modal de recurso
-export function mostrarModalRecurso(personaje, recurso, valorActual) {
+export function mostrarModalRecurso(personaje, recurso, valorActual, valorMaximo = null) {
   const resourceModal = document.getElementById("resourceModal")
   const resourceModalContent = document.getElementById("resourceModalContent")
 
@@ -70,8 +76,16 @@ export function mostrarModalRecurso(personaje, recurso, valorActual) {
     <div class="form-grid">
       <div class="form-group">
         <label for="resourceCurrentValue">Valor actual:</label>
-        <input type="number" id="resourceCurrentValue" min="0" value="${valorActual}">
+        <input type="number" id="resourceCurrentValue" min="0" ${valorMaximo ? `max="${valorMaximo}"` : ""} value="${valorActual}">
       </div>
+      ${
+        valorMaximo
+          ? `<div class="form-group">
+        <label for="resourceMaxValue">Valor máximo:</label>
+        <input type="number" id="resourceMaxValue" value="${valorMaximo}" readonly class="max-value">
+      </div>`
+          : ""
+      }
       <div class="form-group">
         <label for="resourceAmount">Cantidad a modificar:</label>
         <input type="number" id="resourceAmount" min="1" value="1">
@@ -134,7 +148,9 @@ export function modificarRecurso(personaje, recurso, cantidad) {
   if (esRecursoEstado) {
     // Es un recurso de estado
     const valorActual = personaje[recurso]
-    const nuevoValor = Math.max(0, valorActual + cantidad) // Asegurar que no sea negativo
+    const valorMaximo = personaje[`${recurso}Max`]
+    // Calcular nuevo valor, asegurando que esté entre 0 y el máximo
+    const nuevoValor = Math.max(0, Math.min(valorMaximo, valorActual + cantidad))
     personaje[recurso] = nuevoValor
   } else {
     // Es un recurso de inventario
@@ -158,6 +174,9 @@ export function establecerValorRecurso(personaje, recurso, nuevoValor) {
 
   if (esRecursoEstado) {
     // Es un recurso de estado
+    // Asegurar que no supere el valor máximo
+    const valorMaximo = personaje[`${recurso}Max`]
+    nuevoValor = Math.min(nuevoValor, valorMaximo)
     personaje[recurso] = nuevoValor
   } else {
     // Es un recurso de inventario

@@ -152,6 +152,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const agilidad = Number.parseInt(document.getElementById("agilidad").value) || 0
       const inteligencia = Number.parseInt(document.getElementById("inteligencia").value) || 0
 
+      // Obtener valores máximos de vida, aguante y maná
+      const vidaMax = Number.parseInt(document.getElementById("vida").value) || 10
+      const aguanteMax = Number.parseInt(document.getElementById("aguante").value) || 10
+      const manaMax = Number.parseInt(document.getElementById("mana").value) || 10
+
       // Crear objeto de personaje con la nueva estructura
       const personaje = {
         nombre: nombre,
@@ -162,9 +167,14 @@ document.addEventListener("DOMContentLoaded", () => {
         combateCuerpo: Number.parseInt(document.getElementById("combateCuerpo").value),
         combateDistancia: Number.parseInt(document.getElementById("combateDistancia").value),
         lanzamientoHechizos: Number.parseInt(document.getElementById("lanzamientoHechizos").value),
-        vida: Number.parseInt(document.getElementById("vida").value),
-        aguante: Number.parseInt(document.getElementById("aguante").value),
-        mana: Number.parseInt(document.getElementById("mana").value),
+        // Valores máximos
+        vidaMax: vidaMax,
+        aguanteMax: aguanteMax,
+        manaMax: manaMax,
+        // Valores actuales (inicialmente iguales a los máximos)
+        vida: vidaMax,
+        aguante: aguanteMax,
+        mana: manaMax,
         inventario: {
           armaduras: [],
           armas: [],
