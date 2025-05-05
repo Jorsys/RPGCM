@@ -509,12 +509,6 @@ form .btn-primary {
   margin-bottom: 10px;
 }
 
-/* Estilos para las etiquetas de recursos */
-.resource-label {
-  font-weight: bold;
-  margin-right: 5px;
-}
-
 /* Mejoras de accesibilidad para botones e iconos */
 button[title],
 i[title] {
@@ -536,4 +530,26 @@ i[title] {
 .btn-small {
   padding: 2px 6px;
   margin: 0 2px;
+}
+
+/* Estilos para la leyenda de iconos */
+.icons-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 8px;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.legend-item i {
+  margin-right: 5px;
 }
