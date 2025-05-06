@@ -1,100 +1,120 @@
-// Módulo para la gestión de atributos derivados
+// Funciones para gestionar los atributos derivados del personaje
 
-import { guardarPersonaje } from "./personaje.js"
+// Función para cargar los atributos derivados
+function cargarAtributos() {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje) return
 
-// Lista de subatributos por grupo
-const subatributosPorGrupo = {
-  percepcion: ["buscar", "sigilo", "observar"],
-  destreza: ["cerradura", "trampas", "manipularObjetos"],
-  agilidad: ["acrobacia", "desarmar", "equitacion"],
-  inteligencia: ["elocuencia", "resolver"],
+  // Cargar atributos básicos
+  document.getElementById("nivel").textContent = personaje.nivel || "1"
+  document.getElementById("clase").textContent = personaje.clase || "-"
+
+  // Cargar atributos de combate
+  const combate = personaje.atributos?.combate || 0
+  const punteria = personaje.atributos?.punteria || 0
+  const magia = personaje.atributos?.magia || 0
+
+  document.getElementById("combate").textContent = combate
+  document.getElementById("punteria").textContent = punteria
+  document.getElementById("magia").textContent = magia
+
+  // Cargar atributos vitales
+  const vida = personaje.atributos?.vida || 0
+  const aguante = personaje.atributos?.aguante || 0
+  const mana = personaje.atributos?.mana || 0
+
+  document.getElementById("vida").textContent = vida
+  document.getElementById("aguante").textContent = aguante
+  document.getElementById("mana").textContent = mana
+
+  // Cargar atributos secundarios
+  const vidaActual = personaje.atributos?.vidaActual || vida
+  const aguanteActual = personaje.atributos?.aguanteActual || aguante
+  const manaActual = personaje.atributos?.manaActual || mana
+
+  document.getElementById("vidaActual").value = vidaActual
+  document.getElementById("aguanteActual").value = aguanteActual
+  document.getElementById("manaActual").value = manaActual
+
+  // Configurar eventos para los atributos actuales
+  document.getElementById("vidaActual").addEventListener("change", actualizarAtributoActual)
+  document.getElementById("aguanteActual").addEventListener("change", actualizarAtributoActual)
+  document.getElementById("manaActual").addEventListener("change", actualizarAtributoActual)
+
+  // Añadir iconos a los atributos
+  añadirIconosAtributos()
 }
 
-// Función para inicializar los atributos derivados
-export function inicializarAtributosDerivados(personaje) {
-  // Asegurar que existe la estructura de atributos derivados
-  if (!personaje.atributosDerivedos) {
-    personaje.atributosDerivedos = {
-      percepcion: 0,
-      destreza: 0,
-      agilidad: 0,
-      inteligencia: 0,
-    }
+// Función para actualizar un atributo actual
+function actualizarAtributoActual(event) {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje) return
+
+  const atributo = event.target.id
+  const valor = Number.parseInt(event.target.value) || 0
+
+  // Actualizar el atributo en el personaje
+  if (!personaje.atributos) {
+    personaje.atributos = {}
   }
 
-  // Asegurar que existen los subatributos
-  if (!personaje.subatributos) {
-    personaje.subatributos = {
-      buscar: 0,
-      sigilo: 0,
-      observar: 0,
-      cerradura: 0,
-      trampas: 0,
-      manipularObjetos: 0,
-      acrobacia: 0,
-      desarmar: 0,
-      equitacion: 0,
-      elocuencia: 0,
-      resolver: 0,
-    }
+  personaje.atributos[atributo] = valor
+
+  // Guardar cambios
+  localStorage.setItem("personajeActual", JSON.stringify(personaje))
+}
+
+// Función para añadir iconos a los atributos
+function añadirIconosAtributos() {
+  // Añadir iconos a los atributos de combate
+  const combateLabel = document.querySelector('label[for="combate"]')
+  if (combateLabel) {
+    combateLabel.innerHTML = '<i class="bi bi-sword me-1"></i> Combate'
   }
 
-  // Configurar event listeners para los inputs de subatributos
-  Object.keys(subatributosPorGrupo).forEach((grupo) => {
-    subatributosPorGrupo[grupo].forEach((subatributo) => {
-      const input = document.getElementById(subatributo)
-      if (input) {
-        input.value = personaje.subatributos[subatributo] || 0
+  const punteriaLabel = document.querySelector('label[for="punteria"]')
+  if (punteriaLabel) {
+    punteriaLabel.innerHTML = '<i class="bi bi-bullseye me-1"></i> Puntería'
+  }
 
-        // Añadir event listener para actualizar al cambiar
-        input.addEventListener("change", () => {
-          personaje.subatributos[subatributo] = Number.parseInt(input.value) || 0
-          calcularAtributosDerivados(personaje)
-          guardarPersonaje(personaje)
-        })
-      }
-    })
-  })
+  const magiaLabel = document.querySelector('label[for="magia"]')
+  if (magiaLabel) {
+    magiaLabel.innerHTML = '<i class="bi bi-stars me-1"></i> Magia'
+  }
 
-  // Calcular valores iniciales
-  calcularAtributosDerivados(personaje)
+  // Añadir iconos a los atributos vitales
+  const vidaLabel = document.querySelector('label[for="vida"]')
+  if (vidaLabel) {
+    vidaLabel.innerHTML = '<i class="bi bi-heart-fill me-1"></i> Vida'
+  }
+
+  const aguanteLabel = document.querySelector('label[for="aguante"]')
+  if (aguanteLabel) {
+    aguanteLabel.innerHTML = '<i class="bi bi-lightning-fill me-1"></i> Aguante'
+  }
+
+  const manaLabel = document.querySelector('label[for="mana"]')
+  if (manaLabel) {
+    manaLabel.innerHTML = '<i class="bi bi-magic me-1"></i> Maná'
+  }
+
+  // Añadir iconos a los atributos actuales
+  const vidaActualLabel = document.querySelector('label[for="vidaActual"]')
+  if (vidaActualLabel) {
+    vidaActualLabel.innerHTML = '<i class="bi bi-heart-fill me-1"></i> Vida Actual'
+  }
+
+  const aguanteActualLabel = document.querySelector('label[for="aguanteActual"]')
+  if (aguanteActualLabel) {
+    aguanteActualLabel.innerHTML = '<i class="bi bi-lightning-fill me-1"></i> Aguante Actual'
+  }
+
+  const manaActualLabel = document.querySelector('label[for="manaActual"]')
+  if (manaActualLabel) {
+    manaActualLabel.innerHTML = '<i class="bi bi-magic me-1"></i> Maná Actual'
+  }
+  manaActualLabel.innerHTML = '<i class="bi bi-magic me-1"></i> Maná Actual'
 }
 
-// Función para calcular los atributos derivados
-export function calcularAtributosDerivados(personaje) {
-  // Calcular cada atributo derivado como la suma de sus subatributos
-  Object.keys(subatributosPorGrupo).forEach((grupo) => {
-    const total = subatributosPorGrupo[grupo].reduce((sum, subatributo) => {
-      return sum + (personaje.subatributos[subatributo] || 0)
-    }, 0)
-
-    personaje.atributosDerivedos[grupo] = total
-
-    // Actualizar el valor en la interfaz
-    const totalElement = document.getElementById(grupo)
-    if (totalElement) {
-      totalElement.textContent = total.toString()
-    }
-  })
-}
-
-// Función para actualizar la interfaz con los valores de los subatributos
-export function actualizarInterfazSubatributos(personaje) {
-  if (!personaje.subatributos) return
-
-  // Actualizar cada input con su valor correspondiente
-  Object.keys(personaje.subatributos).forEach((subatributo) => {
-    const input = document.getElementById(subatributo)
-    if (input) {
-      input.value = personaje.subatributos[subatributo] || 0
-    }
-  })
-
-  // Actualizar los totales
-  Object.keys(subatributosPorGrupo).forEach((grupo) => {
-    const totalElement = document.getElementById(grupo)
-    if (totalElement) {
-      totalElement.textContent = personaje.atributosDerivedos[grupo].toString()
-    }
-  })
-}
+// Exportar funciones
+export { cargarAtributos, actualizarAtributoActual, añadirIconosAtributos }

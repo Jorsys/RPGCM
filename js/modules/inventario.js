@@ -1,534 +1,543 @@
-// Módulo para la gestión del inventario
-
-import { guardarPersonaje } from "./personaje.js"
-import { getCategoryIcon, showConfirmation } from "./utils.js"
+// Funciones para gestionar el inventario del personaje
+import { actualizarPesoTotal } from "./equipamiento.js"
+import { moverObjetoDeInventarioABolsa } from "./bolsas.js"
 import { cargarEquipamiento } from "./equipamiento.js"
+import { cargarBolsasEspeciales } from "./bolsas.js"
+import * as bootstrap from "bootstrap"
+
+// Función para cargar el inventario
+function cargarInventario() {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.inventario) return
+
+  const inventario = personaje.inventario
+
+  // Actualizar el peso total
+  actualizarPesoTotal()
+}
 
 // Función para cargar el inventario en el acordeón
-export function cargarInventarioAcordeon(personaje, category, confirmModal, confirmMessage) {
-  const accordionList = document.querySelector(`#${category}-content .accordion-list`)
-  if (!accordionList) {
-    console.error(`No se encontró el elemento con clase 'accordion-list' en #${category}-content`)
+function cargarInventarioAcordeon() {
+  const acordeon = document.getElementById("inventoryAccordion")
+  if (!acordeon) return
+
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.inventario) return
+
+  const inventario = personaje.inventario
+
+  // Agrupar objetos por tipo
+  const objetosPorTipo = {}
+  inventario.forEach((objeto) => {
+    const tipo = objeto.tipo || "Otros"
+    if (!objetosPorTipo[tipo]) {
+      objetosPorTipo[tipo] = []
+    }
+    objetosPorTipo[tipo].push(objeto)
+  })
+
+  // Limpiar el acordeón
+  acordeon.innerHTML = ""
+
+  // Si no hay objetos, mostrar mensaje
+  if (inventario.length === 0) {
+    acordeon.innerHTML = '<p class="text-center">No tienes objetos en el inventario</p>'
     return
   }
 
-  accordionList.innerHTML = ""
+  // Crear un elemento de acordeón para cada tipo de objeto
+  Object.keys(objetosPorTipo).forEach((tipo, index) => {
+    const objetos = objetosPorTipo[tipo]
+    const cantidadObjetos = objetos.length
 
-  // Añadir leyenda de iconos
-  const legendHTML = `
-    <div class="icons-legend">
-      <div class="legend-item"><i class="fas fa-edit"></i> Editar</div>
-      <div class="legend-item"><i class="fas fa-trash"></i> Eliminar</div>
-      <div class="legend-item"><i class="fas fa-link"></i> Equipar</div>
-      <div class="legend-item"><i class="fas fa-suitcase"></i> Mover a bolsa</div>
-    </div>
-  `
-  accordionList.innerHTML = legendHTML
+    const pesoTotal = objetos
+      .reduce((total, obj) => {
+        const cantidad = obj.cantidad || 1
+        return total + obj.peso * cantidad
+      }, 0)
+      .toFixed(2)
 
-  if (!personaje.inventario[category] || personaje.inventario[category].length === 0) {
-    accordionList.innerHTML += "<p>No hay objetos en esta categoría.</p>"
-    return
-  }
+    const acordeonItem = document.createElement("div")
+    acordeonItem.className = "accordion-item"
+    acordeonItem.innerHTML = `
+            <h2 class="accordion-header" id="heading-${index}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                        data-bs-target="#collapse-${index}" aria-expanded="false" 
+                        aria-controls="collapse-${index}">
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                        <span>${tipo}</span>
+                        <span class="badge bg-secondary me-2">${cantidadObjetos} objetos | ${pesoTotal} kg</span>
+                    </div>
+                </button>
+            </h2>
+            <div id="collapse-${index}" class="accordion-collapse collapse" 
+                 aria-labelledby="heading-${index}" data-bs-parent="#inventoryAccordion">
+                <div class="accordion-body p-2">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Cant.</th>
+                                <th>Peso</th>
+                                <th>Valor</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-body-${index}">
+                            <!-- Los objetos se agregarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `
 
-  // Crear tabla para mostrar los items
-  let tableHTML = `<table class="inventory-table"><thead><tr>
-    <th>Nombre</th>
-    <th>Detalles</th>
-    <th>Coste</th>
-    <th>Acciones</th>
-  </tr></thead><tbody id="${category}List">`
+    acordeon.appendChild(acordeonItem)
 
-  personaje.inventario[category].forEach((item, index) => {
-    let detalles = ""
+    // Agregar los objetos a la tabla
+    const tbody = document.getElementById(`inventory-body-${index}`)
+    objetos.forEach((objeto) => {
+      const cantidad = objeto.cantidad || 1
+      const pesoTotal = (objeto.peso * cantidad).toFixed(2)
+      const valorTotal = objeto.valor * cantidad
 
-    switch (category) {
-      case "armaduras":
-        detalles = `BF: ${item.bloqueoFisico}, BM: ${item.bloqueoMagico}, Res: ${item.resistenciaMax}`
-        break
-      case "armas":
-        detalles = `${item.manos} mano(s), ${item.tipo}, Daño: ${item.danio}`
-        break
-      case "municion":
-        detalles = `Cantidad: ${item.cantidad}, ${item.mejora || "-"}`
-        break
-      case "pociones":
-        detalles = item.efecto
-        break
-      case "pergaminos":
-        detalles = item.hechizo
-        break
-      case "otros":
-        detalles = item.descripcion
-        break
+      const tr = document.createElement("tr")
+      tr.innerHTML = `
+                <td>${objeto.nombre}</td>
+                <td>${cantidad}</td>
+                <td>${pesoTotal} kg</td>
+                <td>${valorTotal} mo</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary edit-item" data-id="${objeto.id}" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        ${
+                          objeto.tipo === "arma" || objeto.tipo === "armadura" || objeto.tipo === "municion"
+                            ? `<button class="btn btn-outline-success equip-item" data-id="${objeto.id}" title="Equipar">
+                                <i class="bi bi-link"></i>
+                            </button>`
+                            : ""
+                        }
+                        <button class="btn btn-outline-secondary move-to-bag" data-id="${objeto.id}" title="Intercambio">
+                            <i class="bi bi-arrow-left-right"></i>
+                        </button>
+                    </div>
+                </td>
+            `
+
+      tbody.appendChild(tr)
+    })
+  })
+
+  // Agregar eventos a los botones
+  document.querySelectorAll(".edit-item").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const id = e.currentTarget.dataset.id
+      abrirModalObjeto(id)
+    })
+  })
+
+  document.querySelectorAll(".equip-item").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const id = e.currentTarget.dataset.id
+      equiparObjeto(id)
+    })
+  })
+
+  document.querySelectorAll(".move-to-bag").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const id = e.currentTarget.dataset.id
+      abrirModalMoverObjetoABolsa(id)
+    })
+  })
+}
+
+// Función para abrir el modal de objeto
+function abrirModalObjeto(id = null) {
+  const modal = new bootstrap.Modal(document.getElementById("itemModal"))
+  const form = document.getElementById("itemForm")
+  const deleteBtn = document.getElementById("deleteItemBtn")
+  const equipBtn = document.getElementById("equipItemBtn")
+  const moveToBagBtn = document.getElementById("moveToBagBtn")
+
+  // Limpiar el formulario
+  form.reset()
+
+  if (id) {
+    // Editar objeto existente
+    const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+    if (!personaje || !personaje.inventario) return
+
+    const objeto = personaje.inventario.find((o) => o.id === id)
+    if (!objeto) return
+
+    document.getElementById("itemModalLabel").textContent = "Editar objeto"
+    document.getElementById("itemId").value = objeto.id
+    document.getElementById("itemName").value = objeto.nombre
+    document.getElementById("itemType").value = objeto.tipo || "objeto"
+    document.getElementById("itemQuantity").value = objeto.cantidad || 1
+    document.getElementById("itemWeight").value = objeto.peso || 0
+    document.getElementById("itemValue").value = objeto.valor || 0
+    document.getElementById("itemDescription").value = objeto.descripcion || ""
+
+    deleteBtn.style.display = "block"
+
+    // Mostrar botón de equipar solo para armas, armaduras y municiones
+    if (objeto.tipo === "arma" || objeto.tipo === "armadura" || objeto.tipo === "municion") {
+      equipBtn.style.display = "block"
+    } else {
+      equipBtn.style.display = "none"
     }
 
-    tableHTML += `
-    <tr>
-      <td>${item.nombre}</td>
-      <td>${detalles}</td>
-      <td>${item.coste}</td>
-      <td class="actions-cell">
-        <i class="fas fa-edit action-icon edit-inventory-icon" data-category="${category}" data-index="${index}" title="Editar"></i>
-        <i class="fas fa-trash action-icon delete-inventory-icon" data-category="${category}" data-index="${index}" title="Eliminar"></i>
-        <i class="fas fa-link action-icon equip-icon" data-category="${category}" data-index="${index}" title="Equipar"></i>
-        <i class="fas fa-suitcase action-icon move-to-bag-icon" data-category="${category}" data-index="${index}" title="Mover a bolsa"></i>
-      </td>
-    </tr>
-  `
-  })
+    // Mostrar botón de mover a bolsa
+    moveToBagBtn.style.display = "block"
 
-  tableHTML += `</tbody></table>`
-  accordionList.innerHTML += tableHTML
-
-  // Agregar event listeners a los iconos
-  const editInventoryIcons = accordionList.querySelectorAll(".edit-inventory-icon")
-  editInventoryIcons.forEach((icon) => {
-    icon.addEventListener("click", function () {
-      const category = this.dataset.category
-      const index = this.dataset.index
-      editarItemInventario(personaje, category, index)
-    })
-  })
-
-  const deleteInventoryIcons = accordionList.querySelectorAll(".delete-inventory-icon")
-  deleteInventoryIcons.forEach((icon) => {
-    icon.addEventListener("click", function () {
-      const category = this.dataset.category
-      const index = this.dataset.index
-      const itemName = personaje.inventario[category][index].nombre
-
-      showConfirmation(
-        `¿Estás seguro de que deseas eliminar "${itemName}" del inventario?`,
-        () => {
-          eliminarItemInventario(personaje, category, index)
-          cargarInventarioAcordeon(personaje, category, confirmModal, confirmMessage)
-        },
-        confirmModal,
-        confirmMessage,
-      )
-    })
-  })
-
-  const equipIcons = accordionList.querySelectorAll(".equip-icon")
-  equipIcons.forEach((icon) => {
-    icon.addEventListener("click", function () {
-      const category = this.dataset.category
-      const index = this.dataset.index
-      equiparItem(personaje, category, index)
-      cargarInventarioAcordeon(personaje, category, confirmModal, confirmMessage)
-      cargarEquipamiento(personaje, confirmModal, confirmMessage)
-    })
-  })
-
-  // Agregar event listeners a los iconos de mover a bolsa
-  const moveToBagIcons = accordionList.querySelectorAll(".move-to-bag-icon")
-  moveToBagIcons.forEach((icon) => {
-    icon.addEventListener("click", function () {
-      const category = this.dataset.category
-      const index = this.dataset.index
-      mostrarModalMoverABolsa(personaje, category, index)
-    })
-  })
-}
-
-// Función para configurar el acordeón del inventario
-export function configurarAcordeonInventario(personaje, confirmModal, confirmMessage) {
-  const accordionHeaders = document.querySelectorAll(".accordion-header")
-
-  accordionHeaders.forEach((header) => {
-    // Añadir icono a cada categoría
-    const category = header.dataset.category
-    const categoryIcon = getCategoryIcon(category)
-
-    // Verificar si ya existe un icono
-    if (!header.querySelector(".category-icon")) {
-      const titleElement = header.querySelector("h3") || header.querySelector("span")
-      if (titleElement) {
-        const iconElement = document.createElement("i")
-        iconElement.className = `fas ${categoryIcon} category-icon`
-        iconElement.style.marginRight = "10px"
-        titleElement.insertBefore(iconElement, titleElement.firstChild)
-      }
+    // Configurar evento para eliminar objeto
+    deleteBtn.onclick = () => {
+      eliminarObjeto(id)
+      modal.hide()
     }
 
-    header.addEventListener("click", function () {
-      const category = this.dataset.category
-      const content = document.getElementById(`${category}-content`)
-      const isActive = this.classList.contains("active")
-
-      // Cerrar todos los acordeones
-      document.querySelectorAll(".accordion-header").forEach((h) => h.classList.remove("active"))
-      document.querySelectorAll(".accordion-content").forEach((c) => c.classList.remove("active"))
-
-      // Si no estaba activo, abrirlo y cargar su contenido
-      if (!isActive) {
-        this.classList.add("active")
-        content.classList.add("active")
-        cargarInventarioAcordeon(personaje, category, confirmModal, confirmMessage)
-      }
-    })
-  })
-
-  // Configurar botones de añadir items
-  configurarBotonesAnadirItems(personaje, confirmModal, confirmMessage)
-}
-
-// Función para configurar los botones de añadir items
-export function configurarBotonesAnadirItems(personaje, confirmModal, confirmMessage) {
-  const addItemBtns = document.querySelectorAll(".add-item-btn")
-  addItemBtns.forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const category = this.dataset.category
-      mostrarModalAnadirItem(personaje, category, confirmModal, confirmMessage)
-    })
-  })
-}
-
-// Función para mostrar el modal de añadir item
-export function mostrarModalAnadirItem(personaje, category, confirmModal, confirmMessage) {
-  const itemModal = document.getElementById("itemModal")
-  const itemModalContent = document.getElementById("itemModalContent")
-
-  let formHTML = ""
-  let title = ""
-
-  switch (category) {
-    case "armaduras":
-      title = "Añadir Armadura"
-      formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="itemName">Nombre:</label>
-            <input type="text" id="itemName" required>
-          </div>
-          <div class="form-group">
-            <label for="itemQuantity">Cantidad:</label>
-            <input type="number" id="itemQuantity" min="1" value="1">
-          </div>
-          <div class="form-group">
-            <label for="itemCoste">Coste por unidad:</label>
-            <input type="number" id="itemCoste" min="0" value="0">
-          </div>
-          <div class="form-group">
-            <label for="itemResistenciaMax">Resistencia Máxima:</label>
-            <input type="number" id="itemResistenciaMax" min="0" value="10">
-          </div>
-          <div class="form-group">
-            <label for="itemBloqueoFisico">Bloqueo Físico:</label>
-            <input type="number" id="itemBloqueoFisico" min="0" value="0">
-          </div>
-          <div class="form-group">
-            <label for="itemBloqueoMagico">Bloqueo Mágico:</label>
-            <input type="number" id="itemBloqueoMagico" min="0" value="0">
-          </div>
-          <div class="form-group">
-            <label for="itemResistenciaActual">Resistencia Actual:</label>
-            <input type="number" id="itemResistenciaActual" min="0" value="10">
-          </div>
-        </div>
-      `
-      break
-    case "armas":
-      title = "Añadir Arma"
-      formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="itemName">Nombre:</label>
-            <input type="text" id="itemName" required>
-          </div>
-          <div class="form-group">
-            <label for="itemQuantity">Cantidad:</label>
-            <input type="number" id="itemQuantity" min="1" value="1">
-          </div>
-          <div class="form-group">
-            <label for="itemCoste">Coste por unidad:</label>
-            <input type="number" id="itemCoste" min="0" value="0">
-          </div>
-          <div class="form-group">
-            <label for="itemManos">Manos necesarias:</label>
-            <select id="itemManos">
-              <option value="0">No requiere manos</option>
-              <option value="1" selected>1 mano</option>
-              <option value="2">2 manos</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="itemTipo">Tipo de arma:</label>
-            <select id="itemTipo">
-              <option value="Cuerpo a cuerpo" selected>Cuerpo a cuerpo</option>
-              <option value="A distancia">A distancia</option>
-              <option value="Mágica">Mágica</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="itemDanio">Daño (ej: 2d4+1):</label>
-            <input type="text" id="itemDanio" placeholder="1d6" value="1d6">
-          </div>
-          <div class="form-group">
-            <label for="itemResistenciaMax">Resistencia Máxima:</label>
-            <input type="number" id="itemResistenciaMax" min="0" value="10">
-          </div>
-          <div class="form-group">
-            <label for="itemResistenciaActual">Resistencia Actual:</label>
-            <input type="number" id="itemResistenciaActual" min="0" value="10">
-          </div>
-          <div class="form-group">
-            <label for="itemEstadisticas">Estadísticas modificadas:</label>
-            <input type="text" id="itemEstadisticas" placeholder="+1 daño, -1 defensa">
-          </div>
-        </div>
-      `
-      break
-    // Continuar con los demás casos...
-    case "municion":
-      title = "Añadir Munición"
-      formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="itemName">Nombre:</label>
-            <input type="text" id="itemName" required>
-          </div>
-          <div class="form-group">
-            <label for="itemQuantity">Cantidad:</label>
-            <input type="number" id="itemQuantity" min="1" value="10">
-          </div>
-          <div class="form-group">
-            <label for="itemCoste">Coste por unidad:</label>
-            <input type="number" id="itemCoste" min="0" value="0">
-          </div>
-          <div class="form-group">
-            <label for="itemMejora">Mejora:</label>
-            <input type="text" id="itemMejora" placeholder="daño +1">
-          </div>
-        </div>
-      `
-      break
-    case "pociones":
-      title = "Añadir Poción"
-      formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="itemName">Nombre:</label>
-            <input type="text" id="itemName" required>
-          </div>
-          <div class="form-group">
-            <label for="itemQuantity">Cantidad:</label>
-            <input type="number" id="itemQuantity" min="1" value="1">
-          </div>
-          <div class="form-group">
-            <label for="itemCoste">Coste por unidad:</label>
-            <input type="number" id="itemCoste" min="0" value="0">
-          </div>
-          <div class="form-group">
-            <label for="itemModificador">Modificador:</label>
-            <input type="text" id="itemModificador" placeholder="salud">
-          </div>
-          <div class="form-group">
-            <label for="itemEfecto">Efecto:</label>
-            <input type="text" id="itemEfecto" placeholder="+1">
-          </div>
-        </div>
-      `
-      break
-    case "pergaminos":
-      title = "Añadir Pergamino"
-      formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="itemName">Nombre:</label>
-            <input type="text" id="itemName" required>
-          </div>
-          <div class="form-group">
-            <label for="itemQuantity">Cantidad:</label>
-            <input type="number" id="itemQuantity" min="1" value="1">
-          </div>
-          <div class="form-group">
-            <label for="itemCoste">Coste por unidad:</label>
-            <input type="number" id="itemCoste" min="0" value="0">
-          </div>
-          <div class="form-group">
-            <label for="itemTipo">Tipo:</label>
-            <select id="itemTipo">
-              <option value="Ofensivo" selected>Ofensivo</option>
-              <option value="Efecto de estado">Efecto de estado</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="itemModificador">Modificador:</label>
-            <input type="text" id="itemModificador" placeholder="daño">
-          </div>
-          <div class="form-group">
-            <label for="itemEfecto">Efecto:</label>
-            <input type="text" id="itemEfecto" placeholder="+2">
-          </div>
-          <div class="form-group full-width">
-            <label for="itemDescripcion">Descripción:</label>
-            <textarea id="itemDescripcion" rows="2"></textarea>
-          </div>
-        </div>
-      `
-      break
-    case "otros":
-      title = "Añadir Otro Objeto"
-      formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="itemName">Nombre:</label>
-            <input type="text" id="itemName" required>
-          </div>
-          <div class="form-group">
-            <label for="itemQuantity">Cantidad:</label>
-            <input type="number" id="itemQuantity" min="1" value="1">
-          </div>
-          <div class="form-group">
-            <label for="itemCoste">Coste por unidad:</label>
-            <input type="number" id="itemCoste" min="0" value="0">
-          </div>
-          <div class="form-group full-width">
-            <label for="itemDescripcion">Descripción:</label>
-            <textarea id="itemDescripcion" rows="2"></textarea>
-          </div>
-        </div>
-      `
-      break
-  }
-
-  // Preparar contenido del modal
-  itemModalContent.innerHTML = `
-    <h3>${title}</h3>
-    ${formHTML}
-    <div class="form-actions">
-      <button id="addItemModalBtn" class="btn" data-category="${category}">Agregar</button>
-    </div>
-  `
-
-  // Mostrar modal
-  itemModal.classList.add("show-modal")
-
-  // Configurar botón de agregar
-  const addItemModalBtn = document.getElementById("addItemModalBtn")
-  if (addItemModalBtn) {
-    addItemModalBtn.addEventListener("click", function () {
-      const category = this.dataset.category
-      anadirItemInventario(personaje, category)
-      itemModal.classList.remove("show-modal")
-      cargarInventarioAcordeon(personaje, category, confirmModal, confirmMessage)
-    })
-  }
-}
-
-// Resto de funciones del módulo de inventario...
-// Función para añadir item al inventario
-export function anadirItemInventario(personaje, category) {
-  const itemName = document.getElementById("itemName").value.trim()
-  const itemQuantity = Number.parseInt(document.getElementById("itemQuantity").value) || 1
-  const itemCoste = Number.parseInt(document.getElementById("itemCoste").value) || 0
-
-  if (!itemName) {
-    alert("El nombre del objeto es obligatorio")
-    return
-  }
-
-  const newItem = {
-    nombre: itemName,
-    cantidad: itemQuantity,
-    coste: itemCoste,
-    categoria: category,
-  }
-
-  switch (category) {
-    case "armaduras":
-      newItem.resistenciaMax = Number.parseInt(document.getElementById("itemResistenciaMax").value) || 10
-      newItem.bloqueoFisico = Number.parseInt(document.getElementById("itemBloqueoFisico").value) || 0
-      newItem.bloqueoMagico = Number.parseInt(document.getElementById("itemBloqueoMagico").value) || 0
-      newItem.resistenciaActual =
-        Number.parseInt(document.getElementById("itemResistenciaActual").value) || newItem.resistenciaMax
-      break
-    case "armas":
-      newItem.manos = Number.parseInt(document.getElementById("itemManos").value) || 1
-      newItem.tipo = document.getElementById("itemTipo").value
-      newItem.danio = document.getElementById("itemDanio").value || "1d6"
-      newItem.resistenciaMax = Number.parseInt(document.getElementById("itemResistenciaMax").value) || 10
-      newItem.resistenciaActual =
-        Number.parseInt(document.getElementById("itemResistenciaActual").value) || newItem.resistenciaMax
-      newItem.estadisticas = document.getElementById("itemEstadisticas").value || ""
-      break
-    case "municion":
-      newItem.mejora = document.getElementById("itemMejora").value || ""
-      break
-    case "pociones":
-      newItem.modificador = document.getElementById("itemModificador").value || ""
-      newItem.efecto = document.getElementById("itemEfecto").value || ""
-      break
-    case "pergaminos":
-      newItem.tipo = document.getElementById("itemTipo").value
-      newItem.modificador = document.getElementById("itemModificador").value || ""
-      newItem.efecto = document.getElementById("itemEfecto").value || ""
-      newItem.descripcion = document.getElementById("itemDescripcion").value || ""
-      break
-    case "otros":
-      newItem.descripcion = document.getElementById("itemDescripcion").value || ""
-      break
-  }
-
-  personaje.inventario[category].push(newItem)
-  guardarPersonaje(personaje)
-}
-
-// Función para editar un item del inventario
-export function editarItemInventario(personaje, category, index) {
-  // Implementación de la función...
-}
-
-// Función para eliminar un item del inventario
-export function eliminarItemInventario(personaje, category, index) {
-  personaje.inventario[category].splice(index, 1)
-  guardarPersonaje(personaje)
-}
-
-// Función para equipar un item del inventario
-export function equiparItem(personaje, category, index) {
-  const item = personaje.inventario[category][index]
-
-  // Solo se pueden equipar armaduras, armas y munición
-  if (category !== "armaduras" && category !== "armas" && category !== "municion") {
-    alert("Este tipo de objeto no se puede equipar.")
-    return
-  }
-
-  // Verificar si el personaje tiene suficientes brazos para equipar el arma
-  if (category === "armas" && item.manos > 0) {
-    // Contar cuántas manos están ocupadas
-    const manosOcupadas = personaje.equipados
-      .filter((i) => i.categoria === "armas" && i.manos > 0)
-      .reduce((total, i) => total + i.manos, 0)
-
-    // Verificar si hay suficientes manos disponibles
-    if (manosOcupadas + item.manos > personaje.brazos) {
-      alert(`No tienes suficientes brazos para equipar esta arma. Necesitas ${item.manos} mano(s) libre(s).`)
-      return
+    // Configurar evento para equipar objeto
+    equipBtn.onclick = () => {
+      equiparObjeto(id)
+      modal.hide()
     }
-  }
 
-  // Crear una copia del item para equipar
-  const itemToEquip = { ...item }
-
-  // Si la cantidad es mayor que 1, reducir la cantidad en el inventario
-  if (item.cantidad > 1) {
-    item.cantidad -= 1
-    itemToEquip.cantidad = 1
+    // Configurar evento para mover a bolsa
+    moveToBagBtn.onclick = () => {
+      abrirModalMoverObjetoABolsa(id)
+      modal.hide()
+    }
   } else {
-    // Si solo hay 1, eliminar del inventario
-    personaje.inventario[category].splice(index, 1)
+    // Nuevo objeto
+    document.getElementById("itemModalLabel").textContent = "Nuevo objeto"
+    document.getElementById("itemId").value = ""
+
+    deleteBtn.style.display = "none"
+    equipBtn.style.display = "none"
+    moveToBagBtn.style.display = "none"
   }
 
-  // Añadir a equipados
-  personaje.equipados.push(itemToEquip)
+  // Configurar evento para guardar objeto
+  form.onsubmit = (e) => {
+    e.preventDefault()
+    guardarObjeto()
+    modal.hide()
+  }
 
-  guardarPersonaje(personaje)
+  modal.show()
 }
 
-// Función para mostrar el modal de mover a bolsa
-export function mostrarModalMoverABolsa(personaje, category, index) {
-  // Implementación de la función...
+// Función para guardar un objeto
+function guardarObjeto() {
+  const id = document.getElementById("itemId").value
+  const nombre = document.getElementById("itemName").value
+  const tipo = document.getElementById("itemType").value
+  const cantidad = Number.parseInt(document.getElementById("itemQuantity").value) || 1
+  const peso = Number.parseFloat(document.getElementById("itemWeight").value) || 0
+  const valor = Number.parseInt(document.getElementById("itemValue").value) || 0
+  const descripcion = document.getElementById("itemDescription").value || ""
+
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje) return
+
+  if (!personaje.inventario) {
+    personaje.inventario = []
+  }
+
+  if (id) {
+    // Actualizar objeto existente
+    const index = personaje.inventario.findIndex((o) => o.id === id)
+    if (index !== -1) {
+      personaje.inventario[index] = {
+        ...personaje.inventario[index],
+        nombre,
+        tipo,
+        cantidad,
+        peso,
+        valor,
+        descripcion,
+      }
+    }
+  } else {
+    // Crear nuevo objeto
+    const nuevoObjeto = {
+      id: generateUUID(),
+      nombre,
+      tipo,
+      cantidad,
+      peso,
+      valor,
+      descripcion,
+    }
+
+    personaje.inventario.push(nuevoObjeto)
+  }
+
+  // Guardar cambios
+  localStorage.setItem("personajeActual", JSON.stringify(personaje))
+
+  // Actualizar la interfaz
+  cargarInventarioAcordeon()
+
+  // Actualizar el peso total
+  actualizarPesoTotal()
+}
+
+// Función para eliminar un objeto
+function eliminarObjeto(id) {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.inventario) return
+
+  personaje.inventario = personaje.inventario.filter((o) => o.id !== id)
+
+  // Guardar cambios
+  localStorage.setItem("personajeActual", JSON.stringify(personaje))
+
+  // Actualizar la interfaz
+  cargarInventarioAcordeon()
+
+  // Actualizar el peso total
+  actualizarPesoTotal()
+}
+
+// Función para equipar un objeto
+function equiparObjeto(id) {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.inventario) return
+
+  const objeto = personaje.inventario.find((o) => o.id === id)
+  if (!objeto) return
+
+  // Verificar el tipo de objeto
+  if (!objeto.tipo || (objeto.tipo !== "arma" && objeto.tipo !== "armadura" && objeto.tipo !== "municion")) {
+    alert("Este objeto no se puede equipar")
+    return
+  }
+
+  // Inicializar el equipamiento si no existe
+  if (!personaje.equipamiento) {
+    personaje.equipamiento = {
+      armas: [],
+      armaduras: [],
+      municiones: [],
+    }
+  }
+
+  // Equipar el objeto según su tipo
+  switch (objeto.tipo) {
+    case "arma":
+      if (!personaje.equipamiento.armas) {
+        personaje.equipamiento.armas = []
+      }
+      personaje.equipamiento.armas.push(objeto)
+      break
+    case "armadura":
+      if (!personaje.equipamiento.armaduras) {
+        personaje.equipamiento.armaduras = []
+      }
+      personaje.equipamiento.armaduras.push(objeto)
+      break
+    case "municion":
+      if (!personaje.equipamiento.municiones) {
+        personaje.equipamiento.municiones = []
+      }
+      personaje.equipamiento.municiones.push(objeto)
+      break
+  }
+
+  // Eliminar el objeto del inventario
+  personaje.inventario = personaje.inventario.filter((o) => o.id !== id)
+
+  // Guardar cambios
+  localStorage.setItem("personajeActual", JSON.stringify(personaje))
+
+  // Actualizar la interfaz
+  cargarInventarioAcordeon()
+
+  // Cargar equipamiento
+  if (typeof cargarEquipamiento === "function") {
+    cargarEquipamiento()
+  }
+
+  // Actualizar el peso total
+  actualizarPesoTotal()
+}
+
+// Función para vender un objeto
+function venderObjeto(id, cantidad) {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.inventario) return
+
+  const objetoIndex = personaje.inventario.findIndex((o) => o.id === id)
+  if (objetoIndex === -1) return
+
+  const objeto = personaje.inventario[objetoIndex]
+
+  // Verificar la cantidad
+  if (!cantidad || cantidad <= 0 || cantidad > (objeto.cantidad || 1)) {
+    alert("Cantidad inválida")
+    return
+  }
+
+  // Calcular el valor de venta
+  const valorVenta = objeto.valor * cantidad
+
+  // Actualizar el dinero del personaje
+  if (!personaje.dinero) {
+    personaje.dinero = 0
+  }
+  personaje.dinero += valorVenta
+
+  // Actualizar la cantidad del objeto o eliminarlo
+  if (cantidad < (objeto.cantidad || 1)) {
+    personaje.inventario[objetoIndex].cantidad = (objeto.cantidad || 1) - cantidad
+  } else {
+    personaje.inventario = personaje.inventario.filter((o) => o.id !== id)
+  }
+
+  // Guardar cambios
+  localStorage.setItem("personajeActual", JSON.stringify(personaje))
+
+  // Actualizar la interfaz
+  cargarInventarioAcordeon()
+
+  // Actualizar el peso total
+  actualizarPesoTotal()
+
+  return valorVenta
+}
+
+// Función para abrir el modal de vender objeto
+function abrirModalVenderObjeto(id) {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.inventario) return
+
+  const objeto = personaje.inventario.find((o) => o.id === id)
+  if (!objeto) return
+
+  const modal = new bootstrap.Modal(document.getElementById("sellItemModal"))
+  const form = document.getElementById("sellItemForm")
+
+  // Limpiar el formulario
+  form.reset()
+
+  // Establecer los valores
+  document.getElementById("sellItemId").value = objeto.id
+  document.getElementById("sellItemName").textContent = objeto.nombre
+  document.getElementById("sellItemValue").textContent = objeto.valor
+
+  const cantidadInput = document.getElementById("sellItemQuantity")
+  cantidadInput.max = objeto.cantidad || 1
+  cantidadInput.value = 1
+
+  document.getElementById("sellItemTotal").textContent = objeto.valor
+
+  // Actualizar el total al cambiar la cantidad
+  cantidadInput.addEventListener("input", () => {
+    const cantidad = Number.parseInt(cantidadInput.value) || 0
+    document.getElementById("sellItemTotal").textContent = objeto.valor * cantidad
+  })
+
+  // Configurar evento para vender
+  form.onsubmit = (e) => {
+    e.preventDefault()
+
+    const cantidad = Number.parseInt(cantidadInput.value) || 0
+    const valorVenta = venderObjeto(objeto.id, cantidad)
+
+    if (valorVenta) {
+      alert(`Has vendido ${cantidad} ${objeto.nombre} por ${valorVenta} monedas de oro`)
+    }
+
+    modal.hide()
+  }
+
+  modal.show()
+}
+
+// Función para abrir el modal de mover objeto a bolsa
+function abrirModalMoverObjetoABolsa(id) {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.inventario) return
+
+  const objeto = personaje.inventario.find((o) => o.id === id)
+  if (!objeto) return
+
+  const modal = new bootstrap.Modal(document.getElementById("moveToBagModal"))
+  const form = document.getElementById("moveToBagForm")
+  const selectBag = document.getElementById("selectBag")
+
+  // Limpiar el formulario
+  form.reset()
+  selectBag.innerHTML = ""
+
+  // Establecer el ID del objeto
+  document.getElementById("moveItemId").value = objeto.id
+  document.getElementById("sourceBagId").value = "inventario"
+
+  // Cargar las bolsas disponibles
+  if (personaje.bolsasEspeciales && personaje.bolsasEspeciales.length > 0) {
+    personaje.bolsasEspeciales.forEach((bolsa) => {
+      const option = document.createElement("option")
+      option.value = bolsa.id
+      option.textContent = bolsa.nombre
+      selectBag.appendChild(option)
+    })
+  } else {
+    // Si no hay bolsas, mostrar mensaje
+    const option = document.createElement("option")
+    option.disabled = true
+    option.selected = true
+    option.textContent = "No hay bolsas disponibles"
+    selectBag.appendChild(option)
+
+    // Deshabilitar el botón de enviar
+    form.querySelector('button[type="submit"]').disabled = true
+  }
+
+  // Configurar evento para mover objeto
+  form.onsubmit = (e) => {
+    e.preventDefault()
+
+    const bolsaId = selectBag.value
+
+    if (moverObjetoDeInventarioABolsa(id, bolsaId)) {
+      // Actualizar vistas
+      cargarInventarioAcordeon()
+      if (typeof cargarBolsasEspeciales === "function") {
+        cargarBolsasEspeciales()
+      }
+
+      // Actualizar el peso total
+      actualizarPesoTotal()
+    }
+
+    modal.hide()
+  }
+
+  modal.show()
+}
+
+// Función para generar un UUID
+function generateUUID() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    var r = (Math.random() * 16) | 0,
+      v = c == "x" ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
+
+// Exportar funciones
+export {
+  cargarInventario,
+  cargarInventarioAcordeon,
+  abrirModalObjeto,
+  guardarObjeto,
+  eliminarObjeto,
+  equiparObjeto,
+  venderObjeto,
+  abrirModalVenderObjeto,
+  abrirModalMoverObjetoABolsa,
 }

@@ -1,283 +1,450 @@
-// Módulo para la gestión del equipamiento
-
-import { guardarPersonaje } from "./personaje.js"
-import { getCategoryName, showConfirmation } from "./utils.js"
+// Funciones para gestionar el equipamiento del personaje
+import { cargarInventarioAcordeon } from "./inventario.js"
+import * as bootstrap from "bootstrap"
 
 // Función para cargar el equipamiento
-export function cargarEquipamiento(personaje, confirmModal, confirmMessage) {
-  const equippedItems = document.getElementById("equippedItems")
-  if (!equippedItems) {
-    console.error("No se encontró el elemento con ID 'equippedItems'")
-    return
+function cargarEquipamiento() {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.equipamiento) return
+
+  const equipamiento = personaje.equipamiento
+
+  // Cargar armas
+  if (equipamiento.armas) {
+    const contenedorArmas = document.getElementById("weapons-container")
+    if (contenedorArmas) {
+      contenedorArmas.innerHTML = ""
+
+      if (equipamiento.armas.length === 0) {
+        contenedorArmas.innerHTML = '<p class="text-center">No tienes armas equipadas</p>'
+      } else {
+        equipamiento.armas.forEach((arma) => {
+          const card = document.createElement("div")
+          card.className = "card mb-2"
+          card.innerHTML = `
+                        <div class="card-body p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="card-title mb-0">${arma.nombre}</h6>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-danger unequip-weapon" data-id="${arma.id}">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary edit-equipped" data-id="${arma.id}" data-type="arma">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="card-text small mb-0">Daño: ${arma.daño || "-"} | Tipo: ${arma.tipoDaño || "-"}</p>
+                        </div>
+                    `
+
+          contenedorArmas.appendChild(card)
+
+          // Agregar evento para desequipar
+          card.querySelector(".unequip-weapon").addEventListener("click", () => {
+            desequiparArma(arma.id)
+          })
+
+          // Agregar evento para editar
+          card.querySelector(".edit-equipped").addEventListener("click", () => {
+            abrirModalEditarEquipado(arma.id, "arma")
+          })
+        })
+      }
+    }
   }
 
-  equippedItems.innerHTML = ""
+  // Cargar armaduras
+  if (equipamiento.armaduras) {
+    const contenedorArmaduras = document.getElementById("armor-container")
+    if (contenedorArmaduras) {
+      contenedorArmaduras.innerHTML = ""
 
-  // Añadir leyenda de iconos
-  const legendHTML = `
-    <div class="icons-legend">
-      <div class="legend-item"><i class="fas fa-edit"></i> Editar</div>
-      <div class="legend-item"><i class="fas fa-unlink"></i> Desequipar</div>
-    </div>
-  `
-  equippedItems.innerHTML = legendHTML
+      if (equipamiento.armaduras.length === 0) {
+        contenedorArmaduras.innerHTML = '<p class="text-center">No tienes armaduras equipadas</p>'
+      } else {
+        equipamiento.armaduras.forEach((armadura) => {
+          const card = document.createElement("div")
+          card.className = "card mb-2"
+          card.innerHTML = `
+                        <div class="card-body p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="card-title mb-0">${armadura.nombre}</h6>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-danger unequip-armor" data-id="${armadura.id}">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary edit-equipped" data-id="${armadura.id}" data-type="armadura">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="card-text small mb-0">Protección: ${armadura.proteccion || "-"} | Tipo: ${armadura.tipoArmadura || "-"}</p>
+                        </div>
+                    `
 
-  if (!personaje.equipados || personaje.equipados.length === 0) {
-    equippedItems.innerHTML += "<p>No hay objetos equipados.</p>"
-    return
+          contenedorArmaduras.appendChild(card)
+
+          // Agregar evento para desequipar
+          card.querySelector(".unequip-armor").addEventListener("click", () => {
+            desequiparArmadura(armadura.id)
+          })
+
+          // Agregar evento para editar
+          card.querySelector(".edit-equipped").addEventListener("click", () => {
+            abrirModalEditarEquipado(armadura.id, "armadura")
+          })
+        })
+      }
+    }
   }
 
-  // Crear tabla para mostrar los items equipados
-  let tableHTML = `<table class="equipment-table"><thead><tr>
-    <th>Tipo</th>
-    <th>Nombre</th>
-    <th>Detalles</th>
-    <th>Acciones</th>
-  </tr></thead><tbody>`
+  // Cargar municiones
+  if (equipamiento.municiones) {
+    const contenedorMuniciones = document.getElementById("ammo-container")
+    if (contenedorMuniciones) {
+      contenedorMuniciones.innerHTML = ""
 
-  personaje.equipados.forEach((item, index) => {
-    let detalles = ""
+      if (equipamiento.municiones.length === 0) {
+        contenedorMuniciones.innerHTML = '<p class="text-center">No tienes municiones equipadas</p>'
+      } else {
+        equipamiento.municiones.forEach((municion) => {
+          const card = document.createElement("div")
+          card.className = "card mb-2"
+          card.innerHTML = `
+                        <div class="card-body p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="card-title mb-0">${municion.nombre}</h6>
+                                <div>
+                                    <span class="badge bg-primary me-1">${municion.cantidad}</span>
+                                    <button class="btn btn-sm btn-outline-danger unequip-ammo" data-id="${municion.id}">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary edit-equipped" data-id="${municion.id}" data-type="municion">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="card-text small mb-0">Tipo: ${municion.tipoMunicion || "-"}</p>
+                        </div>
+                    `
 
-    switch (item.categoria) {
-      case "armaduras":
-        detalles = `BF: ${item.bloqueoFisico}, BM: ${item.bloqueoMagico}, Res: ${item.resistenciaActual}/${item.resistenciaMax}`
+          contenedorMuniciones.appendChild(card)
+
+          // Agregar evento para desequipar
+          card.querySelector(".unequip-ammo").addEventListener("click", () => {
+            desequiparMunicion(municion.id)
+          })
+
+          // Agregar evento para editar
+          card.querySelector(".edit-equipped").addEventListener("click", () => {
+            abrirModalEditarEquipado(municion.id, "municion")
+          })
+        })
+      }
+    }
+  }
+}
+
+// Función para desequipar un arma
+function desequiparArma(id) {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.equipamiento || !personaje.equipamiento.armas) return
+
+  // Encontrar el arma
+  const arma = personaje.equipamiento.armas.find((a) => a.id === id)
+  if (!arma) return
+
+  // Eliminar el arma del equipamiento
+  personaje.equipamiento.armas = personaje.equipamiento.armas.filter((a) => a.id !== id)
+
+  // Agregar el arma al inventario
+  if (!personaje.inventario) {
+    personaje.inventario = []
+  }
+  personaje.inventario.push(arma)
+
+  // Guardar cambios
+  localStorage.setItem("personajeActual", JSON.stringify(personaje))
+
+  // Actualizar la interfaz
+  cargarEquipamiento()
+  cargarInventarioAcordeon()
+
+  // Actualizar el peso total
+  actualizarPesoTotal()
+}
+
+// Función para desequipar una armadura
+function desequiparArmadura(id) {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.equipamiento || !personaje.equipamiento.armaduras) return
+
+  // Encontrar la armadura
+  const armadura = personaje.equipamiento.armaduras.find((a) => a.id === id)
+  if (!armadura) return
+
+  // Eliminar la armadura del equipamiento
+  personaje.equipamiento.armaduras = personaje.equipamiento.armaduras.filter((a) => a.id !== id)
+
+  // Agregar la armadura al inventario
+  if (!personaje.inventario) {
+    personaje.inventario = []
+  }
+  personaje.inventario.push(armadura)
+
+  // Guardar cambios
+  localStorage.setItem("personajeActual", JSON.stringify(personaje))
+
+  // Actualizar la interfaz
+  cargarEquipamiento()
+  cargarInventarioAcordeon()
+
+  // Actualizar el peso total
+  actualizarPesoTotal()
+}
+
+// Función para desequipar una munición
+function desequiparMunicion(id) {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.equipamiento || !personaje.equipamiento.municiones) return
+
+  // Encontrar la munición
+  const municion = personaje.equipamiento.municiones.find((m) => m.id === id)
+  if (!municion) return
+
+  // Eliminar la munición del equipamiento
+  personaje.equipamiento.municiones = personaje.equipamiento.municiones.filter((m) => m.id !== id)
+
+  // Agregar la munición al inventario
+  if (!personaje.inventario) {
+    personaje.inventario = []
+  }
+  personaje.inventario.push(municion)
+
+  // Guardar cambios
+  localStorage.setItem("personajeActual", JSON.stringify(personaje))
+
+  // Actualizar la interfaz
+  cargarEquipamiento()
+  cargarInventarioAcordeon()
+
+  // Actualizar el peso total
+  actualizarPesoTotal()
+}
+
+// Función para abrir el modal de editar equipado
+function abrirModalEditarEquipado(id, tipo) {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.equipamiento) return
+
+  let objeto
+
+  switch (tipo) {
+    case "arma":
+      objeto = personaje.equipamiento.armas.find((a) => a.id === id)
+      break
+    case "armadura":
+      objeto = personaje.equipamiento.armaduras.find((a) => a.id === id)
+      break
+    case "municion":
+      objeto = personaje.equipamiento.municiones.find((m) => m.id === id)
+      break
+    default:
+      return
+  }
+
+  if (!objeto) return
+
+  const modal = new bootstrap.Modal(document.getElementById("editEquippedModal"))
+  const form = document.getElementById("editEquippedForm")
+
+  // Limpiar el formulario
+  form.reset()
+
+  // Establecer el título del modal
+  document.getElementById("editEquippedModalLabel").textContent = `Editar ${tipo}`
+
+  // Establecer los valores del objeto
+  document.getElementById("equippedId").value = objeto.id
+  document.getElementById("equippedType").value = tipo
+  document.getElementById("equippedName").value = objeto.nombre
+
+  // Mostrar campos específicos según el tipo
+  const damageDivs = document.querySelectorAll(".damage-field")
+  const armorDivs = document.querySelectorAll(".armor-field")
+  const ammoDivs = document.querySelectorAll(".ammo-field")
+
+  damageDivs.forEach((div) => (div.style.display = "none"))
+  armorDivs.forEach((div) => (div.style.display = "none"))
+  ammoDivs.forEach((div) => (div.style.display = "none"))
+
+  switch (tipo) {
+    case "arma":
+      damageDivs.forEach((div) => (div.style.display = "block"))
+      document.getElementById("equippedDamage").value = objeto.daño || ""
+      document.getElementById("equippedDamageType").value = objeto.tipoDaño || ""
+      break
+    case "armadura":
+      armorDivs.forEach((div) => (div.style.display = "block"))
+      document.getElementById("equippedProtection").value = objeto.proteccion || ""
+      document.getElementById("equippedArmorType").value = objeto.tipoArmadura || ""
+      break
+    case "municion":
+      ammoDivs.forEach((div) => (div.style.display = "block"))
+      document.getElementById("equippedAmmoType").value = objeto.tipoMunicion || ""
+      document.getElementById("equippedQuantity").value = objeto.cantidad || 1
+      break
+  }
+
+  // Configurar evento para guardar cambios
+  form.onsubmit = (e) => {
+    e.preventDefault()
+    guardarCambiosEquipado()
+    modal.hide()
+  }
+
+  // Configurar evento para desequipar
+  document.getElementById("unequipBtn").onclick = () => {
+    switch (tipo) {
+      case "arma":
+        desequiparArma(id)
         break
-      case "armas":
-        detalles = `${item.manos} mano(s), ${item.tipo}, Daño: ${item.danio}, Res: ${item.resistenciaActual || 10}/${item.resistenciaMax || 10}`
+      case "armadura":
+        desequiparArmadura(id)
         break
       case "municion":
-        detalles = `Cantidad: ${item.cantidad}, ${item.mejora || "-"}`
+        desequiparMunicion(id)
         break
     }
+    modal.hide()
+  }
 
-    tableHTML += `
-      <tr>
-        <td>${getCategoryName(item.categoria)}</td>
-        <td>${item.nombre}</td>
-        <td>${detalles}</td>
-        <td class="actions-cell">
-          <i class="fas fa-edit action-icon edit-equipment-icon" data-index="${index}" title="Editar"></i>
-          <i class="fas fa-unlink action-icon unequip-icon" data-index="${index}" title="Desequipar"></i>
-        </td>
-      </tr>
-    `
-  })
-
-  tableHTML += `</tbody></table>`
-  equippedItems.innerHTML += tableHTML
-
-  // Agregar event listeners a los iconos
-  const editEquipmentIcons = equippedItems.querySelectorAll(".edit-equipment-icon")
-  editEquipmentIcons.forEach((icon) => {
-    icon.addEventListener("click", function () {
-      const index = this.dataset.index
-      editarEquipamiento(personaje, index, confirmModal, confirmMessage)
-    })
-  })
-
-  const unequipIcons = equippedItems.querySelectorAll(".unequip-icon")
-  unequipIcons.forEach((icon) => {
-    icon.addEventListener("click", function () {
-      const index = this.dataset.index
-      const itemName = personaje.equipados[index].nombre
-
-      showConfirmation(
-        `¿Estás seguro de que deseas desequipar "${itemName}"?`,
-        () => {
-          desequiparItem(personaje, index)
-          cargarEquipamiento(personaje, confirmModal, confirmMessage)
-        },
-        confirmModal,
-        confirmMessage,
-      )
-    })
-  })
+  modal.show()
 }
 
-// Función para desequipar un item
-export function desequiparItem(personaje, index) {
-  const item = { ...personaje.equipados[index] } // Crear una copia del item
+// Función para guardar cambios en un objeto equipado
+function guardarCambiosEquipado() {
+  const id = document.getElementById("equippedId").value
+  const tipo = document.getElementById("equippedType").value
+  const nombre = document.getElementById("equippedName").value
 
-  // Asegurarse de que la categoría existe en el inventario
-  if (!personaje.inventario[item.categoria]) {
-    personaje.inventario[item.categoria] = []
-  }
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.equipamiento) return
 
-  // Verificar si ya existe un item similar en el inventario
-  const existingItemIndex = personaje.inventario[item.categoria].findIndex(
-    (i) =>
-      i.nombre === item.nombre &&
-      (item.categoria !== "armas" || i.manos === item.manos) &&
-      (item.categoria !== "armaduras" ||
-        (i.resistenciaMax === item.resistenciaMax &&
-          i.bloqueoFisico === item.bloqueoFisico &&
-          i.bloqueoMagico === item.bloqueoMagico)),
-  )
+  switch (tipo) {
+    case "arma":
+      const daño = document.getElementById("equippedDamage").value
+      const tipoDaño = document.getElementById("equippedDamageType").value
 
-  if (existingItemIndex !== -1) {
-    // Si existe, incrementar la cantidad
-    personaje.inventario[item.categoria][existingItemIndex].cantidad += item.cantidad || 1
-  } else {
-    // Si no existe, agregar como nuevo item
-    personaje.inventario[item.categoria].push(item)
-  }
-
-  // Eliminar el item de equipados
-  personaje.equipados.splice(index, 1)
-  guardarPersonaje(personaje)
-}
-
-// Función para editar un item equipado
-export function editarEquipamiento(personaje, index, confirmModal, confirmMessage) {
-  const item = personaje.equipados[index]
-  const editEquippedModal = document.getElementById("editEquippedModal")
-  const editEquippedModalContent = document.getElementById("editEquippedModalContent")
-
-  let formHTML = ""
-  const title = `Editar ${getCategoryName(item.categoria)}`
-
-  switch (item.categoria) {
-    case "armaduras":
-      formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="editEquippedName">Nombre:</label>
-            <input type="text" id="editEquippedName" value="${item.nombre}" readonly>
-          </div>
-          <div class="form-group">
-            <label for="editEquippedResistenciaMax">Resistencia Máxima:</label>
-            <input type="number" id="editEquippedResistenciaMax" min="0" value="${item.resistenciaMax}" readonly>
-          </div>
-          <div class="form-group">
-            <label for="editEquippedBloqueoFisico">Bloqueo Físico:</label>
-            <input type="number" id="editEquippedBloqueoFisico" min="0" value="${item.bloqueoFisico}" readonly>
-          </div>
-          <div class="form-group">
-            <label for="editEquippedBloqueoMagico">Bloqueo Mágico:</label>
-            <input type="number" id="editEquippedBloqueoMagico" min="0" value="${item.bloqueoMagico}" readonly>
-          </div>
-          <div class="form-group">
-            <label for="editEquippedResistenciaActual">Resistencia Actual:</label>
-            <input type="number" id="editEquippedResistenciaActual" min="0" max="${item.resistenciaMax}" value="${item.resistenciaActual}">
-          </div>
-        </div>
-      `
-      break
-    case "armas":
-      formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="editEquippedName">Nombre:</label>
-            <input type="text" id="editEquippedName" value="${item.nombre}" readonly>
-          </div>
-          <div class="form-group">
-            <label for="editEquippedManos">Manos necesarias:</label>
-            <input type="text" id="editEquippedManos" value="${item.manos}" readonly>
-          </div>
-          <div class="form-group">
-            <label for="editEquippedTipo">Tipo de arma:</label>
-            <input type="text" id="editEquippedTipo" value="${item.tipo}" readonly>
-          </div>
-          <div class="form-group">
-            <label for="editEquippedDanio">Daño:</label>
-            <input type="text" id="editEquippedDanio" value="${item.danio}" readonly>
-          </div>
-          <div class="form-group">
-            <label for="editEquippedResistenciaMax">Resistencia Máxima:</label>
-            <input type="number" id="editEquippedResistenciaMax" min="0" value="${item.resistenciaMax || 10}" readonly>
-          </div>
-          <div class="form-group">
-            <label for="editEquippedResistenciaActual">Resistencia Actual:</label>
-            <input type="number" id="editEquippedResistenciaActual" min="0" max="${item.resistenciaMax || 10}" value="${item.resistenciaActual || 10}">
-          </div>
-        </div>
-      `
-      break
-    case "municion":
-      formHTML = `
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="editEquippedName">Nombre:</label>
-            <input type="text" id="editEquippedName" value="${item.nombre}" readonly>
-          </div>
-          <div class="form-group">
-            <label for="editEquippedMejora">Mejora:</label>
-            <input type="text" id="editEquippedMejora" value="${item.mejora || ""}" readonly>
-          </div>
-          <div class="form-group">
-            <label for="editEquippedCantidad">Cantidad:</label>
-            <input type="number" id="editEquippedCantidad" min="1" value="${item.cantidad || 1}">
-          </div>
-        </div>
-      `
-      break
-  }
-
-  // Preparar contenido del modal
-  editEquippedModalContent.innerHTML = `
-    <h3>${title}</h3>
-    ${formHTML}
-    <div class="form-actions">
-      <button id="saveEquippedBtn" class="btn" data-index="${index}">Guardar Cambios</button>
-    </div>
-  `
-
-  // Mostrar modal
-  editEquippedModal.classList.add("show-modal")
-
-  // Configurar botón de guardar
-  const saveEquippedBtn = document.getElementById("saveEquippedBtn")
-  if (saveEquippedBtn) {
-    // Eliminar event listeners anteriores
-    const newSaveEquippedBtn = saveEquippedBtn.cloneNode(true)
-    saveEquippedBtn.parentNode.replaceChild(newSaveEquippedBtn, saveEquippedBtn)
-
-    newSaveEquippedBtn.addEventListener("click", function () {
-      const index = this.dataset.index
-      guardarCambiosEquipamiento(personaje, index, confirmModal, confirmMessage)
-      editEquippedModal.classList.remove("show-modal")
-    })
-  }
-}
-
-// Función para guardar los cambios de un item equipado
-export function guardarCambiosEquipamiento(personaje, index, confirmModal, confirmMessage) {
-  const item = personaje.equipados[index]
-
-  switch (item.categoria) {
-    case "armaduras":
-      item.resistenciaActual = Number.parseInt(document.getElementById("editEquippedResistenciaActual").value)
-      break
-    case "armas":
-      item.resistenciaActual = Number.parseInt(document.getElementById("editEquippedResistenciaActual").value)
-      break
-    case "municion":
-      item.cantidad = Number.parseInt(document.getElementById("editEquippedCantidad").value)
-      break
-  }
-
-  guardarPersonaje(personaje)
-  // Recargar la vista de equipamiento para reflejar los cambios
-  cargarEquipamiento(personaje, confirmModal, confirmMessage)
-}
-
-// Función para configurar los eventos de cierre del modal de editar equipamiento
-export function configurarCierreModalEquipamiento() {
-  const closeEditEquippedModal = document.getElementById("closeEditEquippedModal")
-  if (closeEditEquippedModal) {
-    closeEditEquippedModal.addEventListener("click", () => {
-      const editEquippedModal = document.getElementById("editEquippedModal")
-      if (editEquippedModal) {
-        editEquippedModal.classList.remove("show-modal")
+      const armaIndex = personaje.equipamiento.armas.findIndex((a) => a.id === id)
+      if (armaIndex !== -1) {
+        personaje.equipamiento.armas[armaIndex] = {
+          ...personaje.equipamiento.armas[armaIndex],
+          nombre,
+          daño,
+          tipoDaño,
+        }
       }
+      break
+    case "armadura":
+      const proteccion = document.getElementById("equippedProtection").value
+      const tipoArmadura = document.getElementById("equippedArmorType").value
+
+      const armaduraIndex = personaje.equipamiento.armaduras.findIndex((a) => a.id === id)
+      if (armaduraIndex !== -1) {
+        personaje.equipamiento.armaduras[armaduraIndex] = {
+          ...personaje.equipamiento.armaduras[armaduraIndex],
+          nombre,
+          proteccion,
+          tipoArmadura,
+        }
+      }
+      break
+    case "municion":
+      const tipoMunicion = document.getElementById("equippedAmmoType").value
+      const cantidad = Number.parseInt(document.getElementById("equippedQuantity").value) || 1
+
+      const municionIndex = personaje.equipamiento.municiones.findIndex((m) => m.id === id)
+      if (municionIndex !== -1) {
+        personaje.equipamiento.municiones[municionIndex] = {
+          ...personaje.equipamiento.municiones[municionIndex],
+          nombre,
+          tipoMunicion,
+          cantidad,
+        }
+      }
+      break
+  }
+
+  // Guardar cambios
+  localStorage.setItem("personajeActual", JSON.stringify(personaje))
+
+  // Actualizar la interfaz
+  cargarEquipamiento()
+}
+
+// Función para actualizar el peso total
+function actualizarPesoTotal() {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje) return
+
+  let pesoTotal = 0
+
+  // Peso del inventario
+  if (personaje.inventario) {
+    personaje.inventario.forEach((objeto) => {
+      const cantidad = objeto.cantidad || 1
+      pesoTotal += objeto.peso * cantidad
     })
   }
 
-  // También añadir el cierre al hacer clic fuera del modal
-  window.addEventListener("click", (event) => {
-    const editEquippedModal = document.getElementById("editEquippedModal")
-    if (event.target === editEquippedModal) {
-      editEquippedModal.classList.remove("show-modal")
+  // Peso de los recursos
+  if (personaje.recursos) {
+    personaje.recursos.forEach((recurso) => {
+      pesoTotal += recurso.peso * recurso.cantidad
+    })
+  }
+
+  // Peso del equipamiento
+  if (personaje.equipamiento) {
+    // Armas
+    if (personaje.equipamiento.armas) {
+      personaje.equipamiento.armas.forEach((arma) => {
+        pesoTotal += arma.peso || 0
+      })
     }
-  })
+
+    // Armaduras
+    if (personaje.equipamiento.armaduras) {
+      personaje.equipamiento.armaduras.forEach((armadura) => {
+        pesoTotal += armadura.peso || 0
+      })
+    }
+
+    // Municiones
+    if (personaje.equipamiento.municiones) {
+      personaje.equipamiento.municiones.forEach((municion) => {
+        const cantidad = municion.cantidad || 1
+        pesoTotal += (municion.peso || 0) * cantidad
+      })
+    }
+  }
+
+  // Actualizar el elemento en la interfaz
+  const pesoTotalElement = document.getElementById("pesoTotal")
+  if (pesoTotalElement) {
+    pesoTotalElement.textContent = pesoTotal.toFixed(2)
+  }
+}
+
+// Exportar funciones
+export {
+  cargarEquipamiento,
+  desequiparArma,
+  desequiparArmadura,
+  desequiparMunicion,
+  abrirModalEditarEquipado,
+  guardarCambiosEquipado,
+  actualizarPesoTotal,
 }

@@ -1,8 +1,71 @@
-<div id="resourceModal" class="modal">
+<div class="modal fade" id="resourceModal" tabindex="-1" aria-labelledby="resourceModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
     <div class="modal-content">
-        <span class="close" id="closeResourceModal">&times;</span>
-        <div id="resourceModalContent">
-            <!-- El contenido se cargará dinámicamente -->
-        </div>
+      <div class="modal-header">
+        <h5 class="modal-title" id="resourceModalLabel">Editar Recurso</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="resourceForm">
+          <input type="hidden" id="resourceId" name="resourceId">
+          <div class="mb-3">
+            <label for="resourceName" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="resourceName" name="resourceName" required>
+          </div>
+          <div class="mb-3">
+            <label for="resourceQuantity" class="form-label">Cantidad</label>
+            <input type="number" class="form-control" id="resourceQuantity" name="resourceQuantity" min="0" required>
+          </div>
+          <div class="mb-3">
+            <label for="resourceWeight" class="form-label">Peso unitario</label>
+            <input type="number" class="form-control" id="resourceWeight" name="resourceWeight" step="0.01" min="0" required>
+          </div>
+          <div class="mb-3">
+            <label for="resourceValue" class="form-label">Valor unitario</label>
+            <input type="number" class="form-control" id="resourceValue" name="resourceValue" min="0" required>
+          </div>
+          <div class="mb-3">
+            <label for="resourceDescription" class="form-label">Descripción</label>
+            <textarea class="form-control" id="resourceDescription" name="resourceDescription" rows="3"></textarea>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <button type="button" class="btn btn-danger" id="deleteResourceBtn">Eliminar</button>
+            <button type="button" class="btn btn-secondary" id="moveResourceToBagBtn">Mover a bolsa especial</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- Modal para mover recurso a bolsa especial -->
+<div class="modal fade" id="moveResourceToBagModal" tabindex="-1" aria-labelledby="moveResourceToBagModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="moveResourceToBagModalLabel">Mover a bolsa especial</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="moveResourceToBagForm">
+          <input type="hidden" id="moveResourceId" name="moveResourceId">
+          <div class="mb-3">
+            <label for="selectBagForResource" class="form-label">Seleccionar bolsa</label>
+            <select class="form-select" id="selectBagForResource" name="selectBagForResource" required>
+              <!-- Las opciones se cargarán dinámicamente -->
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="moveResourceQuantity" class="form-label">Cantidad a mover</label>
+            <input type="number" class="form-control" id="moveResourceQuantity" name="moveResourceQuantity" min="1" required>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Mover</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>

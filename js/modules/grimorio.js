@@ -1,217 +1,189 @@
-// Módulo para la gestión del grimorio
-
-import { guardarPersonaje } from "./personaje.js"
-import { showConfirmation } from "./utils.js"
+// Funciones para gestionar el grimorio del personaje
+import { generateUUID } from "./utils.js"
+import * as bootstrap from "bootstrap"
 
 // Función para cargar el grimorio
-export function cargarGrimorio(personaje, confirmModal, confirmMessage) {
-  const grimorioList = document.getElementById("grimorioList")
-  if (!grimorioList) {
-    console.error("No se encontró el elemento con ID 'grimorioList'")
+function cargarGrimorio() {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.grimorio) return
+
+  const grimorio = personaje.grimorio
+  const contenedorGrimorio = document.getElementById("grimorio-container")
+  if (!contenedorGrimorio) return
+
+  // Limpiar el contenedor
+  contenedorGrimorio.innerHTML = ""
+
+  // Si no hay hechizos, mostrar mensaje
+  if (grimorio.length === 0) {
+    contenedorGrimorio.innerHTML = '<p class="text-center">No tienes hechizos en tu grimorio</p>'
     return
   }
 
-  grimorioList.innerHTML = ""
+  // Crear la tabla para mostrar los hechizos
+  const table = document.createElement("table")
+  table.className = "table table-sm table-hover"
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Nivel</th>
+        <th>Coste</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Los hechizos se agregarán dinámicamente -->
+    </tbody>
+  `
 
-  if (!personaje.grimorio || personaje.grimorio.length === 0) {
-    grimorioList.innerHTML = "<tr><td colspan='7'>No hay hechizos en el grimorio.</td></tr>"
-    return
-  }
+  const tbody = table.querySelector("tbody")
 
-  personaje.grimorio.forEach((hechizo, index) => {
-    const row = document.createElement("tr")
-    row.innerHTML = `
+  // Agregar cada hechizo a la tabla
+  grimorio.forEach((hechizo) => {
+    const tr = document.createElement("tr")
+    tr.innerHTML = `
       <td>${hechizo.nombre}</td>
-      <td>${hechizo.dificultad.valor} ${hechizo.dificultad.dados}</td>
-      <td>${hechizo.distancia}m</td>
-      <td>${hechizo.uso}</td>
-      <td>${hechizo.accion}</td>
-      <td>${hechizo.descripcion || "-"}</td>
-      <td class="actions-cell">
-        <i class="fas fa-edit action-icon edit-spell-icon" data-index="${index}" title="Editar"></i>
-        <i class="fas fa-trash action-icon delete-spell-icon" data-index="${index}" title="Eliminar"></i>
+      <td>${hechizo.nivel}</td>
+      <td>${hechizo.coste} maná</td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary edit-spell" data-id="${hechizo.id}" title="Editar">
+          <i class="bi bi-pencil"></i>
+        </button>
       </td>
     `
 
-    grimorioList.appendChild(row)
+    tbody.appendChild(tr)
   })
 
-  // Agregar event listeners a los iconos de editar hechizo
-  const editSpellIcons = document.querySelectorAll(".edit-spell-icon")
-  editSpellIcons.forEach((icon) => {
-    icon.addEventListener("click", function () {
-      const index = this.dataset.index
-      editarHechizo(personaje, index)
+  contenedorGrimorio.appendChild(table)
+
+  // Agregar eventos a los botones de editar
+  document.querySelectorAll(".edit-spell").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const id = e.currentTarget.dataset.id
+      abrirModalHechizo(id)
     })
   })
 
-  // Agregar event listeners a los iconos de eliminar hechizo
-  const deleteSpellIcons = document.querySelectorAll(".delete-spell-icon")
-  deleteSpellIcons.forEach((icon) => {
-    icon.addEventListener("click", function () {
-      const index = this.dataset.index
-      const spellName = personaje.grimorio[index].nombre
-
-      showConfirmation(
-        `¿Estás seguro de que deseas eliminar el hechizo "${spellName}"?`,
-        () => {
-          eliminarHechizo(personaje, index)
-          cargarGrimorio(personaje, confirmModal, confirmMessage)
-        },
-        confirmModal,
-        confirmMessage,
-      )
-    })
-  })
-}
-
-// Función para configurar el botón de crear hechizo
-export function configurarBotonCrearHechizo(personaje, confirmModal, confirmMessage) {
-  const createSpellBtn = document.getElementById("createSpellBtn")
-  if (createSpellBtn) {
-    createSpellBtn.addEventListener("click", () => {
-      const createSpellModal = document.getElementById("createSpellModal")
-      if (createSpellModal) {
-        // Limpiar formulario
-        document.getElementById("spellName").value = ""
-        document.getElementById("spellDifficultyValue").value = "6"
-        document.getElementById("spellDifficultyDice").value = "1d10"
-        document.getElementById("spellDistance").value = "0"
-        document.getElementById("spellUse").value = "Ofensivo"
-        document.getElementById("spellAction").value = ""
-        document.getElementById("spellDescription").value = ""
-
-        // Cambiar el texto del botón
-        const addSpellBtn = document.getElementById("addSpellBtn")
-        if (addSpellBtn) {
-          addSpellBtn.textContent = "Agregar Hechizo"
-
-          // Eliminar cualquier event listener anterior
-          const newAddSpellBtn = addSpellBtn.cloneNode(true)
-          addSpellBtn.parentNode.replaceChild(newAddSpellBtn, addSpellBtn)
-
-          // Añadir nuevo event listener
-          newAddSpellBtn.addEventListener("click", () => {
-            const spellName = document.getElementById("spellName").value.trim()
-            const difficultyValue = document.getElementById("spellDifficultyValue").value
-            const difficultyDice = document.getElementById("spellDifficultyDice").value
-            const distance = document.getElementById("spellDistance").value
-            const use = document.getElementById("spellUse").value
-            const action = document.getElementById("spellAction").value
-            const description = document.getElementById("spellDescription").value
-
-            if (spellName) {
-              const newSpell = {
-                nombre: spellName,
-                dificultad: {
-                  valor: difficultyValue,
-                  dados: difficultyDice,
-                },
-                distancia: distance,
-                uso: use,
-                accion: action,
-                descripcion: description,
-              }
-
-              agregarHechizo(personaje, newSpell)
-              cargarGrimorio(personaje, confirmModal, confirmMessage)
-              createSpellModal.classList.remove("show-modal")
-            } else {
-              alert("El nombre del hechizo es obligatorio")
-            }
-          })
-        }
-
-        // Mostrar modal
-        createSpellModal.classList.add("show-modal")
-      }
-    })
-  }
-
-  // Configurar cierre del modal de crear hechizo
-  const closeCreateSpellModal = document.getElementById("closeCreateSpellModal")
-  if (closeCreateSpellModal) {
-    closeCreateSpellModal.addEventListener("click", () => {
-      const createSpellModal = document.getElementById("createSpellModal")
-      if (createSpellModal) {
-        createSpellModal.classList.remove("show-modal")
-      }
-    })
-  }
-}
-
-// Función para agregar un hechizo al grimorio
-export function agregarHechizo(personaje, hechizo) {
-  personaje.grimorio.push(hechizo)
-  guardarPersonaje(personaje)
-}
-
-// Función para eliminar un hechizo del grimorio
-export function eliminarHechizo(personaje, index) {
-  personaje.grimorio.splice(index, 1)
-  guardarPersonaje(personaje)
-}
-
-// Función para editar un hechizo del grimorio
-export function editarHechizo(personaje, index) {
-  const hechizo = personaje.grimorio[index]
-  const createSpellModal = document.getElementById("createSpellModal")
-
-  // Rellenar campos del formulario con los datos del hechizo
-  if (document.getElementById("spellName")) document.getElementById("spellName").value = hechizo.nombre
-  if (document.getElementById("spellDifficultyValue"))
-    document.getElementById("spellDifficultyValue").value = hechizo.dificultad.valor
-  if (document.getElementById("spellDifficultyDice"))
-    document.getElementById("spellDifficultyDice").value = hechizo.dificultad.dados
-  if (document.getElementById("spellDistance")) document.getElementById("spellDistance").value = hechizo.distancia
-  if (document.getElementById("spellUse")) document.getElementById("spellUse").value = hechizo.uso
-  if (document.getElementById("spellAction")) document.getElementById("spellAction").value = hechizo.accion
-  if (document.getElementById("spellDescription"))
-    document.getElementById("spellDescription").value = hechizo.descripcion
-
-  // Mostrar el modal
-  createSpellModal.classList.add("show-modal")
-
-  // Modificar el botón de agregar hechizo para que actualice el hechizo existente
+  // Agregar evento al botón de añadir hechizo
   const addSpellBtn = document.getElementById("addSpellBtn")
   if (addSpellBtn) {
-    // Eliminar cualquier event listener anterior
-    const newAddSpellBtn = addSpellBtn.cloneNode(true)
-    addSpellBtn.parentNode.replaceChild(newAddSpellBtn, addSpellBtn)
-
-    newAddSpellBtn.textContent = "Actualizar Hechizo"
-
-    newAddSpellBtn.addEventListener("click", () => {
-      const spellName = document.getElementById("spellName")?.value.trim() || ""
-      const difficultyValue = document.getElementById("spellDifficultyValue")?.value || "6"
-      const difficultyDice = document.getElementById("spellDifficultyDice")?.value || "1d10"
-      const distance = document.getElementById("spellDistance")?.value || "0"
-      const use = document.getElementById("spellUse")?.value || "Ofensivo"
-      const action = document.getElementById("spellAction")?.value || ""
-      const description = document.getElementById("spellDescription")?.value || ""
-
-      if (spellName) {
-        // Actualizar el hechizo existente
-        personaje.grimorio[index] = {
-          nombre: spellName,
-          dificultad: {
-            valor: difficultyValue,
-            dados: difficultyDice,
-          },
-          distancia: distance,
-          uso: use,
-          accion: action,
-          descripcion: description,
-        }
-
-        guardarPersonaje(personaje)
-        cargarGrimorio(personaje, document.getElementById("confirmModal"), document.getElementById("confirmMessage"))
-
-        // Cerrar el modal
-        createSpellModal.classList.remove("show-modal")
-      } else {
-        alert("El nombre del hechizo es obligatorio")
-      }
+    addSpellBtn.addEventListener("click", () => {
+      abrirModalHechizo()
     })
   }
 }
+
+// Función para abrir el modal de hechizo
+function abrirModalHechizo(id = null) {
+  const modal = new bootstrap.Modal(document.getElementById("spellModal"))
+  const form = document.getElementById("spellForm")
+  const deleteBtn = document.getElementById("deleteSpellBtn")
+
+  // Limpiar el formulario
+  form.reset()
+
+  if (id) {
+    // Editar hechizo existente
+    const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+    if (!personaje || !personaje.grimorio) return
+
+    const hechizo = personaje.grimorio.find((h) => h.id === id)
+    if (!hechizo) return
+
+    document.getElementById("spellModalLabel").textContent = "Editar Hechizo"
+    document.getElementById("spellId").value = hechizo.id
+    document.getElementById("spellName").value = hechizo.nombre
+    document.getElementById("spellLevel").value = hechizo.nivel
+    document.getElementById("spellCost").value = hechizo.coste
+    document.getElementById("spellEffect").value = hechizo.efecto
+
+    deleteBtn.style.display = "block"
+
+    // Configurar evento para eliminar hechizo
+    deleteBtn.onclick = () => {
+      eliminarHechizo(id)
+      modal.hide()
+    }
+  } else {
+    // Nuevo hechizo
+    document.getElementById("spellModalLabel").textContent = "Nuevo Hechizo"
+    document.getElementById("spellId").value = ""
+
+    deleteBtn.style.display = "none"
+  }
+
+  // Configurar evento para guardar hechizo
+  form.onsubmit = (e) => {
+    e.preventDefault()
+    guardarHechizo()
+    modal.hide()
+  }
+
+  modal.show()
+}
+
+// Función para guardar un hechizo
+function guardarHechizo() {
+  const id = document.getElementById("spellId").value
+  const nombre = document.getElementById("spellName").value
+  const nivel = Number.parseInt(document.getElementById("spellLevel").value) || 1
+  const coste = Number.parseInt(document.getElementById("spellCost").value) || 0
+  const efecto = document.getElementById("spellEffect").value
+
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje) return
+
+  if (!personaje.grimorio) {
+    personaje.grimorio = []
+  }
+
+  if (id) {
+    // Actualizar hechizo existente
+    const index = personaje.grimorio.findIndex((h) => h.id === id)
+    if (index !== -1) {
+      personaje.grimorio[index] = {
+        ...personaje.grimorio[index],
+        nombre,
+        nivel,
+        coste,
+        efecto,
+      }
+    }
+  } else {
+    // Crear nuevo hechizo
+    const nuevoHechizo = {
+      id: generateUUID(),
+      nombre,
+      nivel,
+      coste,
+      efecto,
+    }
+
+    personaje.grimorio.push(nuevoHechizo)
+  }
+
+  // Guardar cambios
+  localStorage.setItem("personajeActual", JSON.stringify(personaje))
+
+  // Actualizar la interfaz
+  cargarGrimorio()
+}
+
+// Función para eliminar un hechizo
+function eliminarHechizo(id) {
+  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  if (!personaje || !personaje.grimorio) return
+
+  personaje.grimorio = personaje.grimorio.filter((h) => h.id !== id)
+
+  // Guardar cambios
+  localStorage.setItem("personajeActual", JSON.stringify(personaje))
+
+  // Actualizar la interfaz
+  cargarGrimorio()
+}
+
+// Exportar funciones
+export { cargarGrimorio, abrirModalHechizo, guardarHechizo, eliminarHechizo }
