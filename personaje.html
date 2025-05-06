@@ -103,7 +103,19 @@
                         <label for="mana">Maná:</label>
                         <input type="number" id="mana" min="0" value="10">
                     </div>
+                    <!-- Los atributos derivados se añadirán dinámicamente aquí -->
                     <button type="submit" class="btn btn-primary">Crear Personaje</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de edición de personaje -->
+        <div id="editCharacterModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeEditCharacterModal">&times;</span>
+                <h2>Editar Personaje</h2>
+                <form id="editCharacterForm">
+                    <!-- El contenido se generará dinámicamente -->
                 </form>
             </div>
         </div>

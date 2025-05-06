@@ -4,13 +4,218 @@ import { guardarPersonaje } from "./personaje.js"
 
 // Función para configurar el botón de editar personaje
 export function configurarBotonEditarPersonaje(personaje) {
-  const editCharacterBtn = document.getElementById("editCharacterBtn")
+  // Esta función ya no se usa en ficha-personaje.js
+  // Se mantiene por compatibilidad
+}
 
-  if (editCharacterBtn) {
-    editCharacterBtn.addEventListener("click", () => {
-      mostrarModalEditarPersonaje(personaje)
-    })
+// Función para mostrar el modal de editar personaje desde la lista de personajes
+export function mostrarModalEditarPersonajeDesdeListado(personajeName) {
+  // Cargar datos del personaje
+  const characterData = localStorage.getItem(personajeName + ".json")
+  if (!characterData) {
+    alert("No se encontró el personaje especificado.")
+    return
   }
+
+  const personaje = JSON.parse(characterData)
+
+  // Asegurar que existen todas las propiedades necesarias
+  if (!personaje.subatributos) {
+    personaje.subatributos = {
+      buscar: 0,
+      sigilo: 0,
+      observar: 0,
+      cerradura: 0,
+      trampas: 0,
+      manipularObjetos: 0,
+      acrobacia: 0,
+      desarmar: 0,
+      equitacion: 0,
+      elocuencia: 0,
+      resolver: 0,
+    }
+  }
+
+  // Obtener el modal de edición
+  const editCharacterModal = document.getElementById("editCharacterModal")
+  const editCharacterForm = document.getElementById("editCharacterForm")
+
+  if (!editCharacterModal || !editCharacterForm) {
+    console.error("No se encontró el modal o el formulario de edición")
+    return
+  }
+
+  // Generar el contenido del formulario
+  editCharacterForm.innerHTML = `
+    <div class="form-group">
+      <label for="editNombre">Nombre:</label>
+      <input type="text" id="editNombre" value="${personaje.nombre}" readonly>
+    </div>
+    <div class="form-group">
+      <label for="editRaza">Raza:</label>
+      <input type="text" id="editRaza" value="${personaje.raza}">
+    </div>
+    <div class="form-group">
+      <label for="editBrazos">Número de manos:</label>
+      <input type="number" id="editBrazos" min="0" value="${personaje.brazos || 2}">
+    </div>
+    <div class="form-group">
+      <label for="editNivel">Nivel:</label>
+      <input type="number" id="editNivel" min="1" value="${personaje.nivel}">
+    </div>
+    <div class="form-group">
+      <label for="editClase">Clase:</label>
+      <input type="text" id="editClase" value="${personaje.clase}">
+    </div>
+    <div class="form-group">
+      <label for="editCombateCuerpo">Combate cuerpo a cuerpo:</label>
+      <input type="number" id="editCombateCuerpo" min="0" value="${personaje.combateCuerpo}">
+    </div>
+    <div class="form-group">
+      <label for="editCombateDistancia">Combate a distancia:</label>
+      <input type="number" id="editCombateDistancia" min="0" value="${personaje.combateDistancia}">
+    </div>
+    <div class="form-group">
+      <label for="editLanzamientoHechizos">Lanzamiento de hechizos:</label>
+      <input type="number" id="editLanzamientoHechizos" min="0" value="${personaje.lanzamientoHechizos}">
+    </div>
+    <div class="form-group">
+      <label for="editVidaMax">Vida máxima:</label>
+      <input type="number" id="editVidaMax" min="1" value="${personaje.vidaMax || personaje.vida || 10}">
+    </div>
+    <div class="form-group">
+      <label for="editAguanteMax">Aguante máximo:</label>
+      <input type="number" id="editAguanteMax" min="0" value="${personaje.aguanteMax || personaje.aguante || 10}">
+    </div>
+    <div class="form-group">
+      <label for="editManaMax">Maná máximo:</label>
+      <input type="number" id="editManaMax" min="0" value="${personaje.manaMax || personaje.mana || 10}">
+    </div>
+    
+    <h3>Percepción</h3>
+    <div class="form-group">
+      <label for="editBuscar">Buscar:</label>
+      <input type="number" id="editBuscar" min="0" value="${personaje.subatributos.buscar || 0}">
+    </div>
+    <div class="form-group">
+      <label for="editSigilo">Sigilo:</label>
+      <input type="number" id="editSigilo" min="0" value="${personaje.subatributos.sigilo || 0}">
+    </div>
+    <div class="form-group">
+      <label for="editObservar">Observar:</label>
+      <input type="number" id="editObservar" min="0" value="${personaje.subatributos.observar || 0}">
+    </div>
+    
+    <h3>Destreza</h3>
+    <div class="form-group">
+      <label for="editCerradura">Cerradura:</label>
+      <input type="number" id="editCerradura" min="0" value="${personaje.subatributos.cerradura || 0}">
+    </div>
+    <div class="form-group">
+      <label for="editTrampas">Trampas:</label>
+      <input type="number" id="editTrampas" min="0" value="${personaje.subatributos.trampas || 0}">
+    </div>
+    <div class="form-group">
+      <label for="editManipularObjetos">Manipular objetos:</label>
+      <input type="number" id="editManipularObjetos" min="0" value="${personaje.subatributos.manipularObjetos || 0}">
+    </div>
+    
+    <h3>Agilidad</h3>
+    <div class="form-group">
+      <label for="editAcrobacia">Acrobacia:</label>
+      <input type="number" id="editAcrobacia" min="0" value="${personaje.subatributos.acrobacia || 0}">
+    </div>
+    <div class="form-group">
+      <label for="editDesarmar">Desarmar:</label>
+      <input type="number" id="editDesarmar" min="0" value="${personaje.subatributos.desarmar || 0}">
+    </div>
+    <div class="form-group">
+      <label for="editEquitacion">Equitación:</label>
+      <input type="number" id="editEquitacion" min="0" value="${personaje.subatributos.equitacion || 0}">
+    </div>
+    
+    <h3>Inteligencia</h3>
+    <div class="form-group">
+      <label for="editElocuencia">Elocuencia:</label>
+      <input type="number" id="editElocuencia" min="0" value="${personaje.subatributos.elocuencia || 0}">
+    </div>
+    <div class="form-group">
+      <label for="editResolver">Resolver:</label>
+      <input type="number" id="editResolver" min="0" value="${personaje.subatributos.resolver || 0}">
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+  `
+
+  // Configurar el evento de envío del formulario
+  editCharacterForm.onsubmit = (e) => {
+    e.preventDefault()
+
+    // Actualizar datos del personaje
+    personaje.raza = document.getElementById("editRaza").value
+    personaje.brazos = Number.parseInt(document.getElementById("editBrazos").value) || 2
+    personaje.nivel = Number.parseInt(document.getElementById("editNivel").value) || 1
+    personaje.clase = document.getElementById("editClase").value
+    personaje.combateCuerpo = Number.parseInt(document.getElementById("editCombateCuerpo").value) || 0
+    personaje.combateDistancia = Number.parseInt(document.getElementById("editCombateDistancia").value) || 0
+    personaje.lanzamientoHechizos = Number.parseInt(document.getElementById("editLanzamientoHechizos").value) || 0
+
+    // Actualizar valores máximos
+    personaje.vidaMax = Number.parseInt(document.getElementById("editVidaMax").value) || 10
+    personaje.aguanteMax = Number.parseInt(document.getElementById("editAguanteMax").value) || 10
+    personaje.manaMax = Number.parseInt(document.getElementById("editManaMax").value) || 10
+
+    // Asegurar que los valores actuales no superen los máximos
+    if (personaje.vida > personaje.vidaMax) personaje.vida = personaje.vidaMax
+    if (personaje.aguante > personaje.aguanteMax) personaje.aguante = personaje.aguanteMax
+    if (personaje.mana > personaje.manaMax) personaje.mana = personaje.manaMax
+
+    // Actualizar subatributos
+    personaje.subatributos.buscar = Number.parseInt(document.getElementById("editBuscar").value) || 0
+    personaje.subatributos.sigilo = Number.parseInt(document.getElementById("editSigilo").value) || 0
+    personaje.subatributos.observar = Number.parseInt(document.getElementById("editObservar").value) || 0
+    personaje.subatributos.cerradura = Number.parseInt(document.getElementById("editCerradura").value) || 0
+    personaje.subatributos.trampas = Number.parseInt(document.getElementById("editTrampas").value) || 0
+    personaje.subatributos.manipularObjetos =
+      Number.parseInt(document.getElementById("editManipularObjetos").value) || 0
+    personaje.subatributos.acrobacia = Number.parseInt(document.getElementById("editAcrobacia").value) || 0
+    personaje.subatributos.desarmar = Number.parseInt(document.getElementById("editDesarmar").value) || 0
+    personaje.subatributos.equitacion = Number.parseInt(document.getElementById("editEquitacion").value) || 0
+    personaje.subatributos.elocuencia = Number.parseInt(document.getElementById("editElocuencia").value) || 0
+    personaje.subatributos.resolver = Number.parseInt(document.getElementById("editResolver").value) || 0
+
+    // Calcular atributos derivados
+    personaje.atributosDerivedos = {
+      percepcion: personaje.subatributos.buscar + personaje.subatributos.sigilo + personaje.subatributos.observar,
+      destreza:
+        personaje.subatributos.cerradura + personaje.subatributos.trampas + personaje.subatributos.manipularObjetos,
+      agilidad: personaje.subatributos.acrobacia + personaje.subatributos.desarmar + personaje.subatributos.equitacion,
+      inteligencia: personaje.subatributos.elocuencia + personaje.subatributos.resolver,
+    }
+
+    // Guardar cambios
+    localStorage.setItem(personaje.nombre + ".json", JSON.stringify(personaje))
+
+    // Actualizar la lista de personajes (por si cambió el nivel)
+    const personajesData = JSON.parse(localStorage.getItem("personajes"))
+    const personajeIndex = personajesData.personajes.findIndex((p) => p.nombre === personaje.nombre)
+    if (personajeIndex !== -1) {
+      personajesData.personajes[personajeIndex].nivel = personaje.nivel
+      localStorage.setItem("personajes", JSON.stringify(personajesData))
+    }
+
+    // Cerrar modal y recargar lista
+    editCharacterModal.classList.remove("show-modal")
+
+    // Recargar la lista de personajes
+    const event = new Event("personajeEditado")
+    document.dispatchEvent(event)
+
+    alert("Personaje actualizado correctamente")
+  }
+
+  // Mostrar el modal
+  editCharacterModal.classList.add("show-modal")
 }
 
 // Función para mostrar el modal de editar personaje
@@ -187,56 +392,83 @@ export function configurarAtributosDerivedosEnCreacion() {
     if (submitButton) {
       // Crear contenedor para atributos derivados
       const derivedAttributesContainer = document.createElement("div")
+
+      // Añadir subatributos para Percepción
       derivedAttributesContainer.innerHTML = `
-        <h3>Atributos Derivados</h3>
+        <h3>Percepción</h3>
         <div class="form-group">
-          <label for="percepcion">Percepción:</label>
-          <input type="number" id="percepcion" min="0" value="0" readonly>
+          <label for="buscar">Buscar:</label>
+          <input type="number" id="buscar" min="0" value="0">
         </div>
         <div class="form-group">
-          <label for="destreza">Destreza:</label>
-          <input type="number" id="destreza" min="0" value="0" readonly>
+          <label for="sigilo">Sigilo:</label>
+          <input type="number" id="sigilo" min="0" value="0">
         </div>
         <div class="form-group">
-          <label for="agilidad">Agilidad:</label>
-          <input type="number" id="agilidad" min="0" value="0" readonly>
+          <label for="observar">Observar:</label>
+          <input type="number" id="observar" min="0" value="0">
+        </div>
+        
+        <h3>Destreza</h3>
+        <div class="form-group">
+          <label for="cerradura">Cerradura:</label>
+          <input type="number" id="cerradura" min="0" value="0">
         </div>
         <div class="form-group">
-          <label for="inteligencia">Inteligencia:</label>
-          <input type="number" id="inteligencia" min="0" value="0" readonly>
+          <label for="trampas">Trampas:</label>
+          <input type="number" id="trampas" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label for="manipularObjetos">Manipular objetos:</label>
+          <input type="number" id="manipularObjetos" min="0" value="0">
+        </div>
+        
+        <h3>Agilidad</h3>
+        <div class="form-group">
+          <label for="acrobacia">Acrobacia:</label>
+          <input type="number" id="acrobacia" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label for="desarmar">Desarmar:</label>
+          <input type="number" id="desarmar" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label for="equitacion">Equitación:</label>
+          <input type="number" id="equitacion" min="0" value="0">
+        </div>
+        
+        <h3>Inteligencia</h3>
+        <div class="form-group">
+          <label for="elocuencia">Elocuencia:</label>
+          <input type="number" id="elocuencia" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label for="resolver">Resolver:</label>
+          <input type="number" id="resolver" min="0" value="0">
         </div>
       `
 
       // Insertar antes del botón de submit
       characterForm.insertBefore(derivedAttributesContainer, submitButton)
-
-      // Añadir event listeners para recalcular atributos derivados cuando cambien los atributos base
-      const atributosBase = ["combateCuerpo", "combateDistancia", "lanzamientoHechizos"]
-      atributosBase.forEach((atributo) => {
-        const input = document.getElementById(atributo)
-        if (input) {
-          input.addEventListener("change", calcularAtributosDerivedosCreacion)
-          input.addEventListener("input", calcularAtributosDerivedosCreacion)
-        }
-      })
     }
   }
 }
 
-// Función para calcular atributos derivados en el modal de creación
-function calcularAtributosDerivedosCreacion() {
-  const combateCuerpo = Number(document.getElementById("combateCuerpo")?.value || 0)
-  const combateDistancia = Number(document.getElementById("combateDistancia")?.value || 0)
-  const lanzamientoHechizos = Number(document.getElementById("lanzamientoHechizos")?.value || 0)
+// Función para configurar el cierre del modal de edición
+export function configurarCierreModalEdicion() {
+  const closeEditCharacterModal = document.getElementById("closeEditCharacterModal")
+  const editCharacterModal = document.getElementById("editCharacterModal")
 
-  const percepcion = combateCuerpo + combateDistancia
-  const destreza = combateCuerpo + lanzamientoHechizos
-  const agilidad = combateDistancia + lanzamientoHechizos
-  const inteligencia = combateCuerpo + combateDistancia + lanzamientoHechizos
+  if (closeEditCharacterModal && editCharacterModal) {
+    closeEditCharacterModal.addEventListener("click", () => {
+      editCharacterModal.classList.remove("show-modal")
+    })
 
-  // Actualizar campos
-  if (document.getElementById("percepcion")) document.getElementById("percepcion").value = percepcion
-  if (document.getElementById("destreza")) document.getElementById("destreza").value = destreza
-  if (document.getElementById("agilidad")) document.getElementById("agilidad").value = agilidad
-  if (document.getElementById("inteligencia")) document.getElementById("inteligencia").value = inteligencia
+    // También cerrar al hacer clic fuera del modal
+    window.addEventListener("click", (event) => {
+      if (event.target === editCharacterModal) {
+        editCharacterModal.classList.remove("show-modal")
+      }
+    })
+  }
 }

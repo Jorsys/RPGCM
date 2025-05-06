@@ -71,7 +71,7 @@ export function cargarEquipamiento(personaje, confirmModal, confirmMessage) {
   editEquipmentIcons.forEach((icon) => {
     icon.addEventListener("click", function () {
       const index = this.dataset.index
-      editarEquipamiento(personaje, index)
+      editarEquipamiento(personaje, index, confirmModal, confirmMessage)
     })
   })
 
@@ -123,7 +123,7 @@ export function desequiparItem(personaje, index) {
 }
 
 // Función para editar un item equipado
-export function editarEquipamiento(personaje, index) {
+export function editarEquipamiento(personaje, index, confirmModal, confirmMessage) {
   const item = personaje.equipados[index]
   const editEquippedModal = document.getElementById("editEquippedModal")
   const editEquippedModalContent = document.getElementById("editEquippedModalContent")
@@ -223,16 +223,20 @@ export function editarEquipamiento(personaje, index) {
   // Configurar botón de guardar
   const saveEquippedBtn = document.getElementById("saveEquippedBtn")
   if (saveEquippedBtn) {
-    saveEquippedBtn.addEventListener("click", function () {
+    // Eliminar event listeners anteriores
+    const newSaveEquippedBtn = saveEquippedBtn.cloneNode(true)
+    saveEquippedBtn.parentNode.replaceChild(newSaveEquippedBtn, saveEquippedBtn)
+
+    newSaveEquippedBtn.addEventListener("click", function () {
       const index = this.dataset.index
-      guardarCambiosEquipamiento(personaje, index)
+      guardarCambiosEquipamiento(personaje, index, confirmModal, confirmMessage)
       editEquippedModal.classList.remove("show-modal")
     })
   }
 }
 
 // Función para guardar los cambios de un item equipado
-export function guardarCambiosEquipamiento(personaje, index) {
+export function guardarCambiosEquipamiento(personaje, index, confirmModal, confirmMessage) {
   const item = personaje.equipados[index]
 
   switch (item.categoria) {
@@ -248,6 +252,8 @@ export function guardarCambiosEquipamiento(personaje, index) {
   }
 
   guardarPersonaje(personaje)
+  // Recargar la vista de equipamiento para reflejar los cambios
+  cargarEquipamiento(personaje, confirmModal, confirmMessage)
 }
 
 // Función para configurar los eventos de cierre del modal de editar equipamiento
