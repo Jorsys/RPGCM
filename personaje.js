@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((module) => {
       // Configurar atributos derivados en el modal de creación
       module.configurarAtributosDerivedosEnCreacion()
+      // Configurar cierre del modal de edición
+      module.configurarCierreModalEdicion()
     })
     .catch((error) => {
       console.error("Error al cargar el módulo de editar-personaje:", error)
@@ -24,6 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmYesBtn = document.getElementById("confirmYesBtn")
   const confirmNoBtn = document.getElementById("confirmNoBtn")
   const confirmMessage = document.getElementById("confirmMessage")
+  const editCharacterModal = document.getElementById("editCharacterModal")
+  const closeEditCharacterModal = document.getElementById("closeEditCharacterModal")
 
   console.log("DOM cargado correctamente")
   console.log("newCharacterBtn:", newCharacterBtn)
@@ -64,6 +68,13 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmCallback()
       }
       confirmModal.classList.remove("show-modal")
+    })
+  }
+
+  // Configurar modal de edición
+  if (closeEditCharacterModal) {
+    closeEditCharacterModal.addEventListener("click", () => {
+      editCharacterModal.classList.remove("show-modal")
     })
   }
 
@@ -108,6 +119,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.target === confirmModal) {
       confirmModal.classList.remove("show-modal")
     }
+    if (event.target === editCharacterModal) {
+      editCharacterModal.classList.remove("show-modal")
+    }
   }
 
   // Mostrar/ocultar campos de raza personalizada
@@ -118,6 +132,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
+
+  // Escuchar evento de personaje editado
+  document.addEventListener("personajeEditado", () => {
+    loadCharacters()
+  })
 
   // Manejar envío del formulario de creación de personaje
   if (characterForm) {
@@ -146,11 +165,24 @@ document.addEventListener("DOMContentLoaded", () => {
         brazos = Number.parseInt(selectedOption.dataset.brazos)
       }
 
-      // Obtener valores de atributos derivados
-      const percepcion = Number.parseInt(document.getElementById("percepcion").value) || 0
-      const destreza = Number.parseInt(document.getElementById("destreza").value) || 0
-      const agilidad = Number.parseInt(document.getElementById("agilidad").value) || 0
-      const inteligencia = Number.parseInt(document.getElementById("inteligencia").value) || 0
+      // Obtener valores de subatributos
+      const buscar = Number.parseInt(document.getElementById("buscar")?.value) || 0
+      const sigilo = Number.parseInt(document.getElementById("sigilo")?.value) || 0
+      const observar = Number.parseInt(document.getElementById("observar")?.value) || 0
+      const cerradura = Number.parseInt(document.getElementById("cerradura")?.value) || 0
+      const trampas = Number.parseInt(document.getElementById("trampas")?.value) || 0
+      const manipularObjetos = Number.parseInt(document.getElementById("manipularObjetos")?.value) || 0
+      const acrobacia = Number.parseInt(document.getElementById("acrobacia")?.value) || 0
+      const desarmar = Number.parseInt(document.getElementById("desarmar")?.value) || 0
+      const equitacion = Number.parseInt(document.getElementById("equitacion")?.value) || 0
+      const elocuencia = Number.parseInt(document.getElementById("elocuencia")?.value) || 0
+      const resolver = Number.parseInt(document.getElementById("resolver")?.value) || 0
+
+      // Calcular atributos derivados
+      const percepcion = buscar + sigilo + observar
+      const destreza = cerradura + trampas + manipularObjetos
+      const agilidad = acrobacia + desarmar + equitacion
+      const inteligencia = elocuencia + resolver
 
       // Obtener valores máximos de vida, aguante y maná
       const vidaMax = Number.parseInt(document.getElementById("vida").value) || 10
@@ -195,6 +227,19 @@ document.addEventListener("DOMContentLoaded", () => {
           destreza: destreza,
           agilidad: agilidad,
           inteligencia: inteligencia,
+        },
+        subatributos: {
+          buscar: buscar,
+          sigilo: sigilo,
+          observar: observar,
+          cerradura: cerradura,
+          trampas: trampas,
+          manipularObjetos: manipularObjetos,
+          acrobacia: acrobacia,
+          desarmar: desarmar,
+          equitacion: equitacion,
+          elocuencia: elocuencia,
+          resolver: resolver,
         },
       }
 
@@ -278,18 +323,34 @@ document.addEventListener("DOMContentLoaded", () => {
         <strong>${personaje.nombre}</strong> - ${personaje.raza}, Nivel ${personaje.nivel}
       </div>
       <div class="personaje-actions">
-        <button class="btn view-character" data-name="${personaje.nombre}">Ver Ficha</button>
+        <i class="fas fa-eye action-icon view-character" data-name="${personaje.nombre}" title="Ver Ficha"></i>
+        <i class="fas fa-edit action-icon edit-character" data-name="${personaje.nombre}" title="Editar Personaje"></i>
         <i class="fas fa-trash action-icon delete-icon" data-name="${personaje.nombre}" title="Eliminar"></i>
       </div>
     `
       personajesList.appendChild(personajeItem)
     })
 
-    // Agregar event listeners a los botones de ver ficha
-    document.querySelectorAll(".view-character").forEach((button) => {
-      button.addEventListener("click", function () {
+    // Agregar event listeners a los iconos de ver ficha
+    document.querySelectorAll(".view-character").forEach((icon) => {
+      icon.addEventListener("click", function () {
         const characterName = this.getAttribute("data-name")
         window.location.href = `ficha-personaje.html?nombre=${encodeURIComponent(characterName)}`
+      })
+    })
+
+    // Agregar event listeners a los iconos de editar
+    document.querySelectorAll(".edit-character").forEach((icon) => {
+      icon.addEventListener("click", function () {
+        const characterName = this.getAttribute("data-name")
+        // Importar el módulo de editar personaje y mostrar el modal
+        import("./js/modules/editar-personaje.js")
+          .then((module) => {
+            module.mostrarModalEditarPersonajeDesdeListado(characterName)
+          })
+          .catch((error) => {
+            console.error("Error al cargar el módulo de editar-personaje:", error)
+          })
       })
     })
 

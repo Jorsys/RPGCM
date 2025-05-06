@@ -70,6 +70,9 @@ export function mostrarModalRecurso(personaje, recurso, valorActual, valorMaximo
   const esRecursoEstado = ["vida", "aguante", "mana"].includes(recurso)
   const nombreRecurso = obtenerNombreRecurso(recurso)
 
+  // Guardar el valor original para poder restaurarlo si se cierra el modal sin guardar
+  const valorOriginal = valorActual
+
   // Preparar contenido del modal
   resourceModalContent.innerHTML = `
     <h3>Modificar ${nombreRecurso}</h3>
@@ -111,57 +114,80 @@ export function mostrarModalRecurso(personaje, recurso, valorActual, valorMaximo
   const addResourceBtn = document.getElementById("addResourceBtn")
   const subtractResourceBtn = document.getElementById("subtractResourceBtn")
   const setResourceBtn = document.getElementById("setResourceBtn")
+  const resourceCurrentValue = document.getElementById("resourceCurrentValue")
 
   if (addResourceBtn) {
-    addResourceBtn.addEventListener("click", function () {
-      const recurso = this.dataset.recurso
+    // Eliminar event listeners anteriores
+    const newAddResourceBtn = addResourceBtn.cloneNode(true)
+    addResourceBtn.parentNode.replaceChild(newAddResourceBtn, addResourceBtn)
+
+    newAddResourceBtn.addEventListener("click", () => {
       const cantidad = Number.parseInt(document.getElementById("resourceAmount").value) || 1
-      modificarRecurso(personaje, recurso, cantidad)
-      resourceModal.classList.remove("show-modal")
+      let nuevoValor = Number.parseInt(resourceCurrentValue.value) + cantidad
+
+      // Asegurar que no exceda el máximo si existe
+      if (valorMaximo !== null) {
+        nuevoValor = Math.min(nuevoValor, valorMaximo)
+      }
+
+      // Actualizar solo el valor en el modal
+      resourceCurrentValue.value = nuevoValor
     })
   }
 
   if (subtractResourceBtn) {
-    subtractResourceBtn.addEventListener("click", function () {
-      const recurso = this.dataset.recurso
+    // Eliminar event listeners anteriores
+    const newSubtractResourceBtn = subtractResourceBtn.cloneNode(true)
+    subtractResourceBtn.parentNode.replaceChild(newSubtractResourceBtn, subtractResourceBtn)
+
+    newSubtractResourceBtn.addEventListener("click", () => {
       const cantidad = Number.parseInt(document.getElementById("resourceAmount").value) || 1
-      modificarRecurso(personaje, recurso, -cantidad)
-      resourceModal.classList.remove("show-modal")
+      let nuevoValor = Number.parseInt(resourceCurrentValue.value) - cantidad
+
+      // Asegurar que no sea negativo
+      nuevoValor = Math.max(0, nuevoValor)
+
+      // Actualizar solo el valor en el modal
+      resourceCurrentValue.value = nuevoValor
     })
   }
 
   if (setResourceBtn) {
-    setResourceBtn.addEventListener("click", function () {
+    // Eliminar event listeners anteriores
+    const newSetResourceBtn = setResourceBtn.cloneNode(true)
+    setResourceBtn.parentNode.replaceChild(newSetResourceBtn, setResourceBtn)
+
+    newSetResourceBtn.addEventListener("click", function () {
       const recurso = this.dataset.recurso
-      const nuevoValor = Number.parseInt(document.getElementById("resourceCurrentValue").value) || 0
+      const nuevoValor = Number.parseInt(resourceCurrentValue.value) || 0
+
+      // Aplicar el cambio al personaje
       establecerValorRecurso(personaje, recurso, nuevoValor)
+
+      // Cerrar modal
       resourceModal.classList.remove("show-modal")
     })
   }
-}
 
-// Función para modificar un recurso (agregar o restar)
-export function modificarRecurso(personaje, recurso, cantidad) {
-  // Determinar si es un recurso de estado o de inventario
-  const esRecursoEstado = ["vida", "aguante", "mana"].includes(recurso)
+  // Configurar cierre del modal sin guardar cambios
+  const closeResourceModal = document.getElementById("closeResourceModal")
+  if (closeResourceModal) {
+    // Eliminar event listeners anteriores
+    const newCloseResourceModal = closeResourceModal.cloneNode(true)
+    closeResourceModal.parentNode.replaceChild(newCloseResourceModal, closeResourceModal)
 
-  if (esRecursoEstado) {
-    // Es un recurso de estado
-    const valorActual = personaje[recurso]
-    const valorMaximo = personaje[`${recurso}Max`]
-    // Calcular nuevo valor, asegurando que esté entre 0 y el máximo
-    const nuevoValor = Math.max(0, Math.min(valorMaximo, valorActual + cantidad))
-    personaje[recurso] = nuevoValor
-  } else {
-    // Es un recurso de inventario
-    const valorActual = personaje.inventario[recurso]
-    const nuevoValor = Math.max(0, valorActual + cantidad) // Asegurar que no sea negativo
-    personaje.inventario[recurso] = nuevoValor
+    newCloseResourceModal.addEventListener("click", () => {
+      // No guardar cambios, cerrar modal
+      resourceModal.classList.remove("show-modal")
+    })
   }
 
-  // Guardar cambios y actualizar interfaz
-  guardarPersonaje(personaje)
-  actualizarValoresRecursos(personaje)
+  // También cerrar al hacer clic fuera del modal sin guardar cambios
+  window.addEventListener("click", (event) => {
+    if (event.target === resourceModal) {
+      resourceModal.classList.remove("show-modal")
+    }
+  })
 }
 
 // Función para establecer directamente el valor de un recurso

@@ -479,6 +479,49 @@ th {
   flex: 1;
 }
 
+/* Estilos para atributos derivados */
+.derived-attribute-group {
+  margin-bottom: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.derived-attribute-group h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.derived-total {
+  font-weight: bold;
+  color: #2c0b3f;
+}
+
+.sub-attributes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.sub-attribute-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.sub-attribute-item label {
+  width: 100px;
+  margin-bottom: 0;
+  margin-right: 10px;
+}
+
+.sub-attribute-input {
+  width: 60px;
+  text-align: center;
+}
+
 /* Estilos para dispositivos móviles */
 @media (max-width: 768px) {
   .character-sheet {
@@ -573,31 +616,6 @@ i[title] {
   margin-right: 5px;
 }
 
-/* Estilos para atributos derivados */
-.attributes-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.attribute-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.attribute-item label {
-  width: 100px;
-  margin-bottom: 0;
-}
-
-.derived-attribute {
-  width: 60px;
-  text-align: center;
-  background-color: #f9f9f9;
-  cursor: not-allowed;
-}
-
 /* Estilos para valores máximos */
 .max-value {
   background-color: #f0f0f0;
@@ -610,4 +628,9 @@ i[title] {
   margin: 0 5px;
   font-weight: bold;
   color: #666;
+}
+
+/* Soporte para el icono de espadas */
+.fa-swords:before {
+  content: "\f71d"; /* Código del icono de espadas en Font Awesome */
 }

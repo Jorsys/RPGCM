@@ -124,13 +124,16 @@ export function cargarContenidoBolsa(personaje, bagIndex) {
   const addItemButton = document.createElement("button")
   addItemButton.className = "btn-small"
   addItemButton.innerHTML = '<i class="fas fa-plus"></i> Añadir Objeto'
-  addItemButton.dataset.bagIndex = bagIndex
-  addItemButton.addEventListener("click", function () {
+  addItemButton.dataset.bagIndex = bagIndex.toString()
+
+  // Eliminar cualquier event listener anterior
+  const newAddItemButton = addItemButton.cloneNode(true)
+  newAddItemButton.addEventListener("click", function () {
     const bagIndex = this.dataset.bagIndex
     mostrarModalAnadirItemABolsa(personaje, bagIndex)
   })
 
-  bagItemsList.appendChild(addItemButton)
+  bagItemsList.appendChild(newAddItemButton)
   bagItemsList.appendChild(document.createElement("br"))
   bagItemsList.appendChild(document.createElement("br"))
 
@@ -206,7 +209,11 @@ export function configurarBotonCrearBolsa(personaje, confirmModal, confirmMessag
   const createBagModalBtn = document.querySelector("#createBagModal #createBagBtn")
 
   if (createBagBtn) {
-    createBagBtn.addEventListener("click", () => {
+    // Eliminar event listeners anteriores
+    const newCreateBagBtn = createBagBtn.cloneNode(true)
+    createBagBtn.parentNode.replaceChild(newCreateBagBtn, createBagBtn)
+
+    newCreateBagBtn.addEventListener("click", () => {
       // Limpiar campo
       if (bagNameInput) bagNameInput.value = ""
       // Mostrar modal
@@ -229,7 +236,11 @@ export function configurarBotonCrearBolsa(personaje, confirmModal, confirmMessag
 
   // Corregir el selector para el botón dentro del modal
   if (createBagModalBtn) {
-    createBagModalBtn.addEventListener("click", () => {
+    // Eliminar event listeners anteriores
+    const newCreateBagModalBtn = createBagModalBtn.cloneNode(true)
+    createBagModalBtn.parentNode.replaceChild(newCreateBagModalBtn, createBagModalBtn)
+
+    newCreateBagModalBtn.addEventListener("click", () => {
       const bagName = bagNameInput.value.trim()
       if (bagName) {
         // Crear nueva bolsa
@@ -276,27 +287,34 @@ export function eliminarBolsa(personaje, bagIndex) {
 
   // Mover todos los objetos de la bolsa al inventario
   bolsa.contenido.forEach((item) => {
-    if (!personaje.inventario[item.categoria]) {
-      personaje.inventario[item.categoria] = []
-    }
-
-    // Verificar si ya existe un item similar en el inventario
-    const existingItemIndex = personaje.inventario[item.categoria].findIndex(
-      (i) =>
-        i.nombre === item.nombre &&
-        (item.categoria !== "armas" || i.manos === item.manos) &&
-        (item.categoria !== "armaduras" ||
-          (i.resistenciaMax === item.resistenciaMax &&
-            i.bloqueoFisico === item.bloqueoFisico &&
-            i.bloqueoMagico === item.bloqueoMagico)),
-    )
-
-    if (existingItemIndex !== -1) {
-      // Si existe, incrementar la cantidad
-      personaje.inventario[item.categoria][existingItemIndex].cantidad += item.cantidad || 1
+    // Verificar si es un recurso simple
+    if (["monedas", "ganzuas", "antorchas", "cuerdas"].includes(item.categoria)) {
+      // Incrementar el contador correspondiente
+      personaje.inventario[item.categoria] += item.cantidad || 1
     } else {
-      // Si no existe, agregar como nuevo item
-      personaje.inventario[item.categoria].push({ ...item })
+      // Es un objeto normal
+      if (!personaje.inventario[item.categoria]) {
+        personaje.inventario[item.categoria] = []
+      }
+
+      // Verificar si ya existe un item similar en el inventario
+      const existingItemIndex = personaje.inventario[item.categoria].findIndex(
+        (i) =>
+          i.nombre === item.nombre &&
+          (item.categoria !== "armas" || i.manos === item.manos) &&
+          (item.categoria !== "armaduras" ||
+            (i.resistenciaMax === item.resistenciaMax &&
+              i.bloqueoFisico === item.bloqueoFisico &&
+              i.bloqueoMagico === item.bloqueoMagico)),
+      )
+
+      if (existingItemIndex !== -1) {
+        // Si existe, incrementar la cantidad
+        personaje.inventario[item.categoria][existingItemIndex].cantidad += item.cantidad || 1
+      } else {
+        // Si no existe, agregar como nuevo item
+        personaje.inventario[item.categoria].push({ ...item })
+      }
     }
   })
 
@@ -347,7 +365,11 @@ export function mostrarModalAnadirItemABolsa(personaje, bagIndex) {
   // Configurar botón de continuar
   const continueAddItemBtn = document.getElementById("continueAddItemBtn")
   if (continueAddItemBtn) {
-    continueAddItemBtn.addEventListener("click", function () {
+    // Eliminar event listeners anteriores
+    const newContinueAddItemBtn = continueAddItemBtn.cloneNode(true)
+    continueAddItemBtn.parentNode.replaceChild(newContinueAddItemBtn, continueAddItemBtn)
+
+    newContinueAddItemBtn.addEventListener("click", function () {
       const bagIndex = this.dataset.bagIndex
       const itemType = document.getElementById("itemTypeSelect").value
 
@@ -397,7 +419,11 @@ export function mostrarModalAnadirRecursoABolsa(personaje, bagIndex, itemType) {
   // Configurar botón de añadir
   const addResourceToBagBtn = document.getElementById("addResourceToBagBtn")
   if (addResourceToBagBtn) {
-    addResourceToBagBtn.addEventListener("click", function () {
+    // Eliminar event listeners anteriores
+    const newAddResourceToBagBtn = addResourceToBagBtn.cloneNode(true)
+    addResourceToBagBtn.parentNode.replaceChild(newAddResourceToBagBtn, addResourceToBagBtn)
+
+    newAddResourceToBagBtn.addEventListener("click", function () {
       const bagIndex = this.dataset.bagIndex
       const itemType = this.dataset.itemType
       const cantidad = Number.parseInt(document.getElementById("resourceAmount").value) || 1
@@ -651,7 +677,11 @@ export function mostrarModalFormularioAnadirItemABolsa(personaje, bagIndex, item
   // Configurar botón de agregar
   const addItemToBagBtn = document.getElementById("addItemToBagBtn")
   if (addItemToBagBtn) {
-    addItemToBagBtn.addEventListener("click", function () {
+    // Eliminar event listeners anteriores
+    const newAddItemToBagBtn = addItemToBagBtn.cloneNode(true)
+    addItemToBagBtn.parentNode.replaceChild(newAddItemToBagBtn, addItemToBagBtn)
+
+    newAddItemToBagBtn.addEventListener("click", function () {
       const bagIndex = this.dataset.bagIndex
       const itemType = this.dataset.itemType
       const itemName = document.getElementById("itemName").value.trim()
@@ -728,6 +758,151 @@ function obtenerNombreRecurso(recurso) {
     cuerdas: "Cuerdas",
   }
   return nombres[recurso] || recurso
+}
+
+// Función para mostrar el modal de mover desde bolsa al inventario
+export function mostrarModalMoverDesdebolsa(personaje, bagIndex, itemIndex) {
+  const bolsa = personaje.bolsasEspeciales[bagIndex]
+  const item = bolsa.contenido[itemIndex]
+  const confirmModal = document.getElementById("confirmModal")
+  const confirmMessage = document.getElementById("confirmMessage")
+
+  // Mostrar confirmación
+  showConfirmation(
+    `¿Estás seguro de que deseas mover "${item.nombre}" al inventario?`,
+    () => {
+      moverItemDesdeBolsa(personaje, bagIndex, itemIndex)
+    },
+    confirmModal,
+    confirmMessage,
+  )
+}
+
+// Función para mover un item desde una bolsa al inventario
+export function moverItemDesdeBolsa(personaje, bagIndex, itemIndex) {
+  const bolsa = personaje.bolsasEspeciales[bagIndex]
+  const item = bolsa.contenido[itemIndex]
+
+  // Si es un recurso simple, incrementar el contador
+  if (["monedas", "ganzuas", "antorchas", "cuerdas"].includes(item.categoria)) {
+    personaje.inventario[item.categoria] = (personaje.inventario[item.categoria] || 0) + (item.cantidad || 1)
+  } else {
+    // Si es un objeto, añadirlo a la categoría correspondiente
+    if (!personaje.inventario[item.categoria]) {
+      personaje.inventario[item.categoria] = []
+    }
+
+    // Verificar si ya existe un item similar en el inventario
+    const existingItemIndex = personaje.inventario[item.categoria].findIndex(
+      (i) =>
+        i.nombre === item.nombre &&
+        (item.categoria !== "armas" || i.manos === item.manos) &&
+        (item.categoria !== "armaduras" ||
+          (i.resistenciaMax === item.resistenciaMax &&
+            i.bloqueoFisico === item.bloqueoFisico &&
+            i.bloqueoMagico === item.bloqueoMagico)),
+    )
+
+    if (existingItemIndex !== -1) {
+      // Si existe, incrementar la cantidad
+      personaje.inventario[item.categoria][existingItemIndex].cantidad += item.cantidad || 1
+    } else {
+      // Si no existe, agregar como nuevo item
+      personaje.inventario[item.categoria].push({ ...item })
+    }
+  }
+
+  // Eliminar el item de la bolsa
+  bolsa.contenido.splice(itemIndex, 1)
+  guardarPersonaje(personaje)
+  cargarContenidoBolsa(personaje, bagIndex)
+}
+
+// Función para mostrar el modal de mover a otra bolsa
+export function mostrarModalMoverAOtraBolsa(personaje, bagIndex, itemIndex) {
+  const bolsa = personaje.bolsasEspeciales[bagIndex]
+  const item = bolsa.contenido[itemIndex]
+  const moveToBagModal = document.getElementById("moveToBagModal")
+  const moveToBagModalContent = document.getElementById("moveToBagModalContent")
+  const closeMoveToBagModal = document.getElementById("closeMoveToBagModal")
+
+  // Preparar contenido del modal
+  let bagOptionsHTML = ""
+  personaje.bolsasEspeciales.forEach((b, i) => {
+    if (i !== Number(bagIndex)) {
+      bagOptionsHTML += `<option value="${i}">${b.nombre}</option>`
+    }
+  })
+
+  moveToBagModalContent.innerHTML = `
+    <h3>Mover ${item.nombre} a otra bolsa</h3>
+    <div class="form-group">
+      <label for="targetBagSelect">Selecciona la bolsa destino:</label>
+      <select id="targetBagSelect">
+        ${bagOptionsHTML}
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="moveQuantity">Cantidad a mover:</label>
+      <input type="number" id="moveQuantity" min="1" max="${item.cantidad || 1}" value="${item.cantidad || 1}">
+    </div>
+    <div class="form-actions">
+      <button id="moveToOtherBagBtn" class="btn" data-bag-index="${bagIndex}" data-item-index="${itemIndex}">Mover</button>
+    </div>
+  `
+
+  // Mostrar modal
+  moveToBagModal.classList.add("show-modal")
+
+  // Configurar botón de cerrar
+  if (closeMoveToBagModal) {
+    closeMoveToBagModal.addEventListener("click", () => {
+      moveToBagModal.classList.remove("show-modal")
+    })
+  }
+
+  // Configurar botón de mover
+  const moveToOtherBagBtn = document.getElementById("moveToOtherBagBtn")
+  if (moveToOtherBagBtn) {
+    // Eliminar event listeners anteriores
+    const newMoveToOtherBagBtn = moveToOtherBagBtn.cloneNode(true)
+    moveToOtherBagBtn.parentNode.replaceChild(newMoveToOtherBagBtn, moveToOtherBagBtn)
+
+    newMoveToOtherBagBtn.addEventListener("click", function () {
+      const sourceBagIndex = this.dataset.bagIndex
+      const itemIndex = this.dataset.itemIndex
+      const targetBagIndex = document.getElementById("targetBagSelect").value
+      const quantity = Number.parseInt(document.getElementById("moveQuantity").value) || 1
+
+      moverItemAOtraBolsa(personaje, sourceBagIndex, itemIndex, targetBagIndex, quantity)
+      moveToBagModal.classList.remove("show-modal")
+    })
+  }
+}
+
+// Función para mover un item a otra bolsa
+export function moverItemAOtraBolsa(personaje, sourceBagIndex, itemIndex, targetBagIndex, quantity) {
+  const sourceBag = personaje.bolsasEspeciales[sourceBagIndex]
+  const targetBag = personaje.bolsasEspeciales[targetBagIndex]
+  const item = sourceBag.contenido[itemIndex]
+
+  // Crear copia del item para la bolsa destino
+  const itemToMove = { ...item }
+  itemToMove.cantidad = quantity
+
+  // Añadir a la bolsa destino
+  targetBag.contenido.push(itemToMove)
+
+  // Actualizar o eliminar del origen
+  if (item.cantidad > quantity) {
+    item.cantidad -= quantity
+  } else {
+    sourceBag.contenido.splice(itemIndex, 1)
+  }
+
+  guardarPersonaje(personaje)
+  cargarContenidoBolsa(personaje, sourceBagIndex)
+  cargarContenidoBolsa(personaje, targetBagIndex)
 }
 
 // Función para editar un item de una bolsa
@@ -971,7 +1146,11 @@ export function editarItemBolsa(personaje, bagIndex, itemIndex) {
   // Configurar botón de guardar
   const saveItemBagBtn = document.getElementById("saveItemBagBtn")
   if (saveItemBagBtn) {
-    saveItemBagBtn.addEventListener("click", function () {
+    // Eliminar event listeners anteriores
+    const newSaveItemBagBtn = saveItemBagBtn.cloneNode(true)
+    saveItemBagBtn.parentNode.replaceChild(newSaveItemBagBtn, saveItemBagBtn)
+
+    newSaveItemBagBtn.addEventListener("click", function () {
       const bagIndex = this.dataset.bagIndex
       const itemIndex = this.dataset.itemIndex
       const itemName = document.getElementById("itemName").value.trim()
@@ -1031,145 +1210,4 @@ export function editarItemBolsa(personaje, bagIndex, itemIndex) {
       itemModal.classList.remove("show-modal")
     })
   }
-}
-
-// Función para mostrar el modal de mover desde bolsa al inventario
-export function mostrarModalMoverDesdebolsa(personaje, bagIndex, itemIndex) {
-  const bolsa = personaje.bolsasEspeciales[bagIndex]
-  const item = bolsa.contenido[itemIndex]
-  const confirmModal = document.getElementById("confirmModal")
-  const confirmMessage = document.getElementById("confirmMessage")
-
-  // Mostrar confirmación
-  showConfirmation(
-    `¿Estás seguro de que deseas mover "${item.nombre}" al inventario?`,
-    () => {
-      moverItemDesdeBolsa(personaje, bagIndex, itemIndex)
-    },
-    confirmModal,
-    confirmMessage,
-  )
-}
-
-// Función para mover un item desde una bolsa al inventario
-export function moverItemDesdeBolsa(personaje, bagIndex, itemIndex) {
-  const bolsa = personaje.bolsasEspeciales[bagIndex]
-  const item = bolsa.contenido[itemIndex]
-
-  // Si es un recurso simple, incrementar el contador
-  if (["monedas", "ganzuas", "antorchas", "cuerdas"].includes(item.categoria)) {
-    personaje.inventario[item.categoria] += item.cantidad || 1
-  } else {
-    // Si es un objeto, añadirlo a la categoría correspondiente
-    if (!personaje.inventario[item.categoria]) {
-      personaje.inventario[item.categoria] = []
-    }
-
-    // Verificar si ya existe un item similar en el inventario
-    const existingItemIndex = personaje.inventario[item.categoria].findIndex(
-      (i) =>
-        i.nombre === item.nombre &&
-        (item.categoria !== "armas" || i.manos === item.manos) &&
-        (item.categoria !== "armaduras" ||
-          (i.resistenciaMax === item.resistenciaMax &&
-            i.bloqueoFisico === item.bloqueoFisico &&
-            i.bloqueoMagico === item.bloqueoMagico)),
-    )
-
-    if (existingItemIndex !== -1) {
-      // Si existe, incrementar la cantidad
-      personaje.inventario[item.categoria][existingItemIndex].cantidad += item.cantidad || 1
-    } else {
-      // Si no existe, agregar como nuevo item
-      personaje.inventario[item.categoria].push({ ...item })
-    }
-  }
-
-  // Eliminar el item de la bolsa
-  bolsa.contenido.splice(itemIndex, 1)
-  guardarPersonaje(personaje)
-  cargarContenidoBolsa(personaje, bagIndex)
-}
-
-// Función para mostrar el modal de mover a otra bolsa
-export function mostrarModalMoverAOtraBolsa(personaje, bagIndex, itemIndex) {
-  const bolsa = personaje.bolsasEspeciales[bagIndex]
-  const item = bolsa.contenido[itemIndex]
-  const moveToBagModal = document.getElementById("moveToBagModal")
-  const moveToBagModalContent = document.getElementById("moveToBagModalContent")
-  const closeMoveToBagModal = document.getElementById("closeMoveToBagModal")
-
-  // Preparar contenido del modal
-  let bagOptionsHTML = ""
-  personaje.bolsasEspeciales.forEach((b, i) => {
-    if (i !== Number(bagIndex)) {
-      bagOptionsHTML += `<option value="${i}">${b.nombre}</option>`
-    }
-  })
-
-  moveToBagModalContent.innerHTML = `
-    <h3>Mover ${item.nombre} a otra bolsa</h3>
-    <div class="form-group">
-      <label for="targetBagSelect">Selecciona la bolsa destino:</label>
-      <select id="targetBagSelect">
-        ${bagOptionsHTML}
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="moveQuantity">Cantidad a mover:</label>
-      <input type="number" id="moveQuantity" min="1" max="${item.cantidad || 1}" value="${item.cantidad || 1}">
-    </div>
-    <div class="form-actions">
-      <button id="moveToOtherBagBtn" class="btn" data-bag-index="${bagIndex}" data-item-index="${itemIndex}">Mover</button>
-    </div>
-  `
-
-  // Mostrar modal
-  moveToBagModal.classList.add("show-modal")
-
-  // Configurar botón de cerrar
-  if (closeMoveToBagModal) {
-    closeMoveToBagModal.addEventListener("click", () => {
-      moveToBagModal.classList.remove("show-modal")
-    })
-  }
-
-  // Configurar botón de mover
-  const moveToOtherBagBtn = document.getElementById("moveToOtherBagBtn")
-  if (moveToOtherBagBtn) {
-    moveToOtherBagBtn.addEventListener("click", function () {
-      const sourceBagIndex = this.dataset.bagIndex
-      const itemIndex = this.dataset.itemIndex
-      const targetBagIndex = document.getElementById("targetBagSelect").value
-      const quantity = Number.parseInt(document.getElementById("moveQuantity").value) || 1
-
-      moverItemAOtraBolsa(personaje, sourceBagIndex, itemIndex, targetBagIndex, quantity)
-      moveToBagModal.classList.remove("show-modal")
-    })
-  }
-}
-
-// Función para mover un item a otra bolsa
-export function moverItemAOtraBolsa(personaje, sourceBagIndex, itemIndex, targetBagIndex, quantity) {
-  const sourceBag = personaje.bolsasEspeciales[sourceBagIndex]
-  const targetBag = personaje.bolsasEspeciales[targetBagIndex]
-  const item = sourceBag.contenido[itemIndex]
-
-  // Crear copia del item para la bolsa destino
-  const itemToMove = { ...item }
-  itemToMove.cantidad = quantity
-
-  // Añadir a la bolsa destino
-  targetBag.contenido.push(itemToMove)
-
-  // Actualizar o eliminar del origen
-  if (item.cantidad > quantity) {
-    item.cantidad -= quantity
-  } else {
-    sourceBag.contenido.splice(itemIndex, 1)
-  }
-
-  guardarPersonaje(personaje)
-  cargarContenidoBolsa(personaje, sourceBagIndex)
-  cargarContenidoBolsa(personaje, targetBagIndex)
 }

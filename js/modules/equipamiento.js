@@ -96,7 +96,12 @@ export function cargarEquipamiento(personaje, confirmModal, confirmMessage) {
 
 // Función para desequipar un item
 export function desequiparItem(personaje, index) {
-  const item = personaje.equipados[index]
+  const item = { ...personaje.equipados[index] } // Crear una copia del item
+
+  // Asegurarse de que la categoría existe en el inventario
+  if (!personaje.inventario[item.categoria]) {
+    personaje.inventario[item.categoria] = []
+  }
 
   // Verificar si ya existe un item similar en el inventario
   const existingItemIndex = personaje.inventario[item.categoria].findIndex(
@@ -114,7 +119,7 @@ export function desequiparItem(personaje, index) {
     personaje.inventario[item.categoria][existingItemIndex].cantidad += item.cantidad || 1
   } else {
     // Si no existe, agregar como nuevo item
-    personaje.inventario[item.categoria].push({ ...item })
+    personaje.inventario[item.categoria].push(item)
   }
 
   // Eliminar el item de equipados
