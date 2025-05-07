@@ -48,7 +48,24 @@ function cargarInformacionPersonaje() {
         <div class="col-8">${personaje.nivel || "1"}</div>
       </div>
       <div class="row mb-2">
-        <div class="col-4 text-muted">Atributos:</div>
+        <div class="col-4 text-muted">Atributos Básicos:</div>
+        <div class="col-8">
+          <span class="badge bg-info me-1" title="Percepción">
+            <i class="bi bi-eye"></i> ${personaje.atributos?.percepcion || "0"}
+          </span>
+          <span class="badge bg-warning me-1" title="Destreza">
+            <i class="bi bi-hand"></i> ${personaje.atributos?.destreza || "0"}
+          </span>
+          <span class="badge bg-success me-1" title="Agilidad">
+            <i class="bi bi-lightning"></i> ${personaje.atributos?.agilidad || "0"}
+          </span>
+          <span class="badge bg-danger me-1" title="Inteligencia">
+            <i class="bi bi-brain"></i> ${personaje.atributos?.inteligencia || "0"}
+          </span>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-4 text-muted">Atributos de Combate:</div>
         <div class="col-8">
           <span class="badge bg-primary me-1" title="Combate">
             <i class="bi bi-sword"></i> ${personaje.atributos?.combate || "0"}
@@ -114,6 +131,13 @@ function crearPersonaje() {
     clase,
     nivel,
     atributos: {
+      // Atributos básicos
+      percepcion: 0,
+      destreza: 0,
+      agilidad: 0,
+      inteligencia: 0,
+
+      // Atributos derivados
       combate: 0,
       punteria: 0,
       magia: 0,

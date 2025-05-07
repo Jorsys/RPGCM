@@ -9,6 +9,12 @@ function cargarAtributosEdicion() {
   document.getElementById("nivel").value = personaje.nivel || "1"
   document.getElementById("clase").value = personaje.clase || ""
 
+  // Cargar atributos básicos
+  document.getElementById("percepcion").value = personaje.atributos?.percepcion || 0
+  document.getElementById("destreza").value = personaje.atributos?.destreza || 0
+  document.getElementById("agilidad").value = personaje.atributos?.agilidad || 0
+  document.getElementById("inteligencia").value = personaje.atributos?.inteligencia || 0
+
   // Cargar atributos de combate
   document.getElementById("combate").value = personaje.atributos?.combate || 0
   document.getElementById("punteria").value = personaje.atributos?.punteria || 0
@@ -36,6 +42,14 @@ function guardarAtributosEdicion() {
   if (!personaje.atributos) {
     personaje.atributos = {}
   }
+
+  // Guardar atributos básicos
+  personaje.atributos.percepcion = Number.parseInt(document.getElementById("percepcion").value) || 0
+  personaje.atributos.destreza = Number.parseInt(document.getElementById("destreza").value) || 0
+  personaje.atributos.agilidad = Number.parseInt(document.getElementById("agilidad").value) || 0
+  personaje.atributos.inteligencia = Number.parseInt(document.getElementById("inteligencia").value) || 0
+
+  // Guardar atributos derivados
   personaje.atributos.combate = Number.parseInt(document.getElementById("combate").value) || 0
   personaje.atributos.punteria = Number.parseInt(document.getElementById("punteria").value) || 0
   personaje.atributos.magia = Number.parseInt(document.getElementById("magia").value) || 0
@@ -62,6 +76,27 @@ function guardarAtributosEdicion() {
 
 // Función para añadir iconos a los atributos en la pantalla de edición
 function añadirIconosAtributosEdicion() {
+  // Añadir iconos a los atributos básicos
+  const percepcionLabel = document.querySelector('label[for="percepcion"]')
+  if (percepcionLabel) {
+    percepcionLabel.innerHTML = '<i class="bi bi-eye me-1"></i> Percepción'
+  }
+
+  const destrezaLabel = document.querySelector('label[for="destreza"]')
+  if (destrezaLabel) {
+    destrezaLabel.innerHTML = '<i class="bi bi-hand me-1"></i> Destreza'
+  }
+
+  const agilidadLabel = document.querySelector('label[for="agilidad"]')
+  if (agilidadLabel) {
+    agilidadLabel.innerHTML = '<i class="bi bi-lightning me-1"></i> Agilidad'
+  }
+
+  const inteligenciaLabel = document.querySelector('label[for="inteligencia"]')
+  if (inteligenciaLabel) {
+    inteligenciaLabel.innerHTML = '<i class="bi bi-brain me-1"></i> Inteligencia'
+  }
+
   // Añadir iconos a los atributos de combate
   const combateLabel = document.querySelector('label[for="combate"]')
   if (combateLabel) {

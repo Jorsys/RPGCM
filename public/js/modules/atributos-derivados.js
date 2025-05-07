@@ -9,6 +9,17 @@ function cargarAtributos() {
   document.getElementById("nivel").textContent = personaje.nivel || "1"
   document.getElementById("clase").textContent = personaje.clase || "-"
 
+  // Cargar atributos básicos
+  const percepcion = personaje.atributos?.percepcion || 0
+  const destreza = personaje.atributos?.destreza || 0
+  const agilidad = personaje.atributos?.agilidad || 0
+  const inteligencia = personaje.atributos?.inteligencia || 0
+
+  document.getElementById("percepcion").textContent = percepcion
+  document.getElementById("destreza").textContent = destreza
+  document.getElementById("agilidad").textContent = agilidad
+  document.getElementById("inteligencia").textContent = inteligencia
+
   // Cargar atributos de combate
   const combate = personaje.atributos?.combate || 0
   const punteria = personaje.atributos?.punteria || 0
@@ -66,6 +77,27 @@ function actualizarAtributoActual(event) {
 
 // Función para añadir iconos a los atributos
 function añadirIconosAtributos() {
+  // Añadir iconos a los atributos básicos
+  const percepcionLabel = document.querySelector('label[for="percepcion"]')
+  if (percepcionLabel) {
+    percepcionLabel.innerHTML = '<i class="bi bi-eye me-1"></i> Percepción'
+  }
+
+  const destrezaLabel = document.querySelector('label[for="destreza"]')
+  if (destrezaLabel) {
+    destrezaLabel.innerHTML = '<i class="bi bi-hand me-1"></i> Destreza'
+  }
+
+  const agilidadLabel = document.querySelector('label[for="agilidad"]')
+  if (agilidadLabel) {
+    agilidadLabel.innerHTML = '<i class="bi bi-lightning me-1"></i> Agilidad'
+  }
+
+  const inteligenciaLabel = document.querySelector('label[for="inteligencia"]')
+  if (inteligenciaLabel) {
+    inteligenciaLabel.innerHTML = '<i class="bi bi-brain me-1"></i> Inteligencia'
+  }
+
   // Añadir iconos a los atributos de combate
   const combateLabel = document.querySelector('label[for="combate"]')
   if (combateLabel) {
