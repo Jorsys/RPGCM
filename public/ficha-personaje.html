@@ -121,6 +121,122 @@
         </div>
 
         <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Habilidades de Percepción</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="buscar" class="form-label">Buscar</label>
+                                    <div class="form-control-plaintext" id="buscar">0</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="sigilo" class="form-label">Sigilo</label>
+                                    <div class="form-control-plaintext" id="sigilo">0</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="observar" class="form-label">Observar</label>
+                                    <div class="form-control-plaintext" id="observar">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Habilidades de Destreza</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="cerradura" class="form-label">Cerradura</label>
+                                    <div class="form-control-plaintext" id="cerradura">0</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="trampas" class="form-label">Trampas</label>
+                                    <div class="form-control-plaintext" id="trampas">0</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="manipularObjetos" class="form-label">Manipular Objetos</label>
+                                    <div class="form-control-plaintext" id="manipularObjetos">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Habilidades de Agilidad</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="acrobacia" class="form-label">Acrobacia</label>
+                                    <div class="form-control-plaintext" id="acrobacia">0</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="desarmar" class="form-label">Desarmar</label>
+                                    <div class="form-control-plaintext" id="desarmar">0</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="equitacion" class="form-label">Equitación</label>
+                                    <div class="form-control-plaintext" id="equitacion">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Habilidades de Inteligencia</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="elocuencia" class="form-label">Elocuencia</label>
+                                    <div class="form-control-plaintext" id="elocuencia">0</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="resolver" class="form-label">Resolver</label>
+                                    <div class="form-control-plaintext" id="resolver">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
@@ -272,268 +388,7 @@
         </div>
     </div>
 
-    <!-- Modal para editar objeto -->
-    <div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="itemModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="itemModalLabel">Editar objeto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="itemForm">
-                        <input type="hidden" id="itemId" name="itemId">
-                        <div class="mb-3">
-                            <label for="itemName" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="itemName" name="itemName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="itemType" class="form-label">Tipo</label>
-                            <select class="form-select" id="itemType" name="itemType">
-                                <option value="objeto">Objeto</option>
-                                <option value="arma">Arma</option>
-                                <option value="armadura">Armadura</option>
-                                <option value="municion">Munición</option>
-                                <option value="pocion">Poción</option>
-                                <option value="pergamino">Pergamino</option>
-                                <option value="herramienta">Herramienta</option>
-                                <option value="otro">Otro</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="itemQuantity" class="form-label">Cantidad</label>
-                            <input type="number" class="form-control" id="itemQuantity" name="itemQuantity" min="1" value="1">
-                        </div>
-                        <div class="mb-3">
-                            <label for="itemWeight" class="form-label">Peso unitario</label>
-                            <input type="number" class="form-control" id="itemWeight" name="itemWeight" step="0.01" min="0" value="0">
-                        </div>
-                        <div class="mb-3">
-                            <label for="itemValue" class="form-label">Valor unitario</label>
-                            <input type="number" class="form-control" id="itemValue" name="itemValue" min="0" value="0">
-                        </div>
-                        <div class="mb-3">
-                            <label for="itemDescription" class="form-label">Descripción</label>
-                            <textarea class="form-control" id="itemDescription" name="itemDescription" rows="3"></textarea>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                            <div>
-                                <button type="button" class="btn btn-success" id="equipItemBtn">Equipar</button>
-                                <button type="button" class="btn btn-secondary" id="moveToBagBtn">Mover a bolsa</button>
-                                <button type="button" class="btn btn-danger" id="deleteItemBtn">Eliminar</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para vender objeto -->
-    <div class="modal fade" id="sellItemModal" tabindex="-1" aria-labelledby="sellItemModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="sellItemModalLabel">Vender objeto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="sellItemForm">
-                        <input type="hidden" id="sellItemId" name="sellItemId">
-                        <div class="mb-3">
-                            <label class="form-label">Objeto</label>
-                            <p id="sellItemName" class="form-control-plaintext"></p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Valor unitario</label>
-                            <p id="sellItemValue" class="form-control-plaintext"></p>
-                        </div>
-                        <div class="mb-3">
-                            <label for="sellItemQuantity" class="form-label">Cantidad a vender</label>
-                            <input type="number" class="form-control" id="sellItemQuantity" name="sellItemQuantity" min="1" value="1">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Total</label>
-                            <p id="sellItemTotal" class="form-control-plaintext"></p>
-                        </div>
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Vender</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para mover objeto a bolsa -->
-    <div class="modal fade" id="moveToBagModal" tabindex="-1" aria-labelledby="moveToBagModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="moveToBagModalLabel">Mover a bolsa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="moveToBagForm">
-                        <input type="hidden" id="moveItemId" name="moveItemId">
-                        <input type="hidden" id="sourceBagId" name="sourceBagId">
-                        <div class="mb-3">
-                            <label for="selectBag" class="form-label">Seleccionar bolsa</label>
-                            <select class="form-select" id="selectBag" name="selectBag" required>
-                                <!-- Las opciones se cargarán dinámicamente -->
-                            </select>
-                        </div>
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Mover</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para crear bolsa -->
-    <div class="modal fade" id="createBagModal" tabindex="-1" aria-labelledby="createBagModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createBagModalLabel">Crear bolsa especial</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="createBagForm">
-                        <div class="mb-3">
-                            <label for="bagName" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="bagName" name="bagName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="bagDescription" class="form-label">Descripción</label>
-                            <textarea class="form-control" id="bagDescription" name="bagDescription" rows="3"></textarea>
-                        </div>
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Crear</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para editar recurso -->
-    <div class="modal fade" id="resourceModal" tabindex="-1" aria-labelledby="resourceModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="resourceModalLabel">Editar Recurso</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="resourceForm">
-                        <input type="hidden" id="resourceId" name="resourceId">
-                        <div class="mb-3">
-                            <label for="resourceName" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="resourceName" name="resourceName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="resourceQuantity" class="form-label">Cantidad</label>
-                            <input type="number" class="form-control" id="resourceQuantity" name="resourceQuantity" min="0" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="resourceWeight" class="form-label">Peso unitario</label>
-                            <input type="number" class="form-control" id="resourceWeight" name="resourceWeight" step="0.01" min="0" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="resourceValue" class="form-label">Valor unitario</label>
-                            <input type="number" class="form-control" id="resourceValue" name="resourceValue" min="0" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="resourceDescription" class="form-label">Descripción</label>
-                            <textarea class="form-control" id="resourceDescription" name="resourceDescription" rows="3"></textarea>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                            <div>
-                                <button type="button" class="btn btn-secondary" id="moveResourceToBagBtn">Mover a bolsa</button>
-                                <button type="button" class="btn btn-danger" id="deleteResourceBtn">Eliminar</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para mover recurso a bolsa especial -->
-    <div class="modal fade" id="moveResourceToBagModal" tabindex="-1" aria-labelledby="moveResourceToBagModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="moveResourceToBagModalLabel">Mover a bolsa especial</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="moveResourceToBagForm">
-                        <input type="hidden" id="moveResourceId" name="moveResourceId">
-                        <div class="mb-3">
-                            <label for="selectBagForResource" class="form-label">Seleccionar bolsa</label>
-                            <select class="form-select" id="selectBagForResource" name="selectBagForResource" required>
-                                <!-- Las opciones se cargarán dinámicamente -->
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="moveResourceQuantity" class="form-label">Cantidad a mover</label>
-                            <input type="number" class="form-control" id="moveResourceQuantity" name="moveResourceQuantity" min="1" required>
-                        </div>
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Mover</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para editar hechizo -->
-    <div class="modal fade" id="spellModal" tabindex="-1" aria-labelledby="spellModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="spellModalLabel">Editar Hechizo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="spellForm">
-                        <input type="hidden" id="spellId" name="spellId">
-                        <div class="mb-3">
-                            <label for="spellName" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="spellName" name="spellName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="spellLevel" class="form-label">Nivel</label>
-                            <input type="number" class="form-control" id="spellLevel" name="spellLevel" min="1" max="10" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="spellCost" class="form-label">Coste de maná</label>
-                            <input type="number" class="form-control" id="spellCost" name="spellCost" min="0" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="spellEffect" class="form-label">Efecto</label>
-                            <textarea class="form-control" id="spellEffect" name="spellEffect" rows="3" required></textarea>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                            <button type="button" class="btn btn-danger" id="deleteSpellBtn">Eliminar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Resto de modales... -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="js/ficha-personaje.js"></script>

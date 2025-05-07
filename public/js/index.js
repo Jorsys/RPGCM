@@ -4,6 +4,8 @@ import * as bootstrap from "bootstrap"
 
 // Función para inicializar la página
 function inicializarPagina() {
+  console.log("Inicializando página...")
+
   // Cargar información del personaje actual
   cargarInformacionPersonaje()
 
@@ -16,6 +18,8 @@ function inicializarPagina() {
   // Configurar eventos para los modales
   document.getElementById("confirmResetBtn").addEventListener("click", reiniciarPersonaje)
   document.getElementById("confirmCreateBtn").addEventListener("click", crearPersonaje)
+
+  console.log("Eventos configurados correctamente")
 }
 
 // Función para cargar la información del personaje actual
@@ -113,6 +117,7 @@ function calcularPorcentaje(actual, total) {
 
 // Función para abrir el modal de crear personaje
 function abrirModalCrearPersonaje() {
+  console.log("Abriendo modal de crear personaje...")
   const modal = new bootstrap.Modal(document.getElementById("createCharacterModal"))
   document.getElementById("createCharacterForm").reset()
   modal.show()
@@ -120,6 +125,7 @@ function abrirModalCrearPersonaje() {
 
 // Función para crear un nuevo personaje
 function crearPersonaje() {
+  console.log("Creando personaje...")
   const nombre = document.getElementById("newCharacterName").value
   const clase = document.getElementById("newCharacterClass").value
   const nivel = document.getElementById("newCharacterLevel").value
@@ -137,10 +143,31 @@ function crearPersonaje() {
       agilidad: 0,
       inteligencia: 0,
 
-      // Atributos derivados
+      // Atributos derivados de percepción
+      buscar: 0,
+      sigilo: 0,
+      observar: 0,
+
+      // Atributos derivados de destreza
+      cerradura: 0,
+      trampas: 0,
+      manipularObjetos: 0,
+
+      // Atributos derivados de agilidad
+      acrobacia: 0,
+      desarmar: 0,
+      equitacion: 0,
+
+      // Atributos derivados de inteligencia
+      elocuencia: 0,
+      resolver: 0,
+
+      // Atributos de combate
       combate: 0,
       punteria: 0,
       magia: 0,
+
+      // Atributos vitales
       vida: 10,
       vidaActual: 10,
       aguante: 10,
@@ -161,6 +188,7 @@ function crearPersonaje() {
 
   // Guardar el personaje en localStorage
   localStorage.setItem("personajeActual", JSON.stringify(nuevoPersonaje))
+  console.log("Personaje guardado en localStorage:", nuevoPersonaje)
 
   // Cerrar el modal
   const modal = bootstrap.Modal.getInstance(document.getElementById("createCharacterModal"))

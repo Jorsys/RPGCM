@@ -20,6 +20,40 @@ function cargarAtributos() {
   document.getElementById("agilidad").textContent = agilidad
   document.getElementById("inteligencia").textContent = inteligencia
 
+  // Cargar habilidades de percepción
+  const buscar = personaje.atributos?.buscar || 0
+  const sigilo = personaje.atributos?.sigilo || 0
+  const observar = personaje.atributos?.observar || 0
+
+  document.getElementById("buscar").textContent = buscar
+  document.getElementById("sigilo").textContent = sigilo
+  document.getElementById("observar").textContent = observar
+
+  // Cargar habilidades de destreza
+  const cerradura = personaje.atributos?.cerradura || 0
+  const trampas = personaje.atributos?.trampas || 0
+  const manipularObjetos = personaje.atributos?.manipularObjetos || 0
+
+  document.getElementById("cerradura").textContent = cerradura
+  document.getElementById("trampas").textContent = trampas
+  document.getElementById("manipularObjetos").textContent = manipularObjetos
+
+  // Cargar habilidades de agilidad
+  const acrobacia = personaje.atributos?.acrobacia || 0
+  const desarmar = personaje.atributos?.desarmar || 0
+  const equitacion = personaje.atributos?.equitacion || 0
+
+  document.getElementById("acrobacia").textContent = acrobacia
+  document.getElementById("desarmar").textContent = desarmar
+  document.getElementById("equitacion").textContent = equitacion
+
+  // Cargar habilidades de inteligencia
+  const elocuencia = personaje.atributos?.elocuencia || 0
+  const resolver = personaje.atributos?.resolver || 0
+
+  document.getElementById("elocuencia").textContent = elocuencia
+  document.getElementById("resolver").textContent = resolver
+
   // Cargar atributos de combate
   const combate = personaje.atributos?.combate || 0
   const punteria = personaje.atributos?.punteria || 0
@@ -96,6 +130,65 @@ function añadirIconosAtributos() {
   const inteligenciaLabel = document.querySelector('label[for="inteligencia"]')
   if (inteligenciaLabel) {
     inteligenciaLabel.innerHTML = '<i class="bi bi-brain me-1"></i> Inteligencia'
+  }
+
+  // Añadir iconos a las habilidades de percepción
+  const buscarLabel = document.querySelector('label[for="buscar"]')
+  if (buscarLabel) {
+    buscarLabel.innerHTML = '<i class="bi bi-search me-1"></i> Buscar'
+  }
+
+  const sigiloLabel = document.querySelector('label[for="sigilo"]')
+  if (sigiloLabel) {
+    sigiloLabel.innerHTML = '<i class="bi bi-person-fill-lock me-1"></i> Sigilo'
+  }
+
+  const observarLabel = document.querySelector('label[for="observar"]')
+  if (observarLabel) {
+    observarLabel.innerHTML = '<i class="bi bi-binoculars me-1"></i> Observar'
+  }
+
+  // Añadir iconos a las habilidades de destreza
+  const cerraduraLabel = document.querySelector('label[for="cerradura"]')
+  if (cerraduraLabel) {
+    cerraduraLabel.innerHTML = '<i class="bi bi-key me-1"></i> Cerradura'
+  }
+
+  const trampasLabel = document.querySelector('label[for="trampas"]')
+  if (trampasLabel) {
+    trampasLabel.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i> Trampas'
+  }
+
+  const manipularObjetosLabel = document.querySelector('label[for="manipularObjetos"]')
+  if (manipularObjetosLabel) {
+    manipularObjetosLabel.innerHTML = '<i class="bi bi-tools me-1"></i> Manipular Objetos'
+  }
+
+  // Añadir iconos a las habilidades de agilidad
+  const acrobaciaLabel = document.querySelector('label[for="acrobacia"]')
+  if (acrobaciaLabel) {
+    acrobaciaLabel.innerHTML = '<i class="bi bi-person-walking me-1"></i> Acrobacia'
+  }
+
+  const desarmarLabel = document.querySelector('label[for="desarmar"]')
+  if (desarmarLabel) {
+    desarmarLabel.innerHTML = '<i class="bi bi-shield-slash me-1"></i> Desarmar'
+  }
+
+  const equitacionLabel = document.querySelector('label[for="equitacion"]')
+  if (equitacionLabel) {
+    equitacionLabel.innerHTML = '<i class="bi bi-bicycle me-1"></i> Equitación'
+  }
+
+  // Añadir iconos a las habilidades de inteligencia
+  const elocuenciaLabel = document.querySelector('label[for="elocuencia"]')
+  if (elocuenciaLabel) {
+    elocuenciaLabel.innerHTML = '<i class="bi bi-chat-quote me-1"></i> Elocuencia'
+  }
+
+  const resolverLabel = document.querySelector('label[for="resolver"]')
+  if (resolverLabel) {
+    resolverLabel.innerHTML = '<i class="bi bi-puzzle me-1"></i> Resolver'
   }
 
   // Añadir iconos a los atributos de combate

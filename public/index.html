@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG Character Manager</title>
+    <title>Gestor de Personajes RPG</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/styles.css">
@@ -32,111 +32,42 @@
     </style>
 </head>
 <body>
-    <div class="hero text-center">
-        <div class="container">
-            <h1 class="display-4">RPG Character Manager</h1>
-            <p class="lead">Gestiona tus personajes de rol de forma sencilla y eficiente</p>
-            <div class="mt-4">
-                <a href="ficha-personaje.html" class="btn btn-primary btn-lg me-2">
-                    <i class="bi bi-person-badge"></i> Ver Personaje
-                </a>
-                <a href="editar-personaje.html" class="btn btn-outline-light btn-lg">
-                    <i class="bi bi-pencil-square"></i> Editar Personaje
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="container mb-5">
-        <div class="row text-center mb-5">
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 p-4">
-                    <div class="feature-icon">
-                        <i class="bi bi-shield-fill"></i>
+    <div class="container py-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="card-title mb-0">Gestor de Personajes RPG</h1>
                     </div>
-                    <h3>Equipamiento</h3>
-                    <p>Gestiona armas, armaduras y municiones de tu personaje con facilidad.</p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 p-4">
-                    <div class="feature-icon">
-                        <i class="bi bi-bag-fill"></i>
-                    </div>
-                    <h3>Inventario</h3>
-                    <p>Organiza tu inventario y recursos en bolsas especiales.</p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 p-4">
-                    <div class="feature-icon">
-                        <i class="bi bi-stars"></i>
-                    </div>
-                    <h3>Grimorio</h3>
-                    <p>Mantén un registro de todos tus hechizos y poderes mágicos.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-5">
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
                     <div class="card-body">
-                        <h4 class="card-title"><i class="bi bi-person-fill"></i> Personaje Actual</h4>
-                        <div id="current-character-info">
-                            <p class="text-center text-muted">Cargando información del personaje...</p>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5>Personaje Actual</h5>
+                                <div id="current-character-info">
+                                    <!-- La información del personaje se cargará dinámicamente -->
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-grid gap-2">
+                                    <a href="ficha-personaje.html" class="btn btn-primary">
+                                        <i class="bi bi-person-badge"></i> Ver Ficha
+                                    </a>
+                                    <button id="createCharacterBtn" class="btn btn-success">
+                                        <i class="bi bi-person-plus"></i> Crear Personaje
+                                    </button>
+                                    <button id="resetCharacterBtn" class="btn btn-danger">
+                                        <i class="bi bi-trash"></i> Reiniciar Personaje
+                                    </button>
+                                    <button id="exportCharacterBtn" class="btn btn-info">
+                                        <i class="bi bi-download"></i> Exportar Personaje
+                                    </button>
+                                    <button id="importCharacterBtn" class="btn btn-warning">
+                                        <i class="bi bi-upload"></i> Importar Personaje
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-footer bg-transparent border-top-0">
-                        <a href="ficha-personaje.html" class="btn btn-primary w-100">Ver Ficha Completa</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h4 class="card-title"><i class="bi bi-gear-fill"></i> Opciones</h4>
-                        <div class="d-grid gap-2">
-                            <button id="createCharacterBtn" class="btn btn-outline-primary">
-                                <i class="bi bi-plus-circle"></i> Crear Nuevo Personaje
-                            </button>
-                            <button id="resetCharacterBtn" class="btn btn-outline-danger">
-                                <i class="bi bi-trash"></i> Reiniciar Personaje Actual
-                            </button>
-                            <button id="exportCharacterBtn" class="btn btn-outline-secondary">
-                                <i class="bi bi-download"></i> Exportar Personaje
-                            </button>
-                            <button id="importCharacterBtn" class="btn btn-outline-secondary">
-                                <i class="bi bi-upload"></i> Importar Personaje
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="bg-dark text-white py-4">
-        <div class="container text-center">
-            <p>RPG Character Manager &copy; 2023</p>
-            <p class="small">Una aplicación para gestionar personajes de rol</p>
-        </div>
-    </footer>
-
-    <!-- Modal para confirmar reinicio -->
-    <div class="modal fade" id="resetConfirmModal" tabindex="-1" aria-labelledby="resetConfirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="resetConfirmModalLabel">Confirmar Reinicio</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>¿Estás seguro de que deseas reiniciar el personaje actual? Esta acción no se puede deshacer.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" id="confirmResetBtn">Reiniciar</button>
                 </div>
             </div>
         </div>
@@ -147,28 +78,47 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createCharacterModalLabel">Crear Nuevo Personaje</h5>
+                    <h5 class="modal-title" id="createCharacterModalLabel">Crear Personaje</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="createCharacterForm">
                         <div class="mb-3">
-                            <label for="newCharacterName" class="form-label">Nombre del Personaje</label>
-                            <input type="text" class="form-control" id="newCharacterName" required>
+                            <label for="newCharacterName" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="newCharacterName" name="newCharacterName" required>
                         </div>
                         <div class="mb-3">
                             <label for="newCharacterClass" class="form-label">Clase</label>
-                            <input type="text" class="form-control" id="newCharacterClass">
+                            <input type="text" class="form-control" id="newCharacterClass" name="newCharacterClass">
                         </div>
                         <div class="mb-3">
                             <label for="newCharacterLevel" class="form-label">Nivel</label>
-                            <input type="number" class="form-control" id="newCharacterLevel" min="1" value="1">
+                            <input type="number" class="form-control" id="newCharacterLevel" name="newCharacterLevel" min="1" value="1">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="confirmCreateBtn">Crear</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar reinicio -->
+    <div class="modal fade" id="resetConfirmModal" tabindex="-1" aria-labelledby="resetConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resetConfirmModalLabel">Confirmar Reinicio</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que quieres reiniciar el personaje actual? Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmResetBtn">Reiniciar</button>
                 </div>
             </div>
         </div>
