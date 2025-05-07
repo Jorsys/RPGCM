@@ -1,6 +1,5 @@
 // Importar funciones necesarias
 import { generateUUID } from "./modules/utils.js"
-import * as bootstrap from "bootstrap"
 
 // Función para inicializar la página
 function inicializarPagina() {
@@ -10,8 +9,24 @@ function inicializarPagina() {
   cargarInformacionPersonaje()
 
   // Configurar eventos para los botones
-  document.getElementById("createCharacterBtn").addEventListener("click", abrirModalCrearPersonaje)
-  document.getElementById("resetCharacterBtn").addEventListener("click", abrirModalReiniciarPersonaje)
+  document.getElementById("createCharacterBtn").addEventListener("click", () => {
+    console.log("Botón crear personaje clickeado")
+    document.getElementById("createCharacterForm").reset()
+    const modal = new window.bootstrap.Modal(document.getElementById("createCharacterModal"))
+    modal.show()
+  })
+
+  document.getElementById("resetCharacterBtn").addEventListener("click", () => {
+    console.log("Botón reiniciar personaje clickeado")
+    const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+    if (!personaje) {
+      alert("No hay ningún personaje activo para reiniciar")
+      return
+    }
+    const modal = new window.bootstrap.Modal(document.getElementById("resetConfirmModal"))
+    modal.show()
+  })
+
   document.getElementById("exportCharacterBtn").addEventListener("click", exportarPersonaje)
   document.getElementById("importCharacterBtn").addEventListener("click", importarPersonaje)
 
@@ -25,88 +40,90 @@ function inicializarPagina() {
 // Función para cargar la información del personaje actual
 function cargarInformacionPersonaje() {
   const contenedor = document.getElementById("current-character-info")
-  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+  const personajeJSON = localStorage.getItem("personajeActual")
 
-  if (!personaje) {
+  if (!personajeJSON) {
     contenedor.innerHTML = `
-      <div class="alert alert-info" role="alert">
-        <p class="mb-0">No hay ningún personaje activo. Crea uno nuevo para comenzar.</p>
-      </div>
-    `
+            <div class="alert alert-info" role="alert">
+                <p class="mb-0">No hay ningún personaje activo. Crea uno nuevo para comenzar.</p>
+            </div>
+        `
     return
   }
 
+  const personaje = JSON.parse(personajeJSON)
+
   // Mostrar información básica del personaje
   contenedor.innerHTML = `
-    <div class="card-text">
-      <div class="row mb-2">
-        <div class="col-4 text-muted">Nombre:</div>
-        <div class="col-8 fw-bold">${personaje.nombre || "Sin nombre"}</div>
-      </div>
-      <div class="row mb-2">
-        <div class="col-4 text-muted">Clase:</div>
-        <div class="col-8">${personaje.clase || "-"}</div>
-      </div>
-      <div class="row mb-2">
-        <div class="col-4 text-muted">Nivel:</div>
-        <div class="col-8">${personaje.nivel || "1"}</div>
-      </div>
-      <div class="row mb-2">
-        <div class="col-4 text-muted">Atributos Básicos:</div>
-        <div class="col-8">
-          <span class="badge bg-info me-1" title="Percepción">
-            <i class="bi bi-eye"></i> ${personaje.atributos?.percepcion || "0"}
-          </span>
-          <span class="badge bg-warning me-1" title="Destreza">
-            <i class="bi bi-hand"></i> ${personaje.atributos?.destreza || "0"}
-          </span>
-          <span class="badge bg-success me-1" title="Agilidad">
-            <i class="bi bi-lightning"></i> ${personaje.atributos?.agilidad || "0"}
-          </span>
-          <span class="badge bg-danger me-1" title="Inteligencia">
-            <i class="bi bi-brain"></i> ${personaje.atributos?.inteligencia || "0"}
-          </span>
+        <div class="card-text">
+            <div class="row mb-2">
+                <div class="col-4 text-muted">Nombre:</div>
+                <div class="col-8 fw-bold">${personaje.nombre || "Sin nombre"}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-4 text-muted">Clase:</div>
+                <div class="col-8">${personaje.clase || "-"}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-4 text-muted">Nivel:</div>
+                <div class="col-8">${personaje.nivel || "1"}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-4 text-muted">Atributos Básicos:</div>
+                <div class="col-8">
+                    <span class="badge bg-info me-1" title="Percepción">
+                        <i class="bi bi-eye"></i> ${personaje.atributos?.percepcion || "0"}
+                    </span>
+                    <span class="badge bg-warning me-1" title="Destreza">
+                        <i class="bi bi-hand"></i> ${personaje.atributos?.destreza || "0"}
+                    </span>
+                    <span class="badge bg-success me-1" title="Agilidad">
+                        <i class="bi bi-lightning"></i> ${personaje.atributos?.agilidad || "0"}
+                    </span>
+                    <span class="badge bg-danger me-1" title="Inteligencia">
+                        <i class="bi bi-brain"></i> ${personaje.atributos?.inteligencia || "0"}
+                    </span>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-4 text-muted">Atributos de Combate:</div>
+                <div class="col-8">
+                    <span class="badge bg-primary me-1" title="Combate">
+                        <i class="bi bi-sword"></i> ${personaje.atributos?.combate || "0"}
+                    </span>
+                    <span class="badge bg-success me-1" title="Puntería">
+                        <i class="bi bi-bullseye"></i> ${personaje.atributos?.punteria || "0"}
+                    </span>
+                    <span class="badge bg-info me-1" title="Magia">
+                        <i class="bi bi-stars"></i> ${personaje.atributos?.magia || "0"}
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4 text-muted">Estado:</div>
+                <div class="col-8">
+                    <div class="progress mb-1" style="height: 8px;" title="Vida">
+                        <div class="progress-bar bg-danger" style="width: ${calcularPorcentaje(
+                          personaje.atributos?.vidaActual || 0,
+                          personaje.atributos?.vida || 1,
+                        )}%"></div>
+                    </div>
+                    <div class="progress mb-1" style="height: 8px;" title="Aguante">
+                        <div class="progress-bar bg-warning" style="width: ${calcularPorcentaje(
+                          personaje.atributos?.aguanteActual || 0,
+                          personaje.atributos?.aguante || 1,
+                        )}%"></div>
+                    </div>
+                    <div class="progress" style="height: 8px;" title="Maná">
+                        <div class="progress-bar bg-primary" style="width: ${calcularPorcentaje(
+                          personaje.atributos?.manaActual || 0,
+                          personaje.atributos?.mana || 1,
+                        )}%"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="row mb-2">
-        <div class="col-4 text-muted">Atributos de Combate:</div>
-        <div class="col-8">
-          <span class="badge bg-primary me-1" title="Combate">
-            <i class="bi bi-sword"></i> ${personaje.atributos?.combate || "0"}
-          </span>
-          <span class="badge bg-success me-1" title="Puntería">
-            <i class="bi bi-bullseye"></i> ${personaje.atributos?.punteria || "0"}
-          </span>
-          <span class="badge bg-info me-1" title="Magia">
-            <i class="bi bi-stars"></i> ${personaje.atributos?.magia || "0"}
-          </span>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-4 text-muted">Estado:</div>
-        <div class="col-8">
-          <div class="progress mb-1" style="height: 8px;" title="Vida">
-            <div class="progress-bar bg-danger" style="width: ${calcularPorcentaje(
-              personaje.atributos?.vidaActual || 0,
-              personaje.atributos?.vida || 1,
-            )}%"></div>
-          </div>
-          <div class="progress mb-1" style="height: 8px;" title="Aguante">
-            <div class="progress-bar bg-warning" style="width: ${calcularPorcentaje(
-              personaje.atributos?.aguanteActual || 0,
-              personaje.atributos?.aguante || 1,
-            )}%"></div>
-          </div>
-          <div class="progress" style="height: 8px;" title="Maná">
-            <div class="progress-bar bg-primary" style="width: ${calcularPorcentaje(
-              personaje.atributos?.manaActual || 0,
-              personaje.atributos?.mana || 1,
-            )}%"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
+    `
 }
 
 // Función para calcular el porcentaje
@@ -115,20 +132,18 @@ function calcularPorcentaje(actual, total) {
   return Math.min(100, Math.max(0, (actual / total) * 100))
 }
 
-// Función para abrir el modal de crear personaje
-function abrirModalCrearPersonaje() {
-  console.log("Abriendo modal de crear personaje...")
-  const modal = new bootstrap.Modal(document.getElementById("createCharacterModal"))
-  document.getElementById("createCharacterForm").reset()
-  modal.show()
-}
-
 // Función para crear un nuevo personaje
 function crearPersonaje() {
-  console.log("Creando personaje...")
+  console.log("Función crearPersonaje ejecutada")
+
   const nombre = document.getElementById("newCharacterName").value
   const clase = document.getElementById("newCharacterClass").value
   const nivel = document.getElementById("newCharacterLevel").value
+
+  if (!nombre) {
+    alert("El nombre del personaje es obligatorio")
+    return
+  }
 
   // Crear objeto de personaje
   const nuevoPersonaje = {
@@ -191,7 +206,7 @@ function crearPersonaje() {
   console.log("Personaje guardado en localStorage:", nuevoPersonaje)
 
   // Cerrar el modal
-  const modal = bootstrap.Modal.getInstance(document.getElementById("createCharacterModal"))
+  const modal = window.bootstrap.Modal.getInstance(document.getElementById("createCharacterModal"))
   modal.hide()
 
   // Actualizar la información mostrada
@@ -201,25 +216,13 @@ function crearPersonaje() {
   alert("Personaje creado con éxito")
 }
 
-// Función para abrir el modal de reiniciar personaje
-function abrirModalReiniciarPersonaje() {
-  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
-  if (!personaje) {
-    alert("No hay ningún personaje activo para reiniciar")
-    return
-  }
-
-  const modal = new bootstrap.Modal(document.getElementById("resetConfirmModal"))
-  modal.show()
-}
-
 // Función para reiniciar el personaje actual
 function reiniciarPersonaje() {
   // Eliminar el personaje del localStorage
   localStorage.removeItem("personajeActual")
 
   // Cerrar el modal
-  const modal = bootstrap.Modal.getInstance(document.getElementById("resetConfirmModal"))
+  const modal = window.bootstrap.Modal.getInstance(document.getElementById("resetConfirmModal"))
   modal.hide()
 
   // Actualizar la información mostrada
@@ -300,4 +303,14 @@ function importarPersonaje() {
 }
 
 // Inicializar la página cuando se carga
-document.addEventListener("DOMContentLoaded", inicializarPagina)
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM cargado completamente")
+  // Asegurarse de que Bootstrap esté disponible
+  if (typeof window.bootstrap === "undefined") {
+    console.error("Bootstrap no está disponible. Asegúrate de que se cargó correctamente.")
+    alert("Error: Bootstrap no está disponible. La aplicación podría no funcionar correctamente.")
+  } else {
+    console.log("Bootstrap está disponible")
+    inicializarPagina()
+  }
+})
