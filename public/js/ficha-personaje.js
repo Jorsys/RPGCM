@@ -1,38 +1,36 @@
-// Importar módulos
+// Importar funciones necesarias
 import { cargarPersonaje } from "./modules/personaje.js"
-import { cargarAtributos } from "./modules/atributos-derivados.js"
 import { cargarEquipamiento } from "./modules/equipamiento.js"
-import { cargarInventarioAcordeon } from "./modules/inventario.js"
+import { cargarInventario } from "./modules/inventario.js"
 import { cargarRecursos } from "./modules/recursos.js"
 import { cargarBolsasEspeciales } from "./modules/bolsas.js"
 import { cargarGrimorio } from "./modules/grimorio.js"
+import { cargarAtributosDerivados } from "./modules/atributos-derivados.js"
 
-// Función para inicializar la ficha de personaje
-function inicializarFichaPersonaje() {
-  // Cargar datos del personaje
+// Función para inicializar la página
+function inicializarPagina() {
+  // Verificar si hay un personaje activo
+  const personajeJSON = localStorage.getItem("personajeActual")
+  if (!personajeJSON) {
+    alert("No hay ningún personaje activo. Serás redirigido a la página principal.")
+    window.location.href = "index.html"
+    return
+  }
+
+  // Cargar los datos del personaje
   cargarPersonaje()
-
-  // Cargar atributos derivados
-  cargarAtributos()
-
-  // Cargar equipamiento
   cargarEquipamiento()
-
-  // Cargar inventario
-  cargarInventarioAcordeon()
-
-  // Cargar recursos
+  cargarInventario()
   cargarRecursos()
-
-  // Cargar bolsas especiales
   cargarBolsasEspeciales()
-
-  // Cargar grimorio
   cargarGrimorio()
+  cargarAtributosDerivados()
+
+  // Configurar eventos
+  document.getElementById("volver").addEventListener("click", () => {
+    window.location.href = "index.html"
+  })
 }
 
-// Inicializar la ficha cuando se carga la página
-document.addEventListener("DOMContentLoaded", inicializarFichaPersonaje)
-
-// Exportar funciones
-export { inicializarFichaPersonaje }
+// Inicializar la página cuando se carga
+document.addEventListener("DOMContentLoaded", inicializarPagina)

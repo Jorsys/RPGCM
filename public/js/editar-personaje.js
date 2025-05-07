@@ -1,33 +1,55 @@
-// Importar módulos
+// Importar funciones necesarias
 import { cargarPersonajeEdicion, guardarPersonajeEdicion } from "./modules/personaje.js"
 import { cargarAtributosEdicion, guardarAtributosEdicion } from "./modules/editar-atributos.js"
 
-// Función para inicializar la página de edición
-function inicializarEdicion() {
-  // Cargar datos del personaje
-  cargarPersonajeEdicion()
+// Función para inicializar la página
+function inicializarPagina() {
+  // Verificar si hay un personaje activo
+  const personajeJSON = localStorage.getItem("personajeActual")
+  if (!personajeJSON) {
+    alert("No hay ningún personaje activo. Serás redirigido a la página principal.")
+    window.location.href = "index.html"
+    return
+  }
 
-  // Cargar atributos
+  // Cargar los datos del personaje en el formulario
+  cargarPersonajeEdicion()
   cargarAtributosEdicion()
 
-  // Configurar evento para guardar cambios
-  document.getElementById("saveBtn").addEventListener("click", guardarCambios)
+  // Configurar eventos
+  document.getElementById("guardarPersonaje").addEventListener("click", () => {
+    guardarPersonajeEdicion()
+    guardarAtributosEdicion()
+
+    // Actualizar el personaje en la lista de personajes
+    actualizarPersonajeEnLista()
+
+    alert("Personaje guardado con éxito")
+  })
+
+  document.getElementById("volver").addEventListener("click", () => {
+    window.location.href = "ficha-personaje.html"
+  })
 }
 
-// Función para guardar todos los cambios
-function guardarCambios() {
-  // Guardar datos del personaje
-  guardarPersonajeEdicion()
+// Función para actualizar el personaje en la lista de personajes
+function actualizarPersonajeEnLista() {
+  const personajeActualJSON = localStorage.getItem("personajeActual")
+  if (!personajeActualJSON) return
 
-  // Guardar atributos
-  guardarAtributosEdicion()
+  const personajeActual = JSON.parse(personajeActualJSON)
 
-  // Redirigir a la ficha de personaje
-  window.location.href = "ficha-personaje.html"
+  const personajesJSON = localStorage.getItem("personajes")
+  if (!personajesJSON) return
+
+  const personajes = JSON.parse(personajesJSON)
+  const index = personajes.findIndex((p) => p.id === personajeActual.id)
+
+  if (index !== -1) {
+    personajes[index] = personajeActual
+    localStorage.setItem("personajes", JSON.stringify(personajes))
+  }
 }
 
 // Inicializar la página cuando se carga
-document.addEventListener("DOMContentLoaded", inicializarEdicion)
-
-// Exportar funciones
-export { inicializarEdicion, guardarCambios }
+document.addEventListener("DOMContentLoaded", inicializarPagina)

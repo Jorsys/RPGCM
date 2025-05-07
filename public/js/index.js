@@ -1,12 +1,15 @@
 // Importar funciones necesarias
 import { generateUUID } from "./modules/utils.js"
 
+// Variable para almacenar el ID del personaje a eliminar
+let personajeAEliminarId = null
+
 // Función para inicializar la página
 function inicializarPagina() {
   console.log("Inicializando página...")
 
-  // Cargar información del personaje actual
-  cargarInformacionPersonaje()
+  // Cargar lista de personajes
+  cargarListaPersonajes()
 
   // Configurar eventos para los botones
   document.getElementById("createCharacterBtn").addEventListener("click", () => {
@@ -16,227 +19,172 @@ function inicializarPagina() {
     modal.show()
   })
 
-  document.getElementById("resetCharacterBtn").addEventListener("click", () => {
-    console.log("Botón reiniciar personaje clickeado")
-    const personaje = JSON.parse(localStorage.getItem("personajeActual"))
-    if (!personaje) {
-      alert("No hay ningún personaje activo para reiniciar")
-      return
-    }
-    const modal = new window.bootstrap.Modal(document.getElementById("resetConfirmModal"))
-    modal.show()
-  })
-
-  document.getElementById("exportCharacterBtn").addEventListener("click", exportarPersonaje)
   document.getElementById("importCharacterBtn").addEventListener("click", importarPersonaje)
 
   // Configurar eventos para los modales
-  document.getElementById("confirmResetBtn").addEventListener("click", reiniciarPersonaje)
   document.getElementById("confirmCreateBtn").addEventListener("click", crearPersonaje)
+  document.getElementById("confirmDeleteBtn").addEventListener("click", eliminarPersonaje)
 
   console.log("Eventos configurados correctamente")
 }
 
-// Función para cargar la información del personaje actual
-function cargarInformacionPersonaje() {
-  const contenedor = document.getElementById("current-character-info")
-  const personajeJSON = localStorage.getItem("personajeActual")
+// Función para cargar la lista de personajes
+function cargarListaPersonajes() {
+  const contenedor = document.getElementById("characters-list")
+  const personajesJSON = localStorage.getItem("personajes")
 
-  if (!personajeJSON) {
+  if (!personajesJSON) {
+    localStorage.setItem("personajes", JSON.stringify([]))
     contenedor.innerHTML = `
-            <div class="alert alert-info" role="alert">
-                <p class="mb-0">No hay ningún personaje activo. Crea uno nuevo para comenzar.</p>
-            </div>
-        `
-    return
-  }
-
-  const personaje = JSON.parse(personajeJSON)
-
-  // Mostrar información básica del personaje
-  contenedor.innerHTML = `
-        <div class="card-text">
-            <div class="row mb-2">
-                <div class="col-4 text-muted">Nombre:</div>
-                <div class="col-8 fw-bold">${personaje.nombre || "Sin nombre"}</div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-4 text-muted">Clase:</div>
-                <div class="col-8">${personaje.clase || "-"}</div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-4 text-muted">Nivel:</div>
-                <div class="col-8">${personaje.nivel || "1"}</div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-4 text-muted">Atributos Básicos:</div>
-                <div class="col-8">
-                    <span class="badge bg-info me-1" title="Percepción">
-                        <i class="bi bi-eye"></i> ${personaje.atributos?.percepcion || "0"}
-                    </span>
-                    <span class="badge bg-warning me-1" title="Destreza">
-                        <i class="bi bi-hand"></i> ${personaje.atributos?.destreza || "0"}
-                    </span>
-                    <span class="badge bg-success me-1" title="Agilidad">
-                        <i class="bi bi-lightning"></i> ${personaje.atributos?.agilidad || "0"}
-                    </span>
-                    <span class="badge bg-danger me-1" title="Inteligencia">
-                        <i class="bi bi-brain"></i> ${personaje.atributos?.inteligencia || "0"}
-                    </span>
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-4 text-muted">Atributos de Combate:</div>
-                <div class="col-8">
-                    <span class="badge bg-primary me-1" title="Combate">
-                        <i class="bi bi-sword"></i> ${personaje.atributos?.combate || "0"}
-                    </span>
-                    <span class="badge bg-success me-1" title="Puntería">
-                        <i class="bi bi-bullseye"></i> ${personaje.atributos?.punteria || "0"}
-                    </span>
-                    <span class="badge bg-info me-1" title="Magia">
-                        <i class="bi bi-stars"></i> ${personaje.atributos?.magia || "0"}
-                    </span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-4 text-muted">Estado:</div>
-                <div class="col-8">
-                    <div class="progress mb-1" style="height: 8px;" title="Vida">
-                        <div class="progress-bar bg-danger" style="width: ${calcularPorcentaje(
-                          personaje.atributos?.vidaActual || 0,
-                          personaje.atributos?.vida || 1,
-                        )}%"></div>
-                    </div>
-                    <div class="progress mb-1" style="height: 8px;" title="Aguante">
-                        <div class="progress-bar bg-warning" style="width: ${calcularPorcentaje(
-                          personaje.atributos?.aguanteActual || 0,
-                          personaje.atributos?.aguante || 1,
-                        )}%"></div>
-                    </div>
-                    <div class="progress" style="height: 8px;" title="Maná">
-                        <div class="progress-bar bg-primary" style="width: ${calcularPorcentaje(
-                          personaje.atributos?.manaActual || 0,
-                          personaje.atributos?.mana || 1,
-                        )}%"></div>
-                    </div>
-                </div>
-            </div>
+      <div class="col-12">
+        <div class="alert alert-info" role="alert">
+          <p class="mb-0">No hay personajes creados. Crea uno nuevo para comenzar.</p>
         </div>
+      </div>
     `
-}
-
-// Función para calcular el porcentaje
-function calcularPorcentaje(actual, total) {
-  if (total <= 0) return 0
-  return Math.min(100, Math.max(0, (actual / total) * 100))
-}
-
-// Función para crear un nuevo personaje
-function crearPersonaje() {
-  console.log("Función crearPersonaje ejecutada")
-
-  const nombre = document.getElementById("newCharacterName").value
-  const clase = document.getElementById("newCharacterClass").value
-  const nivel = document.getElementById("newCharacterLevel").value
-
-  if (!nombre) {
-    alert("El nombre del personaje es obligatorio")
     return
   }
 
-  // Crear objeto de personaje
-  const nuevoPersonaje = {
-    id: generateUUID(),
-    nombre,
-    clase,
-    nivel,
-    atributos: {
-      // Atributos básicos
-      percepcion: 0,
-      destreza: 0,
-      agilidad: 0,
-      inteligencia: 0,
+  const personajes = JSON.parse(personajesJSON)
 
-      // Atributos derivados de percepción
-      buscar: 0,
-      sigilo: 0,
-      observar: 0,
-
-      // Atributos derivados de destreza
-      cerradura: 0,
-      trampas: 0,
-      manipularObjetos: 0,
-
-      // Atributos derivados de agilidad
-      acrobacia: 0,
-      desarmar: 0,
-      equitacion: 0,
-
-      // Atributos derivados de inteligencia
-      elocuencia: 0,
-      resolver: 0,
-
-      // Atributos de combate
-      combate: 0,
-      punteria: 0,
-      magia: 0,
-
-      // Atributos vitales
-      vida: 10,
-      vidaActual: 10,
-      aguante: 10,
-      aguanteActual: 10,
-      mana: 10,
-      manaActual: 10,
-    },
-    inventario: [],
-    equipamiento: {
-      armas: [],
-      armaduras: [],
-      municiones: [],
-    },
-    recursos: [],
-    bolsasEspeciales: [],
-    grimorio: [],
+  if (personajes.length === 0) {
+    contenedor.innerHTML = `
+      <div class="col-12">
+        <div class="alert alert-info" role="alert">
+          <p class="mb-0">No hay personajes creados. Crea uno nuevo para comenzar.</p>
+        </div>
+      </div>
+    `
+    return
   }
 
-  // Guardar el personaje en localStorage
-  localStorage.setItem("personajeActual", JSON.stringify(nuevoPersonaje))
-  console.log("Personaje guardado en localStorage:", nuevoPersonaje)
-
-  // Cerrar el modal
-  const modal = window.bootstrap.Modal.getInstance(document.getElementById("createCharacterModal"))
-  modal.hide()
-
-  // Actualizar la información mostrada
-  cargarInformacionPersonaje()
-
-  // Mostrar mensaje de éxito
-  alert("Personaje creado con éxito")
+  // Mostrar la lista de personajes
+  contenedor.innerHTML = personajes
+    .map(
+      (personaje) => `
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">${personaje.nombre}</h5>
+          <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton-${personaje.id}" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton-${personaje.id}">
+              <li><a class="dropdown-item" href="#" onclick="window.seleccionarPersonaje('${personaje.id}')">Seleccionar</a></li>
+              <li><a class="dropdown-item" href="#" onclick="window.exportarPersonaje('${personaje.id}')">Exportar</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="#" onclick="window.confirmarEliminarPersonaje('${personaje.id}')">Eliminar</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row mb-2">
+            <div class="col-4 text-muted">Clase:</div>
+            <div class="col-8">${personaje.clase || "-"}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-4 text-muted">Nivel:</div>
+            <div class="col-8">${personaje.nivel || "1"}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-4 text-muted">Atributos:</div>
+            <div class="col-8">
+              <span class="badge bg-info me-1" title="Percepción">
+                <i class="bi bi-eye"></i> ${personaje.atributos?.percepcion || "0"}
+              </span>
+              <span class="badge bg-warning me-1" title="Destreza">
+                <i class="bi bi-hand"></i> ${personaje.atributos?.destreza || "0"}
+              </span>
+              <span class="badge bg-success me-1" title="Agilidad">
+                <i class="bi bi-lightning"></i> ${personaje.atributos?.agilidad || "0"}
+              </span>
+              <span class="badge bg-danger me-1" title="Inteligencia">
+                <i class="bi bi-brain"></i> ${personaje.atributos?.inteligencia || "0"}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="d-grid">
+            <a href="ficha-personaje.html" class="btn btn-primary btn-sm" onclick="window.seleccionarPersonaje('${personaje.id}')">
+              <i class="bi bi-person-badge"></i> Ver Ficha
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+    )
+    .join("")
 }
 
-// Función para reiniciar el personaje actual
-function reiniciarPersonaje() {
-  // Eliminar el personaje del localStorage
-  localStorage.removeItem("personajeActual")
+// Función para seleccionar un personaje
+function seleccionarPersonaje(id) {
+  const personajesJSON = localStorage.getItem("personajes")
+  if (!personajesJSON) return
 
-  // Cerrar el modal
-  const modal = window.bootstrap.Modal.getInstance(document.getElementById("resetConfirmModal"))
-  modal.hide()
+  const personajes = JSON.parse(personajesJSON)
+  const personaje = personajes.find((p) => p.id === id)
 
-  // Actualizar la información mostrada
-  cargarInformacionPersonaje()
-
-  // Mostrar mensaje de éxito
-  alert("Personaje reiniciado con éxito")
+  if (personaje) {
+    localStorage.setItem("personajeActual", JSON.stringify(personaje))
+    console.log("Personaje seleccionado:", personaje)
+  }
 }
 
-// Función para exportar el personaje actual
-function exportarPersonaje() {
-  const personaje = JSON.parse(localStorage.getItem("personajeActual"))
+// Función para confirmar la eliminación de un personaje
+function confirmarEliminarPersonaje(id) {
+  personajeAEliminarId = id
+  const modal = new window.bootstrap.Modal(document.getElementById("deleteConfirmModal"))
+  modal.show()
+}
+
+// Función para eliminar un personaje
+function eliminarPersonaje() {
+  if (!personajeAEliminarId) return
+
+  const personajesJSON = localStorage.getItem("personajes")
+  if (!personajesJSON) return
+
+  const personajes = JSON.parse(personajesJSON)
+  const nuevosPersonajes = personajes.filter((p) => p.id !== personajeAEliminarId)
+
+  localStorage.setItem("personajes", JSON.stringify(nuevosPersonajes))
+
+  // Si el personaje eliminado era el actual, eliminar también de personajeActual
+  const personajeActualJSON = localStorage.getItem("personajeActual")
+  if (personajeActualJSON) {
+    const personajeActual = JSON.parse(personajeActualJSON)
+    if (personajeActual.id === personajeAEliminarId) {
+      localStorage.removeItem("personajeActual")
+    }
+  }
+
+  // Cerrar el modal
+  const modal = window.bootstrap.Modal.getInstance(document.getElementById("deleteConfirmModal"))
+  modal.hide()
+
+  // Actualizar la lista de personajes
+  cargarListaPersonajes()
+
+  // Mostrar mensaje de éxito
+  alert("Personaje eliminado con éxito")
+
+  // Resetear la variable
+  personajeAEliminarId = null
+}
+
+// Función para exportar un personaje específico
+function exportarPersonaje(id) {
+  const personajesJSON = localStorage.getItem("personajes")
+  if (!personajesJSON) return
+
+  const personajes = JSON.parse(personajesJSON)
+  const personaje = personajes.find((p) => p.id === id)
+
   if (!personaje) {
-    alert("No hay ningún personaje activo para exportar")
+    alert("No se encontró el personaje")
     return
   }
 
@@ -261,6 +209,117 @@ function exportarPersonaje() {
   }, 0)
 }
 
+// Función para crear un nuevo personaje
+function crearPersonaje() {
+  console.log("Función crearPersonaje ejecutada")
+
+  const nombre = document.getElementById("newCharacterName").value
+  const clase = document.getElementById("newCharacterClass").value
+  const nivel = document.getElementById("newCharacterLevel").value
+
+  // Obtener atributos básicos
+  const percepcion = Number.parseInt(document.getElementById("newCharacterPerception").value) || 0
+  const destreza = Number.parseInt(document.getElementById("newCharacterDexterity").value) || 0
+  const agilidad = Number.parseInt(document.getElementById("newCharacterAgility").value) || 0
+  const inteligencia = Number.parseInt(document.getElementById("newCharacterIntelligence").value) || 0
+
+  // Obtener atributos de combate
+  const combate = Number.parseInt(document.getElementById("newCharacterCombat").value) || 0
+  const punteria = Number.parseInt(document.getElementById("newCharacterAim").value) || 0
+  const magia = Number.parseInt(document.getElementById("newCharacterMagic").value) || 0
+
+  // Obtener atributos vitales
+  const vida = Number.parseInt(document.getElementById("newCharacterLife").value) || 10
+  const aguante = Number.parseInt(document.getElementById("newCharacterStamina").value) || 10
+  const mana = Number.parseInt(document.getElementById("newCharacterMana").value) || 10
+
+  if (!nombre) {
+    alert("El nombre del personaje es obligatorio")
+    return
+  }
+
+  // Crear objeto de personaje
+  const nuevoPersonaje = {
+    id: generateUUID(),
+    nombre,
+    clase,
+    nivel,
+    atributos: {
+      // Atributos básicos
+      percepcion,
+      destreza,
+      agilidad,
+      inteligencia,
+
+      // Atributos derivados de percepción
+      buscar: Math.floor(percepcion / 2),
+      sigilo: Math.floor(percepcion / 2),
+      observar: Math.floor(percepcion / 2),
+
+      // Atributos derivados de destreza
+      cerradura: Math.floor(destreza / 2),
+      trampas: Math.floor(destreza / 2),
+      manipularObjetos: Math.floor(destreza / 2),
+
+      // Atributos derivados de agilidad
+      acrobacia: Math.floor(agilidad / 2),
+      desarmar: Math.floor(agilidad / 2),
+      equitacion: Math.floor(agilidad / 2),
+
+      // Atributos derivados de inteligencia
+      elocuencia: Math.floor(inteligencia / 2),
+      resolver: Math.floor(inteligencia / 2),
+
+      // Atributos de combate
+      combate,
+      punteria,
+      magia,
+
+      // Atributos vitales
+      vida,
+      vidaActual: vida,
+      aguante,
+      aguanteActual: aguante,
+      mana,
+      manaActual: mana,
+    },
+    inventario: [],
+    equipamiento: {
+      armas: [],
+      armaduras: [],
+      municiones: [],
+    },
+    recursos: [],
+    bolsasEspeciales: [],
+    grimorio: [],
+  }
+
+  // Obtener la lista actual de personajes
+  const personajesJSON = localStorage.getItem("personajes")
+  const personajes = personajesJSON ? JSON.parse(personajesJSON) : []
+
+  // Añadir el nuevo personaje
+  personajes.push(nuevoPersonaje)
+
+  // Guardar la lista actualizada
+  localStorage.setItem("personajes", JSON.stringify(personajes))
+
+  // Establecer como personaje actual
+  localStorage.setItem("personajeActual", JSON.stringify(nuevoPersonaje))
+
+  console.log("Personaje guardado:", nuevoPersonaje)
+
+  // Cerrar el modal
+  const modal = window.bootstrap.Modal.getInstance(document.getElementById("createCharacterModal"))
+  modal.hide()
+
+  // Actualizar la lista de personajes
+  cargarListaPersonajes()
+
+  // Mostrar mensaje de éxito
+  alert("Personaje creado con éxito")
+}
+
 // Función para importar un personaje
 function importarPersonaje() {
   // Crear un input de tipo file
@@ -283,11 +342,32 @@ function importarPersonaje() {
           throw new Error("El archivo no contiene un personaje válido")
         }
 
-        // Guardar el personaje en localStorage
+        // Asegurarse de que el personaje tenga un ID único
+        personaje.id = personaje.id || generateUUID()
+
+        // Obtener la lista actual de personajes
+        const personajesJSON = localStorage.getItem("personajes")
+        const personajes = personajesJSON ? JSON.parse(personajesJSON) : []
+
+        // Comprobar si ya existe un personaje con el mismo ID
+        const personajeExistente = personajes.findIndex((p) => p.id === personaje.id)
+
+        if (personajeExistente !== -1) {
+          // Reemplazar el personaje existente
+          personajes[personajeExistente] = personaje
+        } else {
+          // Añadir el nuevo personaje
+          personajes.push(personaje)
+        }
+
+        // Guardar la lista actualizada
+        localStorage.setItem("personajes", JSON.stringify(personajes))
+
+        // Establecer como personaje actual
         localStorage.setItem("personajeActual", JSON.stringify(personaje))
 
-        // Actualizar la información mostrada
-        cargarInformacionPersonaje()
+        // Actualizar la lista de personajes
+        cargarListaPersonajes()
 
         // Mostrar mensaje de éxito
         alert("Personaje importado con éxito")
@@ -301,6 +381,11 @@ function importarPersonaje() {
   // Simular clic en el input
   input.click()
 }
+
+// Exponer funciones al ámbito global para poder usarlas en los onclick
+window.seleccionarPersonaje = seleccionarPersonaje
+window.confirmarEliminarPersonaje = confirmarEliminarPersonaje
+window.exportarPersonaje = exportarPersonaje
 
 // Inicializar la página cuando se carga
 document.addEventListener("DOMContentLoaded", () => {
