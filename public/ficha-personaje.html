@@ -91,21 +91,33 @@
                                 <div class="text-center">
                                     <i class="bi bi-heart-fill fs-2 text-danger"></i>
                                     <h6>Vida</h6>
-                                    <span class="badge bg-danger fs-6" id="vidaValor">0</span>
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <span class="badge bg-danger fs-6" id="vidaActualValor">0</span>
+                                        <span class="mx-1">/</span>
+                                        <span class="badge bg-secondary fs-6" id="vidaValor">0</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="text-center">
                                     <i class="bi bi-battery-full fs-2 text-warning"></i>
                                     <h6>Aguante</h6>
-                                    <span class="badge bg-warning fs-6" id="aguanteValor">0</span>
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <span class="badge bg-warning fs-6" id="aguanteActualValor">0</span>
+                                        <span class="mx-1">/</span>
+                                        <span class="badge bg-secondary fs-6" id="aguanteValor">0</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="text-center">
                                     <i class="bi bi-stars fs-2 text-primary"></i>
                                     <h6>Maná</h6>
-                                    <span class="badge bg-primary fs-6" id="manaValor">0</span>
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <span class="badge bg-primary fs-6" id="manaActualValor">0</span>
+                                        <span class="mx-1">/</span>
+                                        <span class="badge bg-secondary fs-6" id="manaValor">0</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -274,6 +286,161 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Equipamiento -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Equipamiento</h5>
+                        <button class="btn btn-sm btn-primary" id="addEquipmentBtn">
+                            <i class="bi bi-plus-circle"></i> Añadir
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6><i class="bi bi-sword"></i> Armas</h6>
+                                <ul class="list-group" id="armasLista">
+                                    <li class="list-group-item text-muted">No hay armas equipadas</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h6><i class="bi bi-shield"></i> Armaduras</h6>
+                                <ul class="list-group" id="armadurasLista">
+                                    <li class="list-group-item text-muted">No hay armaduras equipadas</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h6><i class="bi bi-bullseye"></i> Municiones</h6>
+                                <ul class="list-group" id="municionesLista">
+                                    <li class="list-group-item text-muted">No hay municiones equipadas</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventario y Recursos -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Inventario</h5>
+                        <button class="btn btn-sm btn-primary" id="addItemBtn">
+                            <i class="bi bi-plus-circle"></i> Añadir
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="inventarioAccordion">
+                            <!-- El inventario se cargará dinámicamente -->
+                            <div class="text-muted" id="inventarioVacio">No hay objetos en el inventario</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Recursos</h5>
+                        <button class="btn btn-sm btn-primary" id="addResourceBtn">
+                            <i class="bi bi-plus-circle"></i> Añadir
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="recursosContainer">
+                            <!-- Los recursos se cargarán dinámicamente -->
+                            <div class="text-muted" id="recursosVacio">No hay recursos disponibles</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bolsas y Grimorio -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Bolsas Especiales</h5>
+                        <button class="btn btn-sm btn-primary" id="addBagBtn">
+                            <i class="bi bi-plus-circle"></i> Añadir
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="bolsasContainer">
+                            <!-- Las bolsas se cargarán dinámicamente -->
+                            <div class="text-muted" id="bolsasVacio">No hay bolsas especiales</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Grimorio</h5>
+                        <button class="btn btn-sm btn-primary" id="addSpellBtn">
+                            <i class="bi bi-plus-circle"></i> Añadir
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="grimorioContainer">
+                            <!-- El grimorio se cargará dinámicamente -->
+                            <div class="text-muted" id="grimorioVacio">No hay hechizos en el grimorio</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales para edición -->
+    <!-- Modal para añadir/editar objeto -->
+    <div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="itemModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="itemModalLabel">Añadir Objeto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="itemForm">
+                        <input type="hidden" id="itemId">
+                        <div class="mb-3">
+                            <label for="itemName" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="itemName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="itemType" class="form-label">Tipo</label>
+                            <select class="form-select" id="itemType">
+                                <option value="objeto">Objeto</option>
+                                <option value="arma">Arma</option>
+                                <option value="armadura">Armadura</option>
+                                <option value="municion">Munición</option>
+                                <option value="pocion">Poción</option>
+                                <option value="pergamino">Pergamino</option>
+                                <option value="herramienta">Herramienta</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="itemQuantity" class="form-label">Cantidad</label>
+                            <input type="number" class="form-control" id="itemQuantity" min="1" value="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="itemDescription" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="itemDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveItemBtn">Guardar</button>
                 </div>
             </div>
         </div>
