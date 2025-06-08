@@ -137,7 +137,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="text-center">
-                                    <i class="bi bi-sword fs-2 text-danger"></i>
+                                    <i class="bi bi-heart-break fs-2 text-danger"></i>
                                     <h6>Combate</h6>
                                     <span class="badge bg-danger fs-6" id="combateValor">0</span>
                                 </div>
@@ -254,7 +254,7 @@
                             </div>
                             <div class="col-4">
                                 <div class="text-center">
-                                    <i class="bi bi-horse fs-4"></i>
+                                    <i class="bi bi-bicycle fs-4"></i>
                                     <p class="mb-1">Equitación</p>
                                     <span class="badge bg-secondary" id="equitacionValor">0</span>
                                 </div>
@@ -402,45 +402,154 @@
     <!-- Modales para edición -->
     <!-- Modal para añadir/editar objeto -->
     <div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="itemModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="itemModalLabel">Añadir Objeto</h5>
+                    <h5 class="modal-title" id="itemModalLabel">Nuevo objeto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="itemForm">
-                        <input type="hidden" id="itemId">
+                        <input type="hidden" id="itemId" name="itemId">
+                    
+                        <!-- Tipo de objeto -->
                         <div class="mb-3">
-                            <label for="itemName" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="itemName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="itemType" class="form-label">Tipo</label>
-                            <select class="form-select" id="itemType">
-                                <option value="objeto">Objeto</option>
+                            <label for="itemType" class="form-label">Tipo de objeto</label>
+                            <select class="form-select" id="itemType" name="itemType" required>
+                                <option value="">Seleccionar tipo...</option>
                                 <option value="arma">Arma</option>
                                 <option value="armadura">Armadura</option>
                                 <option value="municion">Munición</option>
-                                <option value="pocion">Poción</option>
-                                <option value="pergamino">Pergamino</option>
-                                <option value="herramienta">Herramienta</option>
-                                <option value="otro">Otro</option>
+                                <option value="recurso">Recurso</option>
+                                <option value="objeto">Objeto general</option>
                             </select>
                         </div>
+
+                        <!-- Campos comunes -->
                         <div class="mb-3">
-                            <label for="itemQuantity" class="form-label">Cantidad</label>
-                            <input type="number" class="form-control" id="itemQuantity" min="1" value="1">
+                            <label for="itemName" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="itemName" name="itemName" required>
                         </div>
+
+                        <!-- Campos específicos para armas -->
+                        <div id="weaponFields" class="weapon-fields" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="weaponType" class="form-label">Tipo de arma</label>
+                                        <select class="form-select" id="weaponType" name="weaponType">
+                                            <option value="espada">Espada</option>
+                                            <option value="hacha">Hacha</option>
+                                            <option value="arco">Arco</option>
+                                            <option value="ballesta">Ballesta</option>
+                                            <option value="daga">Daga</option>
+                                            <option value="maza">Maza</option>
+                                            <option value="lanza">Lanza</option>
+                                            <option value="baston">Bastón</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="weaponDamage" class="form-label">Daño</label>
+                                        <input type="text" class="form-control" id="weaponDamage" name="weaponDamage" placeholder="ej: 1d8+2">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="weaponRange" class="form-label">Alcance</label>
+                                <input type="text" class="form-control" id="weaponRange" name="weaponRange" placeholder="ej: Cuerpo a cuerpo, 30m">
+                            </div>
+                        </div>
+
+                        <!-- Campos específicos para armaduras -->
+                        <div id="armorFields" class="armor-fields" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="armorType" class="form-label">Tipo de armadura</label>
+                                        <select class="form-select" id="armorType" name="armorType">
+                                            <option value="ligera">Ligera</option>
+                                            <option value="media">Media</option>
+                                            <option value="pesada">Pesada</option>
+                                            <option value="escudo">Escudo</option>
+                                            <option value="casco">Casco</option>
+                                            <option value="guantes">Guantes</option>
+                                            <option value="botas">Botas</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="armorProtection" class="form-label">Protección</label>
+                                        <input type="number" class="form-control" id="armorProtection" name="armorProtection" min="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campos específicos para munición -->
+                        <div id="ammoFields" class="ammo-fields" style="display: none;">
+                            <div class="mb-3">
+                                <label for="ammoType" class="form-label">Tipo de munición</label>
+                                <select class="form-select" id="ammoType" name="ammoType">
+                                    <option value="flecha">Flecha</option>
+                                    <option value="virote">Virote</option>
+                                    <option value="piedra">Piedra</option>
+                                    <option value="dardo">Dardo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Campos específicos para recursos -->
+                        <div id="resourceFields" class="resource-fields" style="display: none;">
+                            <div class="mb-3">
+                                <label for="resourceCategory" class="form-label">Categoría</label>
+                                <select class="form-select" id="resourceCategory" name="resourceCategory">
+                                    <option value="alimento">Alimento</option>
+                                    <option value="bebida">Bebida</option>
+                                    <option value="material">Material</option>
+                                    <option value="herramienta">Herramienta</option>
+                                    <option value="componente">Componente mágico</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Campos comunes de cantidad y peso -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="itemQuantity" class="form-label">Cantidad</label>
+                                    <input type="number" class="form-control" id="itemQuantity" name="itemQuantity" min="1" value="1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="itemWeight" class="form-label">Peso <span id="weightLabel">total</span></label>
+                                    <input type="number" class="form-control" id="itemWeight" name="itemWeight" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="itemValue" class="form-label">Valor <span id="valueLabel">total</span></label>
+                                    <input type="number" class="form-control" id="itemValue" name="itemValue" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Descripción -->
                         <div class="mb-3">
                             <label for="itemDescription" class="form-label">Descripción</label>
-                            <textarea class="form-control" id="itemDescription" rows="3"></textarea>
+                            <textarea class="form-control" id="itemDescription" name="itemDescription" rows="3"></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="saveItemBtn">Guardar</button>
+                    <button type="button" class="btn btn-danger me-2" id="deleteItemBtn" style="display: none;">Eliminar</button>
+                    <button type="button" class="btn btn-success me-2" id="equipItemBtn" style="display: none;">Equipar</button>
+                    <button type="button" class="btn btn-secondary" id="moveToBagBtn" style="display: none;">Mover a bolsa</button>
                 </div>
             </div>
         </div>
