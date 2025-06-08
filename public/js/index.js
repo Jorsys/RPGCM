@@ -10,6 +10,56 @@ function generateUUID() {
 // Variable para almacenar el ID del personaje a eliminar
 let personajeAEliminarId = null
 
+// Función para obtener la lista de personajes de forma segura
+function obtenerPersonajes() {
+  try {
+    const personajesJSON = localStorage.getItem("personajes")
+
+    if (!personajesJSON) {
+      console.log("No hay personajes en localStorage, inicializando array vacío")
+      const arrayVacio = []
+      localStorage.setItem("personajes", JSON.stringify(arrayVacio))
+      return arrayVacio
+    }
+
+    const personajes = JSON.parse(personajesJSON)
+
+    // Verificar que sea un array
+    if (!Array.isArray(personajes)) {
+      console.warn("Los datos de personajes no son un array válido, reiniciando...")
+      const arrayVacio = []
+      localStorage.setItem("personajes", JSON.stringify(arrayVacio))
+      return arrayVacio
+    }
+
+    console.log(`Personajes cargados correctamente: ${personajes.length} personajes`)
+    return personajes
+  } catch (error) {
+    console.error("Error al obtener personajes:", error)
+    console.log("Reiniciando localStorage de personajes...")
+    const arrayVacio = []
+    localStorage.setItem("personajes", JSON.stringify(arrayVacio))
+    return arrayVacio
+  }
+}
+
+// Función para guardar la lista de personajes de forma segura
+function guardarPersonajes(personajes) {
+  try {
+    if (!Array.isArray(personajes)) {
+      console.error("Intentando guardar algo que no es un array:", personajes)
+      return false
+    }
+
+    localStorage.setItem("personajes", JSON.stringify(personajes))
+    console.log(`Guardados ${personajes.length} personajes en localStorage`)
+    return true
+  } catch (error) {
+    console.error("Error al guardar personajes:", error)
+    return false
+  }
+}
+
 // Función para inicializar la página
 function inicializarPagina() {
   console.log("Inicializando página...")
@@ -90,21 +140,7 @@ function cargarListaPersonajes() {
     return
   }
 
-  const personajesJSON = localStorage.getItem("personajes")
-
-  if (!personajesJSON) {
-    localStorage.setItem("personajes", JSON.stringify([]))
-    contenedor.innerHTML = `
-      <div class="col-12">
-        <div class="alert alert-info" role="alert">
-          <p class="mb-0">No hay personajes creados. Crea uno nuevo para comenzar.</p>
-        </div>
-      </div>
-    `
-    return
-  }
-
-  const personajes = JSON.parse(personajesJSON)
+  const personajes = obtenerPersonajes()
 
   if (personajes.length === 0) {
     contenedor.innerHTML = `
@@ -277,16 +313,20 @@ function crearPersonaje() {
 
     console.log("Personaje creado:", nuevoPersonaje)
 
-    // Obtener la lista actual de personajes
-    const personajesJSON = localStorage.getItem("personajes")
-    const personajes = personajesJSON ? JSON.parse(personajesJSON) : []
+    // Obtener la lista actual de personajes de forma segura
+    const personajes = obtenerPersonajes()
+    console.log("Lista actual de personajes:", personajes)
+    console.log("¿Es array?", Array.isArray(personajes))
 
     // Añadir el nuevo personaje
     personajes.push(nuevoPersonaje)
+    console.log("Personaje añadido a la lista. Nueva longitud:", personajes.length)
 
     // Guardar la lista actualizada
-    localStorage.setItem("personajes", JSON.stringify(personajes))
-    console.log("Lista de personajes guardada en localStorage")
+    const guardadoExitoso = guardarPersonajes(personajes)
+    if (!guardadoExitoso) {
+      throw new Error("No se pudo guardar la lista de personajes")
+    }
 
     // Establecer como personaje actual
     localStorage.setItem("personajeActual", JSON.stringify(nuevoPersonaje))
@@ -317,10 +357,7 @@ function crearPersonaje() {
 // Función para seleccionar un personaje
 function seleccionarPersonaje(id) {
   console.log("Seleccionando personaje:", id)
-  const personajesJSON = localStorage.getItem("personajes")
-  if (!personajesJSON) return
-
-  const personajes = JSON.parse(personajesJSON)
+  const personajes = obtenerPersonajes()
   const personaje = personajes.find((p) => p.id === id)
 
   if (personaje) {
@@ -340,13 +377,10 @@ function confirmarEliminarPersonaje(id) {
 function eliminarPersonaje() {
   if (!personajeAEliminarId) return
 
-  const personajesJSON = localStorage.getItem("personajes")
-  if (!personajesJSON) return
-
-  const personajes = JSON.parse(personajesJSON)
+  const personajes = obtenerPersonajes()
   const nuevosPersonajes = personajes.filter((p) => p.id !== personajeAEliminarId)
 
-  localStorage.setItem("personajes", JSON.stringify(nuevosPersonajes))
+  guardarPersonajes(nuevosPersonajes)
 
   // Si el personaje eliminado era el actual, eliminar también de personajeActual
   const personajeActualJSON = localStorage.getItem("personajeActual")
@@ -373,10 +407,7 @@ function eliminarPersonaje() {
 
 // Función para exportar un personaje específico
 function exportarPersonaje(id) {
-  const personajesJSON = localStorage.getItem("personajes")
-  if (!personajesJSON) return
-
-  const personajes = JSON.parse(personajesJSON)
+  const personajes = obtenerPersonajes()
   const personaje = personajes.find((p) => p.id === id)
 
   if (!personaje) {
@@ -433,8 +464,7 @@ function importarPersonaje() {
         personaje.id = personaje.id || generateUUID()
 
         // Obtener la lista actual de personajes
-        const personajesJSON = localStorage.getItem("personajes")
-        const personajes = personajesJSON ? JSON.parse(personajesJSON) : []
+        const personajes = obtenerPersonajes()
 
         // Comprobar si ya existe un personaje con el mismo ID
         const personajeExistente = personajes.findIndex((p) => p.id === personaje.id)
@@ -448,7 +478,7 @@ function importarPersonaje() {
         }
 
         // Guardar la lista actualizada
-        localStorage.setItem("personajes", JSON.stringify(personajes))
+        guardarPersonajes(personajes)
 
         // Establecer como personaje actual
         localStorage.setItem("personajeActual", JSON.stringify(personaje))
