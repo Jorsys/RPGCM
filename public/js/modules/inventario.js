@@ -159,16 +159,23 @@ function cargarInventarioAcordeon() {
   }
 }
 
-// Función para abrir el modal de objeto
+// Función para abrir el modal de objeto con campos dinámicos
 function abrirModalObjeto(id = null) {
   const modal = new bootstrap.Modal(document.getElementById("itemModal"))
   const form = document.getElementById("itemForm")
   const deleteBtn = document.getElementById("deleteItemBtn")
   const equipBtn = document.getElementById("equipItemBtn")
   const moveToBagBtn = document.getElementById("moveToBagBtn")
+  const typeSelect = document.getElementById("itemType")
 
   // Limpiar el formulario
   form.reset()
+
+  // Ocultar todos los campos específicos
+  document.getElementById("weaponFields").style.display = "none"
+  document.getElementById("armorFields").style.display = "none"
+  document.getElementById("ammoFields").style.display = "none"
+  document.getElementById("resourceFields").style.display = "none"
 
   if (id) {
     // Editar objeto existente
@@ -187,31 +194,25 @@ function abrirModalObjeto(id = null) {
     document.getElementById("itemValue").value = objeto.valor || 0
     document.getElementById("itemDescription").value = objeto.descripcion || ""
 
+    // Cargar campos específicos según el tipo
+    mostrarCamposEspecificos(objeto.tipo, objeto)
+
     deleteBtn.style.display = "block"
-
-    // Mostrar botón de equipar solo para armas, armaduras y municiones
-    if (objeto.tipo === "arma" || objeto.tipo === "armadura" || objeto.tipo === "municion") {
-      equipBtn.style.display = "block"
-    } else {
-      equipBtn.style.display = "none"
-    }
-
-    // Mostrar botón de mover a bolsa
+    equipBtn.style.display =
+      objeto.tipo === "arma" || objeto.tipo === "armadura" || objeto.tipo === "municion" ? "block" : "none"
     moveToBagBtn.style.display = "block"
 
-    // Configurar evento para eliminar objeto
+    // Configurar eventos
     deleteBtn.onclick = () => {
       eliminarObjeto(id)
       modal.hide()
     }
 
-    // Configurar evento para equipar objeto
     equipBtn.onclick = () => {
       equiparObjeto(id)
       modal.hide()
     }
 
-    // Configurar evento para mover a bolsa
     moveToBagBtn.onclick = () => {
       abrirModalMoverObjetoABolsa(id)
       modal.hide()
@@ -220,10 +221,14 @@ function abrirModalObjeto(id = null) {
     // Nuevo objeto
     document.getElementById("itemModalLabel").textContent = "Nuevo objeto"
     document.getElementById("itemId").value = ""
-
     deleteBtn.style.display = "none"
     equipBtn.style.display = "none"
     moveToBagBtn.style.display = "none"
+  }
+
+  // Evento para cambiar campos según el tipo
+  typeSelect.onchange = (e) => {
+    mostrarCamposEspecificos(e.target.value)
   }
 
   // Configurar evento para guardar objeto
@@ -236,7 +241,66 @@ function abrirModalObjeto(id = null) {
   modal.show()
 }
 
-// Función para guardar un objeto
+// Función para mostrar campos específicos según el tipo de objeto
+function mostrarCamposEspecificos(tipo, objeto = null) {
+  // Ocultar todos los campos específicos
+  document.getElementById("weaponFields").style.display = "none"
+  document.getElementById("armorFields").style.display = "none"
+  document.getElementById("ammoFields").style.display = "none"
+  document.getElementById("resourceFields").style.display = "none"
+
+  // Actualizar etiquetas de peso y valor
+  const weightLabel = document.getElementById("weightLabel")
+  const valueLabel = document.getElementById("valueLabel")
+
+  switch (tipo) {
+    case "arma":
+      document.getElementById("weaponFields").style.display = "block"
+      weightLabel.textContent = "total"
+      valueLabel.textContent = "total"
+      if (objeto) {
+        document.getElementById("weaponType").value = objeto.tipoArma || ""
+        document.getElementById("weaponDamage").value = objeto.daño || ""
+        document.getElementById("weaponRange").value = objeto.alcance || ""
+      }
+      break
+
+    case "armadura":
+      document.getElementById("armorFields").style.display = "block"
+      weightLabel.textContent = "total"
+      valueLabel.textContent = "total"
+      if (objeto) {
+        document.getElementById("armorType").value = objeto.tipoArmadura || ""
+        document.getElementById("armorProtection").value = objeto.proteccion || 0
+      }
+      break
+
+    case "municion":
+      document.getElementById("ammoFields").style.display = "block"
+      weightLabel.textContent = "unitario"
+      valueLabel.textContent = "unitario"
+      if (objeto) {
+        document.getElementById("ammoType").value = objeto.tipoMunicion || ""
+      }
+      break
+
+    case "recurso":
+      document.getElementById("resourceFields").style.display = "block"
+      weightLabel.textContent = "unitario"
+      valueLabel.textContent = "unitario"
+      if (objeto) {
+        document.getElementById("resourceCategory").value = objeto.categoria || ""
+      }
+      break
+
+    default:
+      weightLabel.textContent = "total"
+      valueLabel.textContent = "total"
+      break
+  }
+}
+
+// Función para guardar un objeto con campos específicos
 function guardarObjeto() {
   const id = document.getElementById("itemId").value
   const nombre = document.getElementById("itemName").value
@@ -253,33 +317,48 @@ function guardarObjeto() {
     personaje.inventario = []
   }
 
+  // Crear objeto base
+  const objetoBase = {
+    id: id || generateUUID(),
+    nombre,
+    tipo,
+    cantidad,
+    peso,
+    valor,
+    descripcion,
+  }
+
+  // Añadir campos específicos según el tipo
+  switch (tipo) {
+    case "arma":
+      objetoBase.tipoArma = document.getElementById("weaponType").value
+      objetoBase.daño = document.getElementById("weaponDamage").value
+      objetoBase.alcance = document.getElementById("weaponRange").value
+      break
+
+    case "armadura":
+      objetoBase.tipoArmadura = document.getElementById("armorType").value
+      objetoBase.proteccion = Number.parseInt(document.getElementById("armorProtection").value) || 0
+      break
+
+    case "municion":
+      objetoBase.tipoMunicion = document.getElementById("ammoType").value
+      break
+
+    case "recurso":
+      objetoBase.categoria = document.getElementById("resourceCategory").value
+      break
+  }
+
   if (id) {
     // Actualizar objeto existente
     const index = personaje.inventario.findIndex((o) => o.id === id)
     if (index !== -1) {
-      personaje.inventario[index] = {
-        ...personaje.inventario[index],
-        nombre,
-        tipo,
-        cantidad,
-        peso,
-        valor,
-        descripcion,
-      }
+      personaje.inventario[index] = objetoBase
     }
   } else {
     // Crear nuevo objeto
-    const nuevoObjeto = {
-      id: generateUUID(),
-      nombre,
-      tipo,
-      cantidad,
-      peso,
-      valor,
-      descripcion,
-    }
-
-    personaje.inventario.push(nuevoObjeto)
+    personaje.inventario.push(objetoBase)
   }
 
   // Guardar cambios
@@ -287,8 +366,6 @@ function guardarObjeto() {
 
   // Actualizar la interfaz
   cargarInventarioAcordeon()
-
-  // Actualizar el peso total
   actualizarPesoTotal()
 }
 
