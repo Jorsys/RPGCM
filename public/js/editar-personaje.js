@@ -1,55 +1,209 @@
-// Importar funciones necesarias
-import { cargarPersonajeEdicion, guardarPersonajeEdicion } from "./modules/personaje.js"
-import { cargarAtributosEdicion, guardarAtributosEdicion } from "./modules/editar-atributos.js"
+// Función para cargar los datos del personaje en el formulario de edición
+function cargarEdicionPersonaje() {
+  console.log("Cargando datos para edición...")
 
-// Función para inicializar la página
-function inicializarPagina() {
-  // Verificar si hay un personaje activo
-  const personajeJSON = localStorage.getItem("personajeActual")
-  if (!personajeJSON) {
-    alert("No hay ningún personaje activo. Serás redirigido a la página principal.")
-    window.location.href = "index.html"
-    return
+  try {
+    const personajeJSON = localStorage.getItem("personajeActual")
+    console.log("Datos del personaje actual:", personajeJSON)
+
+    if (!personajeJSON) {
+      console.error("No hay personaje actual")
+      alert("No hay ningún personaje seleccionado. Serás redirigido a la página principal.")
+      window.location.href = "index.html"
+      return
+    }
+
+    const personaje = JSON.parse(personajeJSON)
+    console.log("Personaje parseado:", personaje)
+
+    // Cargar datos básicos
+    const nombreInput = document.getElementById("nombre")
+    const claseInput = document.getElementById("clase")
+    const nivelInput = document.getElementById("nivel")
+
+    if (nombreInput) nombreInput.value = personaje.nombre || ""
+    if (claseInput) claseInput.value = personaje.clase || ""
+    if (nivelInput) nivelInput.value = personaje.nivel || "1"
+
+    // Cargar atributos básicos
+    const percepcionInput = document.getElementById("percepcion")
+    const destrezaInput = document.getElementById("destreza")
+    const agilidadInput = document.getElementById("agilidad")
+    const inteligenciaInput = document.getElementById("inteligencia")
+
+    if (percepcionInput) percepcionInput.value = personaje.percepcion || "0"
+    if (destrezaInput) destrezaInput.value = personaje.destreza || "0"
+    if (agilidadInput) agilidadInput.value = personaje.agilidad || "0"
+    if (inteligenciaInput) inteligenciaInput.value = personaje.inteligencia || "0"
+
+    // Cargar atributos vitales
+    const vidaInput = document.getElementById("vida")
+    const aguanteInput = document.getElementById("aguante")
+    const manaInput = document.getElementById("mana")
+
+    if (vidaInput) vidaInput.value = personaje.vida || "0"
+    if (aguanteInput) aguanteInput.value = personaje.aguante || "0"
+    if (manaInput) manaInput.value = personaje.mana || "0"
+
+    // Cargar atributos de combate
+    const combateInput = document.getElementById("combate")
+    const punteriaInput = document.getElementById("punteria")
+    const magiaInput = document.getElementById("magia")
+
+    if (combateInput) combateInput.value = personaje.combate || "0"
+    if (punteriaInput) punteriaInput.value = personaje.punteria || "0"
+    if (magiaInput) magiaInput.value = personaje.magia || "0"
+
+    // Cargar habilidades derivadas
+    const buscarInput = document.getElementById("buscar")
+    const sigiloInput = document.getElementById("sigilo")
+    const observarInput = document.getElementById("observar")
+    const cerraduraInput = document.getElementById("cerradura")
+    const trampasInput = document.getElementById("trampas")
+    const manipularObjetosInput = document.getElementById("manipularObjetos")
+    const acrobaciaInput = document.getElementById("acrobacia")
+    const desarmarInput = document.getElementById("desarmar")
+    const equitacionInput = document.getElementById("equitacion")
+    const elocuenciaInput = document.getElementById("elocuencia")
+    const resolverInput = document.getElementById("resolver")
+
+    if (buscarInput) buscarInput.value = personaje.buscar || "0"
+    if (sigiloInput) sigiloInput.value = personaje.sigilo || "0"
+    if (observarInput) observarInput.value = personaje.observar || "0"
+    if (cerraduraInput) cerraduraInput.value = personaje.cerradura || "0"
+    if (trampasInput) trampasInput.value = personaje.trampas || "0"
+    if (manipularObjetosInput) manipularObjetosInput.value = personaje.manipularObjetos || "0"
+    if (acrobaciaInput) acrobaciaInput.value = personaje.acrobacia || "0"
+    if (desarmarInput) desarmarInput.value = personaje.desarmar || "0"
+    if (equitacionInput) equitacionInput.value = personaje.equitacion || "0"
+    if (elocuenciaInput) elocuenciaInput.value = personaje.elocuencia || "0"
+    if (resolverInput) resolverInput.value = personaje.resolver || "0"
+
+    console.log("Datos cargados en el formulario correctamente")
+  } catch (error) {
+    console.error("Error al cargar los datos para edición:", error)
+    alert("Error al cargar los datos del personaje")
   }
+}
 
-  // Cargar los datos del personaje en el formulario
-  cargarPersonajeEdicion()
-  cargarAtributosEdicion()
+// Función para guardar los cambios del personaje
+function guardarPersonaje() {
+  console.log("Guardando cambios del personaje...")
 
-  // Configurar eventos
-  document.getElementById("guardarPersonaje").addEventListener("click", () => {
-    guardarPersonajeEdicion()
-    guardarAtributosEdicion()
+  try {
+    const personajeJSON = localStorage.getItem("personajeActual")
+    if (!personajeJSON) {
+      alert("No hay personaje para guardar")
+      return
+    }
 
-    // Actualizar el personaje en la lista de personajes
-    actualizarPersonajeEnLista()
+    const personaje = JSON.parse(personajeJSON)
 
-    alert("Personaje guardado con éxito")
-  })
+    // Obtener datos básicos
+    const nombreInput = document.getElementById("nombre")
+    const claseInput = document.getElementById("clase")
+    const nivelInput = document.getElementById("nivel")
 
-  document.getElementById("volver").addEventListener("click", () => {
+    if (nombreInput) personaje.nombre = nombreInput.value
+    if (claseInput) personaje.clase = claseInput.value
+    if (nivelInput) personaje.nivel = Number.parseInt(nivelInput.value) || 1
+
+    // Obtener atributos básicos
+    const percepcionInput = document.getElementById("percepcion")
+    const destrezaInput = document.getElementById("destreza")
+    const agilidadInput = document.getElementById("agilidad")
+    const inteligenciaInput = document.getElementById("inteligencia")
+
+    if (percepcionInput) personaje.percepcion = Number.parseInt(percepcionInput.value) || 0
+    if (destrezaInput) personaje.destreza = Number.parseInt(destrezaInput.value) || 0
+    if (agilidadInput) personaje.agilidad = Number.parseInt(agilidadInput.value) || 0
+    if (inteligenciaInput) personaje.inteligencia = Number.parseInt(inteligenciaInput.value) || 0
+
+    // Obtener atributos vitales
+    const vidaInput = document.getElementById("vida")
+    const aguanteInput = document.getElementById("aguante")
+    const manaInput = document.getElementById("mana")
+
+    if (vidaInput) personaje.vida = Number.parseInt(vidaInput.value) || 0
+    if (aguanteInput) personaje.aguante = Number.parseInt(aguanteInput.value) || 0
+    if (manaInput) personaje.mana = Number.parseInt(manaInput.value) || 0
+
+    // Obtener atributos de combate
+    const combateInput = document.getElementById("combate")
+    const punteriaInput = document.getElementById("punteria")
+    const magiaInput = document.getElementById("magia")
+
+    if (combateInput) personaje.combate = Number.parseInt(combateInput.value) || 0
+    if (punteriaInput) personaje.punteria = Number.parseInt(punteriaInput.value) || 0
+    if (magiaInput) personaje.magia = Number.parseInt(magiaInput.value) || 0
+
+    // Obtener habilidades derivadas
+    const buscarInput = document.getElementById("buscar")
+    const sigiloInput = document.getElementById("sigilo")
+    const observarInput = document.getElementById("observar")
+    const cerraduraInput = document.getElementById("cerradura")
+    const trampasInput = document.getElementById("trampas")
+    const manipularObjetosInput = document.getElementById("manipularObjetos")
+    const acrobaciaInput = document.getElementById("acrobacia")
+    const desarmarInput = document.getElementById("desarmar")
+    const equitacionInput = document.getElementById("equitacion")
+    const elocuenciaInput = document.getElementById("elocuencia")
+    const resolverInput = document.getElementById("resolver")
+
+    if (buscarInput) personaje.buscar = Number.parseInt(buscarInput.value) || 0
+    if (sigiloInput) personaje.sigilo = Number.parseInt(sigiloInput.value) || 0
+    if (observarInput) personaje.observar = Number.parseInt(observarInput.value) || 0
+    if (cerraduraInput) personaje.cerradura = Number.parseInt(cerraduraInput.value) || 0
+    if (trampasInput) personaje.trampas = Number.parseInt(trampasInput.value) || 0
+    if (manipularObjetosInput) personaje.manipularObjetos = Number.parseInt(manipularObjetosInput.value) || 0
+    if (acrobaciaInput) personaje.acrobacia = Number.parseInt(acrobaciaInput.value) || 0
+    if (desarmarInput) personaje.desarmar = Number.parseInt(desarmarInput.value) || 0
+    if (equitacionInput) personaje.equitacion = Number.parseInt(equitacionInput.value) || 0
+    if (elocuenciaInput) personaje.elocuencia = Number.parseInt(elocuenciaInput.value) || 0
+    if (resolverInput) personaje.resolver = Number.parseInt(resolverInput.value) || 0
+
+    // Guardar el personaje actual
+    localStorage.setItem("personajeActual", JSON.stringify(personaje))
+
+    // Actualizar en la lista de personajes
+    const personajesJSON = localStorage.getItem("personajes")
+    if (personajesJSON) {
+      const personajes = JSON.parse(personajesJSON)
+      const index = personajes.findIndex((p) => p.id === personaje.id)
+      if (index !== -1) {
+        personajes[index] = personaje
+        localStorage.setItem("personajes", JSON.stringify(personajes))
+      }
+    }
+
+    console.log("Personaje guardado correctamente:", personaje)
+    alert("Personaje guardado correctamente")
+
+    // Redirigir a la ficha de personaje
     window.location.href = "ficha-personaje.html"
-  })
-}
-
-// Función para actualizar el personaje en la lista de personajes
-function actualizarPersonajeEnLista() {
-  const personajeActualJSON = localStorage.getItem("personajeActual")
-  if (!personajeActualJSON) return
-
-  const personajeActual = JSON.parse(personajeActualJSON)
-
-  const personajesJSON = localStorage.getItem("personajes")
-  if (!personajesJSON) return
-
-  const personajes = JSON.parse(personajesJSON)
-  const index = personajes.findIndex((p) => p.id === personajeActual.id)
-
-  if (index !== -1) {
-    personajes[index] = personajeActual
-    localStorage.setItem("personajes", JSON.stringify(personajes))
+  } catch (error) {
+    console.error("Error al guardar el personaje:", error)
+    alert("Error al guardar el personaje")
   }
 }
 
-// Inicializar la página cuando se carga
-document.addEventListener("DOMContentLoaded", inicializarPagina)
+// Inicializar cuando se carga la página
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM cargado, inicializando edición de personaje...")
+
+  // Cargar datos del personaje
+  cargarEdicionPersonaje()
+
+  // Configurar botón de guardar
+  const saveBtn = document.getElementById("saveBtn")
+  if (saveBtn) {
+    saveBtn.addEventListener("click", (e) => {
+      e.preventDefault()
+      console.log("Botón guardar clickeado")
+      guardarPersonaje()
+    })
+    console.log("Event listener del botón guardar configurado")
+  } else {
+    console.error("No se encontró el botón de guardar")
+  }
+})
