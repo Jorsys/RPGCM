@@ -184,19 +184,16 @@ function cargarListaPersonajes() {
               <div class="col-8">${personaje.nivel || "1"}</div>
             </div>
             <div class="row mb-2">
-              <div class="col-4 text-muted">Atributos:</div>
+              <div class="col-4 text-muted">Combate:</div>
               <div class="col-8">
-                <span class="badge bg-info me-1" title="Percepción">
-                  <i class="bi bi-eye"></i> ${personaje.percepcion || "0"}
+                <span class="badge bg-danger me-1" title="Combate">
+                  <i class="bi bi-sword"></i> ${personaje.combate || "0"}
                 </span>
-                <span class="badge bg-warning me-1" title="Destreza">
-                  <i class="bi bi-hand"></i> ${personaje.destreza || "0"}
+                <span class="badge bg-success me-1" title="Puntería">
+                  <i class="bi bi-bullseye"></i> ${personaje.punteria || "0"}
                 </span>
-                <span class="badge bg-success me-1" title="Agilidad">
-                  <i class="bi bi-lightning"></i> ${personaje.agilidad || "0"}
-                </span>
-                <span class="badge bg-danger me-1" title="Inteligencia">
-                  <i class="bi bi-brain"></i> ${personaje.inteligencia || "0"}
+                <span class="badge bg-primary me-1" title="Magia">
+                  <i class="bi bi-magic"></i> ${personaje.magia || "0"}
                 </span>
               </div>
             </div>
@@ -233,14 +230,6 @@ function crearPersonaje() {
       return
     }
 
-    // Obtener atributos básicos
-    const percepcion = Number.parseInt(document.getElementById("newCharacterPerception")?.value) || 0
-    const destreza = Number.parseInt(document.getElementById("newCharacterDexterity")?.value) || 0
-    const agilidad = Number.parseInt(document.getElementById("newCharacterAgility")?.value) || 0
-    const inteligencia = Number.parseInt(document.getElementById("newCharacterIntelligence")?.value) || 0
-
-    console.log("Atributos básicos:", { percepcion, destreza, agilidad, inteligencia })
-
     // Obtener atributos de combate
     const combate = Number.parseInt(document.getElementById("newCharacterCombat")?.value) || 0
     const punteria = Number.parseInt(document.getElementById("newCharacterAim")?.value) || 0
@@ -261,31 +250,17 @@ function crearPersonaje() {
       nombre,
       clase,
       nivel,
-
-      // Atributos básicos
-      percepcion,
-      destreza,
-      agilidad,
-      inteligencia,
-
-      // Atributos derivados de percepción
-      buscar: Math.floor(percepcion / 2),
-      sigilo: Math.floor(percepcion / 2),
-      observar: Math.floor(percepcion / 2),
-
-      // Atributos derivados de destreza
-      cerradura: Math.floor(destreza / 2),
-      trampas: Math.floor(destreza / 2),
-      manipularObjetos: Math.floor(destreza / 2),
-
-      // Atributos derivados de agilidad
-      acrobacia: Math.floor(agilidad / 2),
-      desarmar: Math.floor(agilidad / 2),
-      equitacion: Math.floor(agilidad / 2),
-
-      // Atributos derivados de inteligencia
-      elocuencia: Math.floor(inteligencia / 2),
-      resolver: Math.floor(inteligencia / 2),
+      buscar: 0,
+      sigilo: 0,
+      observar: 0,
+      cerradura: 0,
+      trampas: 0,
+      manipularObjetos: 0,
+      acrobacia: 0,
+      desarmar: 0,
+      equitacion: 0,
+      elocuencia: 0,
+      resolver: 0,
 
       // Atributos de combate
       combate,

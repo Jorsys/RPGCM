@@ -25,17 +25,6 @@ function cargarEdicionPersonaje() {
     if (claseInput) claseInput.value = personaje.clase || ""
     if (nivelInput) nivelInput.value = personaje.nivel || "1"
 
-    // Cargar atributos básicos
-    const percepcionInput = document.getElementById("percepcion")
-    const destrezaInput = document.getElementById("destreza")
-    const agilidadInput = document.getElementById("agilidad")
-    const inteligenciaInput = document.getElementById("inteligencia")
-
-    if (percepcionInput) percepcionInput.value = personaje.percepcion || "0"
-    if (destrezaInput) destrezaInput.value = personaje.destreza || "0"
-    if (agilidadInput) agilidadInput.value = personaje.agilidad || "0"
-    if (inteligenciaInput) inteligenciaInput.value = personaje.inteligencia || "0"
-
     // Cargar atributos vitales
     const vidaInput = document.getElementById("vida")
     const aguanteInput = document.getElementById("aguante")
@@ -107,17 +96,6 @@ function guardarPersonaje() {
     if (nombreInput) personaje.nombre = nombreInput.value
     if (claseInput) personaje.clase = claseInput.value
     if (nivelInput) personaje.nivel = Number.parseInt(nivelInput.value) || 1
-
-    // Obtener atributos básicos
-    const percepcionInput = document.getElementById("percepcion")
-    const destrezaInput = document.getElementById("destreza")
-    const agilidadInput = document.getElementById("agilidad")
-    const inteligenciaInput = document.getElementById("inteligencia")
-
-    if (percepcionInput) personaje.percepcion = Number.parseInt(percepcionInput.value) || 0
-    if (destrezaInput) personaje.destreza = Number.parseInt(destrezaInput.value) || 0
-    if (agilidadInput) personaje.agilidad = Number.parseInt(agilidadInput.value) || 0
-    if (inteligenciaInput) personaje.inteligencia = Number.parseInt(inteligenciaInput.value) || 0
 
     // Obtener atributos vitales
     const vidaInput = document.getElementById("vida")

@@ -78,17 +78,6 @@ function cargarFichaPersonaje() {
     if (claseElement) claseElement.textContent = personaje.clase || "Sin clase"
     if (nivelElement) nivelElement.textContent = personaje.nivel || "1"
 
-    // Cargar atributos básicos
-    const percepcionElement = document.getElementById("percepcionValor")
-    const destrezaElement = document.getElementById("destrezaValor")
-    const agilidadElement = document.getElementById("agilidadValor")
-    const inteligenciaElement = document.getElementById("inteligenciaValor")
-
-    if (percepcionElement) percepcionElement.textContent = personaje.percepcion || "0"
-    if (destrezaElement) destrezaElement.textContent = personaje.destreza || "0"
-    if (agilidadElement) agilidadElement.textContent = personaje.agilidad || "0"
-    if (inteligenciaElement) inteligenciaElement.textContent = personaje.inteligencia || "0"
-
     // Cargar atributos vitales
     const vidaElement = document.getElementById("vidaValor")
     const vidaActualElement = document.getElementById("vidaActualValor")
